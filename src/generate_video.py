@@ -1,0 +1,347 @@
+# -*- coding: utf-8 -*-
+"""生视频功能脚本 - 正式版：产品图 -> 场景图 -> 视频
+
+参考 test/test_video_scene_flow.py 实现，使用测试通过的方案和提示词
+
+输入参数：
+    --image: 输入产品图片路径（必需）
+    --user_id: 飞书用户ID（可选，用于发送结果）
+    --scene: 场景类型（默认：default，可选：food/electronics/fashion/cosmetics）
+    --duration: 视频时长（默认：5秒）
+    --resolution: 分辨率（默认：480p，可选：720p）
+    --output_dir: 输出目录（可选，默认按时间创建）
+
+输出：
+    - 场景图：output/YYYYMMDD_HHMMSS/scene.png
+    - 视频：output/YYYYMMDD_HHMMSS/video.mp4
+    - 结果记录：output/YYYYMMDD_HHMMSS/result.json
+"""
+import argparse
+import json
+import sys
+from datetime import datetime
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+
+from providers.flash_image import FlashImageProvider
+from providers.grok_video import GrokVideoProvider
+from providers.gemini_prompt import GeminiPromptProvider
+from utils.logger import get_logger
+from utils.feishu import send_text
+
+
+# 主人提供的场景化提示词模板（来自 test_video_scene_flow.py）
+SCENE_PROMPT_TEMPLATE = """Photorealistic professional e-commerce lifestyle product photography using the exact reference image as the product source -- the product must remain 100% identical in every single detail: precise shape, exact original colors, perfect logo/text/font placement and spelling, identical packaging, materials, textures, labels, proportions, reflections, no alterations, no redesign, no stylization, no improvements, no hallucinations or changes whatsoever to the product itself. Preserve all original features faithfully with maximum fidelity. Integrate the unchanged product naturally and seamlessly into a premium, aspirational real-life usage scene: {scene_description}. High-end commercial advertising style, sophisticated and balanced composition, ideal hero product placement and flattering angle for online store showcase, professional cinematic lighting: soft diffused key light from {light_direction} + gentle natural fill + subtle realistic rim/highlight on product edges, accurate soft shadows falling naturally on surfaces, realistic reflections and caustics where appropriate, shallow to medium depth of field with creamy background blur (f/2.8–f/4 aesthetic), razor-sharp critical focus exclusively on the product, hyper-realistic materials and surfaces, clean aspirational mood that evokes desire and quality, no text overlays, no watermarks, no distracting or obscuring elements on or covering the product. Ultra-high resolution 8K, RAW photo quality, shot on professional full-frame camera like Canon EOS R5 or Sony A1 with 85mm or 100mm prime lens, subtle film-like color grading."""
+
+
+# 针对不同产品类型的场景描述（来自 test_video_scene_flow.py）
+SCENE_PRESETS = {
+    "food": {
+        "scene": "rustic wooden dining table at warm golden hour, soft natural window light from the left, ceramic plate and linen napkin, fresh herbs garnish, cozy home kitchen atmosphere with gentle bokeh",
+        "light": "front-left window"
+    },
+    "electronics": {
+        "scene": "minimalist modern workspace with matte black desk, soft diffused daylight from large window, subtle tech accessories in background, clean Scandinavian interior design, premium professional environment",
+        "light": "front-right large window"
+    },
+    "fashion": {
+        "scene": "elegant walk-in closet with warm ambient lighting, velvet hanger and marble surface, soft fabric textures in background, luxurious boutique atmosphere, refined lifestyle setting",
+        "light": "front-left softbox"
+    },
+    "cosmetics": {
+        "scene": "marble vanity counter with fresh flowers, soft morning light through sheer curtains, rose gold accents, spa-like serene atmosphere, dewy fresh aesthetic",
+        "light": "front window with sheer diffusion"
+    },
+    "default": {
+        "scene": "clean modern surface with soft natural lighting, minimal elegant background, professional studio atmosphere with subtle lifestyle elements",
+        "light": "front-left window"
+    }
+}
+
+
+# 固定的视频提示词（主人提供，来自 test_video_scene_flow.py）
+# 注意：提示词中不要硬编码时长和分辨率，由 API 参数控制
+VIDEO_PROMPT_TEMPLATE = """Using the uploaded reference image as the exact product and starting scene, create a premium cinematic product advertisement video. First analyze the product's theme, design style, colors, materials, and surrounding environment in the image, then craft a natural, engaging, story-driven showcase that feels like a high-end commercial. Feature elegant dynamic product showcase with subtle, realistic interactions relevant to the product (such as gentle handling, natural usage, pouring, wearing, or environmental interaction) while keeping the product perfectly centered and heroically highlighted. Showcase the product through dynamic camera movements and professional cinematography techniques. Use smooth, fluid cinematic camera movements — slow push-in, gentle tracking shot, subtle elegant orbit, or graceful dolly — to reveal beautiful details from multiple flattering angles in a seamless, continuous flow. Maintain 100% visual fidelity to the original product in every frame: exact shape, precise colors, perfect logo placement and text, identical materials, textures, reflections, and all details — no morphing, distortion, hallucination, or added parts whatsoever. CRITICAL: Maintain the exact aspect ratio and proportions of the original product image, strictly prohibit any stretching, squeezing, or distortion of the product shape. Preserve the original width-to-height ratio of all items in the image. Enhance the original scene with consistent premium atmosphere, professional soft studio wrap-around lighting plus natural cinematic enhancements, realistic sliding reflections and soft shadows that perfectly match the motion. Output an ultra-cinematic product advertisement video: ultra-smooth 60fps-like fluid motion, hyper-realistic photorealistic rendering, razor-sharp clarity and ultra-high detail, professional Hollywood color grading, high dynamic range, cinematic depth of field, clean aspirational mood, masterpiece commercial quality, no artifacts, no jitter, no flicker. Negative: choppy transitions, erratic movement, background changes or flicker, excessive zooming, shape distortion, blurry details, low quality, morphing, artifacts, unnatural motion, stretching, squeezing, aspect ratio changes."""
+
+
+def generate_video(image_path: str, user_id: str = None, scene_type: str = "default",
+                   duration: int = 5, resolution: str = "480p", output_dir: Path = None) -> dict:
+    """
+    生成产品营销视频 - 参考 test_video_scene_flow.py 实现
+    
+    流程：
+        Step 1: 生成场景化产品图 (FlashImage)
+        Step 2: 用场景图生成视频 (Grok)
+    
+    Args:
+        image_path: 输入产品图片路径
+        user_id: 飞书用户ID（用于发送结果）
+        scene_type: 场景类型 (food/electronics/fashion/cosmetics/default)
+        duration: 视频时长（秒）
+        resolution: 分辨率 (480p/720p)
+        output_dir: 输出目录（默认按时间创建）
+    
+    Returns:
+        {
+            "status": "success|error",
+            "output_dir": str,
+            "scene_path": str,
+            "video_path": str,
+            "user_id": str
+        }
+    """
+    logger = get_logger()
+    
+    # 验证输入图片
+    if not Path(image_path).exists():
+        error_msg = f"输入图片不存在: {image_path}"
+        logger.log_error("generate_video", "validate_input", Exception(error_msg))
+        return {"status": "error", "error": {"message": error_msg}}
+    
+    # 创建输出目录
+    if output_dir is None:
+        output_dir = Path("output") / datetime.now().strftime("%Y%m%d_%H%M%S")
+    else:
+        output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    logger.log_operation(
+        module="generate_video",
+        action="start",
+        params={"image": image_path, "scene": scene_type, "duration": duration, "resolution": resolution, "user_id": user_id},
+        result={"output_dir": str(output_dir)}
+    )
+    
+    print("=" * 60)
+    print("生成产品营销视频")
+    print("=" * 60)
+    print(f"输入: {image_path}")
+    print(f"场景: {scene_type} | 时长: {duration}s | 分辨率: {resolution}")
+    print()
+    
+    # 通知用户开始生成
+    if user_id:
+        send_text(user_id, "开始生成视频...\n第1步：生成场景化产品图")
+    
+    # Step 1: 生成场景图
+    print("[1/2] 生成场景化产品图...")
+    
+    preset = SCENE_PRESETS.get(scene_type, SCENE_PRESETS["default"])
+    scene_prompt = SCENE_PROMPT_TEMPLATE.format(
+        scene_description=preset["scene"],
+        light_direction=preset["light"]
+    )
+    
+    scene_path = str(output_dir / "scene.png")
+    
+    flash = FlashImageProvider()
+    result = flash.generate_image(
+        prompt=scene_prompt,
+        output_path=scene_path,
+        input_image=image_path,
+        aspect_ratio="9:16",  # 竖版 9:16，与视频比例一致，避免拉伸
+        resolution="2K"
+    )
+    
+    if result['status'] != 'success':
+        error_msg = result.get('error', {}).get('message', '场景图生成失败')
+        logger.log_error("generate_video", "generate_scene", Exception(error_msg))
+        if user_id:
+            send_text(user_id, f"场景图生成失败: {error_msg}")
+        return {"status": "error", "error": {"message": error_msg}}
+    
+    print(f"  [OK] 场景图生成成功: {scene_path}")
+    
+    # 保存场景提示词
+    scene_prompt_file = output_dir / "scene_prompt.txt"
+    with open(scene_prompt_file, 'w', encoding='utf-8') as f:
+        f.write("=" * 60 + "\n")
+        f.write("场景图生成提示词 (Scene Prompt)\n")
+        f.write("=" * 60 + "\n\n")
+        f.write(f"场景类型: {scene_type}\n")
+        f.write(f"场景描述: {preset['scene']}\n")
+        f.write(f"光照方向: {preset['light']}\n\n")
+        f.write("-" * 60 + "\n")
+        f.write("完整提示词:\n")
+        f.write("-" * 60 + "\n\n")
+        f.write(scene_prompt)
+        f.write("\n")
+    print(f"  [OK] 场景提示词已保存: {scene_prompt_file}")
+    
+    # 通知用户场景图完成
+    if user_id:
+        send_text(user_id, "场景图生成完成，正在分析产品比例并生成视频...")
+    
+    # Step 2: 用 Gemini 生成带比例约束的视频提示词
+    print("[2/3] 分析产品比例并生成视频提示词...")
+    
+    gemini = GeminiPromptProvider()
+    prompt_result = gemini.generate_video_prompt_with_scale(
+        image_path=image_path,
+        scene_description=preset['scene']
+    )
+    
+    if prompt_result['status'] != 'success':
+        error_msg = prompt_result.get('error', {}).get('message', '视频提示词生成失败')
+        print(f"  [Warning] Gemini提示词生成失败，使用默认模板: {error_msg}")
+        video_prompt = VIDEO_PROMPT_TEMPLATE
+        scale_reference = "使用默认比例约束"
+    else:
+        video_prompt = prompt_result['video_prompt']
+        scale_reference = prompt_result['scale_reference']
+        print(f"  [OK] 视频提示词生成成功")
+        print(f"  [Scale] 比例参照: {scale_reference}")
+    
+    # Step 3: 生成视频
+    print("[3/3] 生成视频...")
+    
+    video_path = str(output_dir / "video.mp4")
+    
+    grok = GrokVideoProvider()
+    result = grok.generate_video(
+        prompt=video_prompt,
+        output_path=video_path,
+        input_image=scene_path,
+        duration=duration,
+        resolution=resolution,
+        aspect_ratio="9:16"  # 竖版视频
+    )
+    
+    if result['status'] != 'success':
+        error_detail = result.get('error', {})
+        error_msg = error_detail.get('message', '视频生成失败')
+        # 记录完整错误信息以便诊断
+        full_error = json.dumps(error_detail, ensure_ascii=False)
+        print(f"[Error] 视频生成失败详情: {full_error}")
+        logger.log_error("generate_video", "generate_video", Exception(full_error))
+        if user_id:
+            send_text(user_id, f"视频生成失败: {error_msg}")
+        return {"status": "error", "error": error_detail}
+    
+    print(f"  [OK] 视频生成成功: {video_path}")
+    
+    # 保存视频提示词
+    video_prompt_file = output_dir / "video_prompt.txt"
+    with open(video_prompt_file, 'w', encoding='utf-8') as f:
+        f.write("=" * 60 + "\n")
+        f.write("视频生成提示词 (Video Prompt)\n")
+        f.write("=" * 60 + "\n\n")
+        f.write(f"视频时长: {duration}秒\n")
+        f.write(f"分辨率: {resolution}\n")
+        f.write(f"比例: 9:16 (竖屏)\n")
+        f.write(f"比例参照: {scale_reference}\n\n")
+        f.write("-" * 60 + "\n")
+        f.write("完整提示词:\n")
+        f.write("-" * 60 + "\n\n")
+        f.write(video_prompt)
+        f.write("\n")
+    print(f"  [OK] 视频提示词已保存: {video_prompt_file}")
+    
+    # 保存合并的提示词文件（方便对照）
+    prompts_file = output_dir / "prompts.txt"
+    with open(prompts_file, 'w', encoding='utf-8') as f:
+        f.write("=" * 70 + "\n")
+        f.write("产品营销视频生成提示词记录\n")
+        f.write("=" * 70 + "\n\n")
+        f.write(f"产品图片: {image_path}\n")
+        f.write(f"场景类型: {scene_type}\n")
+        f.write(f"视频参数: {duration}秒 | {resolution} | 9:16竖屏\n")
+        f.write(f"生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write("\n" + "=" * 70 + "\n")
+        f.write("第一部分：场景图生成提示词\n")
+        f.write("=" * 70 + "\n\n")
+        f.write(f"【场景类型】{scene_type}\n")
+        f.write(f"【场景描述】{preset['scene']}\n")
+        f.write(f"【光照方向】{preset['light']}\n\n")
+        f.write("【完整提示词】\n")
+        f.write("-" * 70 + "\n")
+        f.write(scene_prompt)
+        f.write("\n\n" + "=" * 70 + "\n")
+        f.write("第二部分：视频生成提示词\n")
+        f.write("=" * 70 + "\n\n")
+        f.write(f"【视频时长】{duration}秒\n")
+        f.write(f"【分辨率】{resolution}\n")
+        f.write(f"【画面比例】9:16 (竖屏，适合抖音/小红书)\n\n")
+        f.write("【完整提示词】\n")
+        f.write("-" * 70 + "\n")
+        f.write(video_prompt)
+        f.write("\n")
+    print(f"  [OK] 合并提示词已保存: {prompts_file}")
+    
+    # 完成
+    print()
+    print("=" * 60)
+    print("[OK] 视频生成成功!")
+    print(f"  场景图: {scene_path}")
+    print(f"  视频: {video_path}")
+    print(f"  提示词: {prompts_file}")
+    print("=" * 60)
+    
+    # 构建返回结果
+    result = {
+        "status": "success",
+        "output_dir": str(output_dir),
+        "scene_path": scene_path,
+        "video_path": video_path,
+        "user_id": user_id
+    }
+    
+    # 保存结果
+    result_file = output_dir / "result.json"
+    with open(result_file, 'w', encoding='utf-8') as f:
+        json.dump(result, f, ensure_ascii=False, indent=2)
+    
+    logger.log_operation(
+        module="generate_video",
+        action="complete",
+        params={"image": image_path, "scene": scene_type, "duration": duration, "resolution": resolution},
+        result={"scene_path": scene_path, "video_path": video_path}
+    )
+    
+    print(f"\n结果已保存:")
+    print(f"  输出目录: {output_dir}")
+    print(f"  结果文件: {result_file}")
+    
+    return result
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description='生成产品营销视频',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+示例:
+  python src/generate_video.py --image product.jpg
+  python src/generate_video.py --image product.jpg --user_id ou_xxx --scene food --duration 5 --resolution 720p
+        """
+    )
+    parser.add_argument('--image', required=True, help='输入产品图片路径')
+    parser.add_argument('--user_id', help='飞书用户ID（用于发送结果）')
+    parser.add_argument('--scene', default='default', choices=list(SCENE_PRESETS.keys()),
+                        help='场景类型（默认：default）')
+    parser.add_argument('--duration', type=int, default=5, help='视频时长（秒，默认：5）')
+    parser.add_argument('--resolution', default='480p', choices=['480p', '720p'],
+                        help='分辨率（默认：480p）')
+    parser.add_argument('--output_dir', help='输出目录（默认按时间创建）')
+    
+    args = parser.parse_args()
+    
+    result = generate_video(
+        image_path=args.image,
+        user_id=args.user_id,
+        scene_type=args.scene,
+        duration=args.duration,
+        resolution=args.resolution,
+        output_dir=Path(args.output_dir) if args.output_dir else None
+    )
+    
+    # 输出 JSON 结果（供其他脚本解析）
+    print("\n" + "=" * 60)
+    print("[VIDEO_RESULT] " + json.dumps(result, ensure_ascii=False))
+    
+    return 0 if result['status'] == 'success' else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

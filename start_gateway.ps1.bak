@@ -1,0 +1,64 @@
+#!/usr/bin/env powershell
+# Gateway Start Script - EcomAgent
+# Separate Gateway and Monitor Service
+
+# Get script directory
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+Set-Location $scriptDir
+
+$logDir = "$scriptDir\logs"
+New-Item -ItemType Directory -Force -Path $logDir | Out-Null
+
+$logFile = "$logDir\gateway.log"
+
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "  OpenClaw Gateway + Monitor Starter" -ForegroundColor Cyan
+Write-Host "  EcomAgent Edition" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "Log: $logFile" -ForegroundColor Gray
+Write-Host ""
+
+# Clear old log (optional)
+if (Test-Path $logFile) {
+    Clear-Content $logFile
+    Write-Host "Cleared old log" -ForegroundColor Gray
+}
+
+# Set UTF-8 encoding
+$OutputEncoding = [System.Text.Encoding]::UTF8
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
+# Start monitor service (background window using CMD to avoid encoding issues)
+Write-Host "Starting monitor service..." -ForegroundColor Green
+$monitorCmd = "cd /d `"$scriptDir`" && chcp 65001 >nul && python monitor_service.py"
+$monitorProcess = Start-Process cmd -ArgumentList "/c", $monitorCmd -WindowStyle Normal -PassThru
+
+# Wait for monitor to initialize
+Start-Sleep -Seconds 3
+
+Write-Host "Starting Gateway..." -ForegroundColor Green
+Write-Host "Press Ctrl+C to stop both services" -ForegroundColor Yellow
+Write-Host ""
+
+# Use cmd to start Gateway, avoid PowerShell pipeline issues
+cmd /c "openclaw gateway --verbose --ws-log full 2>&1" | ForEach-Object {
+    $line = $_
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $logLine = "[$timestamp] $line"
+    
+    # Output to console
+    Write-Host $line
+    
+    # Write to log file
+    Add-Content -Path $logFile -Value $logLine -Encoding UTF8
+}
+
+# After Gateway stops, stop monitor service
+Write-Host ""
+Write-Host "Gateway stopped, closing monitor service..." -ForegroundColor Yellow
+if ($monitorProcess -and !$monitorProcess.HasExited) {
+    Stop-Process -Id $monitorProcess.Id -Force
+    Write-Host "Monitor service closed" -ForegroundColor Green
+}
+
+Write-Host "All services stopped" -ForegroundColor Cyan

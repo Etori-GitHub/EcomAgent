@@ -1,0 +1,210 @@
+"""
+飞书消息监听服务 - 改进版
+清晰的日志输出，参考 monitor_service.py 风格
+"""
+import json
+import re
+import subprocess
+import sys
+import time
+from datetime import datetime, timedelta
+from pathlib import Path
+from threading import Lock
+
+sys.path.insert(0, str(Path(__file__).parent))
+from utils.logger import get_logger
+
+
+def now():
+    """获取当前时间字符串"""
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+
+def log(level: str, message: str):
+    """统一日志输出格式"""
+    print(f"[{now()}] [{level}] {message}")
+
+
+class ImageCache:
+    """图片缓存管理器"""
+    
+    def __init__(self, cache_file: str = "temp/image_cache.json", expire_minutes: int = 10):
+        self.cache_file = Path(cache_file)
+        self.cache_file.parent.mkdir(parents=True, exist_ok=True)
+        self.expire_minutes = expire_minutes
+        self.cache = {}
+        self.lock = Lock()
+        self._load_cache()
+    
+    def _load_cache(self):
+        """从文件加载缓存"""
+        if self.cache_file.exists():
+            try:
+                with open(self.cache_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    now = datetime.now()
+                    valid_count = 0
+                    expired_count = 0
+                    
+                    for k, v in data.items():
+                        try:
+                            timestamp = datetime.fromisoformat(v['timestamp'])
+                            if timestamp + timedelta(minutes=self.expire_minutes) > now:
+                                self.cache[k] = v
+                                valid_count += 1
+                            else:
+                                expired_count += 1
+                        except Exception:
+                            pass
+                    
+                    if expired_count > 0:
+                        log("Cache", f"加载缓存: {valid_count}个有效, {expired_count}个已过期")
+                    else:
+                        log("Cache", f"加载缓存: {valid_count}个有效")
+            except Exception as e:
+                log("Error", f"加载缓存文件失败: {e}")
+                self.cache = {}
+    
+    def _save_cache(self):
+        """保存缓存到文件"""
+        try:
+            with open(self.cache_file, 'w', encoding='utf-8') as f:
+                json.dump(self.cache, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            log("Error", f"保存缓存失败: {e}")
+    
+    def set(self, user_id: str, image_path: str):
+        """设置缓存"""
+        with self.lock:
+            self.cache[user_id] = {
+                'image_path': image_path,
+                'timestamp': datetime.now().isoformat()
+            }
+            self._save_cache()
+            log("Cache", f"✓ 缓存图片: user={user_id}")
+    
+    def get(self, user_id: str) -> str:
+        """获取缓存的图片路径"""
+        with self.lock:
+            if user_id not in self.cache:
+                return None
+            
+            data = self.cache[user_id]
+            try:
+                timestamp = datetime.fromisoformat(data['timestamp'])
+                if datetime.now() - timestamp > timedelta(minutes=self.expire_minutes):
+                    del self.cache[user_id]
+                    self._save_cache()
+                    log("Cache", f"✗ 缓存过期: user={user_id}")
+                    return None
+                return data['image_path']
+            except Exception:
+                return None
+    
+    def delete(self, user_id: str):
+        """删除缓存"""
+        with self.lock:
+            if user_id in self.cache:
+                del self.cache[user_id]
+                self._save_cache()
+                log("Cache", f"✗ 清除缓存: user={user_id}")
+    
+    def list_active(self) -> list:
+        """列出所有活跃缓存"""
+        with self.lock:
+            return list(self.cache.keys())
+
+
+class TriggerConfig:
+    """触发词配置管理"""
+    
+    def __init__(self, config_path: str = "config/triggers.json"):
+        self.config_file = Path(config_path)
+        self.config = self._load_config()
+    
+    def _load_config(self) -> dict:
+        if not self.config_file.exists():
+            log("Config", "使用默认触发词配置")
+            return self._default_config()
+        try:
+            with open(self.config_file, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+                trigger_count = sum(len(t.get('keywords', [])) for t in config.get('triggers', {}).values())
+                log("Config", f"加载配置: {len(config.get('triggers', {}))}个触发器, {trigger_count}个关键词")
+                return config
+        except Exception as e:
+            log("Error", f"加载触发词配置失败: {e}")
+            return self._default_config()
+    
+    def _default_config(self) -> dict:
+        return {
+            "triggers": {
+                "image": {"script": "generate_images.py", "keywords": ["作图", "生图"]},
+                "video": {"script": "generate_video.py", "keywords": ["生视频", "做视频"]}
+            },
+            "settings": {"cache_expire_minutes": 10, "case_sensitive": False}
+        }
+    
+    def check_trigger(self, content: str) -> tuple:
+        """检查触发词，返回 (trigger_id, trigger_info)"""
+        content = content.strip()
+        settings = self.config.get('settings', {})
+        case_sensitive = settings.get('case_sensitive', False)
+        
+        check_content = content if case_sensitive else content.lower()
+        
+        for trigger_id, trigger_info in self.config.get('triggers', {}).items():
+            for keyword in trigger_info.get('keywords', []):
+                check_keyword = keyword if case_sensitive else keyword.lower()
+                if check_keyword in check_content:
+                    return (trigger_id, trigger_info)
+        return (None, None)
+    
+    def get_cache_expire(self) -> int:
+        return self.config.get('settings', {}).get('cache_expire_minutes', 10)
+
+
+class FeishuMonitor:
+    """飞书消息监听器"""
+    
+    def __init__(self, log_file: str = "logs/gateway.log"):
+        # Get project root (parent of src directory)
+        project_root = Path(__file__).parent.parent
+        self.log_file = project_root / log_file
+        self.triggers = TriggerConfig()
+        self.cache = ImageCache(expire_minutes=self.triggers.get_cache_expire())
+        self.logger = get_logger()
+        self.running = False
+        
+        # 正则表达式模式
+        self.image_pattern = re.compile(r'Image\s+saved:\s+(\S+)\s+for\s+user\s+(ou_[a-f0-9]+)')
+        self.message_pattern = re.compile(r'Feishu\[default\]\s+DM\s+from\s+(ou_[a-f0-9]+):\s+(.*)')
+        
+        log("Init", f"项目根目录: {project_root}")
+        log("Init", f"日志文件: {self.log_file}")
+    
+    def parse_line(self, line: str) -> dict:
+        """解析日志行"""
+        # 去除 ANSI 颜色代码
+        clean_line = re.sub(r'\x1b\[[0-9;]*m', '', line)
+        
+        image_match = self.image_pattern.search(clean_line)
+        if image_match:
+            return {
+                'type': 'image', 
+                'image_path': image_match.group(1), 
+                'user_id': image_match.group(2)
+            }
+        
+        msg_match = self.message_pattern.search(clean_line)
+        if msg_match:
+            return {
+                'type': 'text', 
+                'user_id': msg_match.group(1), 
+                'content': msg_match.group(2).strip()
+            }
+        return None
+    
+    def call_script(self, script: str, user_id: str, image_path: str) -> bool:
+        """调用生成脚本"""
+        project_root = Path(__file__).parent

@@ -1,0 +1,6 @@
+{
+    "_comment": "复制此文件为 api_keys.json 并填入真实密钥",
+    "google": "your-google-api-key-here",
+    "volcano": "your-volcano-api-key-here",
+    "xai": "your-xai-api-key-here"
+}

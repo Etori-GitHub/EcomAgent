@@ -1,0 +1,27 @@
+{
+  "_comment": "触发词配置，支持正则匹配",
+  "triggers": {
+    "image": {
+      "name": "生成图片",
+      "script": "generate_images.py",
+      "keywords": ["作图", "生图", "生9图", "9图", "生成图片"],
+      "description": "生成9张电商营销图"
+    },
+    "video": {
+      "name": "生成视频",
+      "script": "generate_video_v2.py",
+      "keywords": ["生视频", "视频", "生成视频"],
+      "description": "生成3图3视频合成版"
+    },
+    "test": {
+      "name": "测试模式",
+      "script": "test_mode.py",
+      "keywords": ["测试"],
+      "description": "测试模式：保存图片到output，再发回飞书"
+    }
+  },
+  "settings": {
+    "cache_expire_minutes": 10,
+    "case_sensitive": false
+  }
+}
