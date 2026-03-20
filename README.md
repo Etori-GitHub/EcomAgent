@@ -87,50 +87,6 @@ python test\test_video_flow_v2.py
 
 ---
 
-## 依赖库安装
-
-### Python 依赖
-```bash
-pip install pillow requests python-dotenv
-```
-
-### 系统依赖
-- **FFmpeg**：视频合并需要（已集成到项目，无需额外安装）
-- **Python 3.11+**：推荐使用 Python 3.11 或更高版本
-
-### 配置文件
-1. 复制 `config/api_keys.template.json` 为 `config/api_keys.json`
-2. 填写 Google API Key 和 Grok API Key
-3. 其他配置保持默认即可
-
----
-
-## 快速开始（生图/生视频）
-
-### 启动服务
-```bash
-# 启动 Gateway（监控用户口令）
-.\start_gateway.ps1
-
-# 启动 monitor（监听飞书消息）
-python src/monitor.py
-```
-
-### 用户口令（触发生图/生视频）
-- **生9图**：发送"作图" / "生图" / "生9图" / "9图"
-- **生视频 V2**：发送"生视频" / "做视频" / "视频"
-
-### 测试功能
-```bash
-# 测试生图
-python test\test_full_flow.py
-
-# 测试生视频 V2（3图3视频合成版）
-python test\test_video_flow_v2.py
-```
-
----
-
 ## 项目状态
 
 | 模块 | 状态 | 说明 |
@@ -540,4 +496,111 @@ CRITICAL PROPORTION CONSTRAINTS:
 
 ---
 
-## 开发计划
+## OpenClaw 技能配置（软链接）
+
+### 为什么需要软链接？
+
+OpenClaw 的技能默认从全局目录 `/opt/homebrew/lib/node_modules/openclaw/skills/` 加载，但：
+- 全局目录是 npm 包的一部分，升级时会被覆盖
+- 你的自定义技能应该用 Git 管理，放在项目里
+
+**解决方案：软链接** - 让 OpenClaw 从项目目录读取技能。
+
+### 设置步骤
+
+1. **确保技能放在项目目录**
+   ```
+   /Users/etori/.openclaw/workspace/code/EcomAgent/skills/
+   └── amazon-fetcher/
+       └── SKILL.md
+   ```
+
+2. **创建软链接**
+   ```bash
+   # 进入 OpenClaw 全局技能目录
+   cd /opt/homebrew/lib/node_modules/openclaw/skills/
+   
+   # 创建软链接（指向项目技能目录）
+   ln -sf /Users/etori/.openclaw/workspace/code/EcomAgent/skills/amazon-fetcher amazon-fetcher
+   ```
+
+3. **验证软链接**
+   ```bash
+   ls -la amazon-fetcher
+   # 应该显示：lrwxr-xr-x ... amazon-fetcher -> /Users/etori/.openclaw/workspace/code/EcomAgent/skills/amazon-fetcher
+   ```
+
+4. **测试技能**
+   ```bash
+   # 在 OpenClaw 中调用技能
+   /fetch_amazon_bestsellers
+   ```
+
+### 重装系统/换环境时的恢复步骤
+
+```bash
+# 1. 克隆项目
+git clone https://github.com/your-repo/EcomAgent.git
+cd EcomAgent
+
+# 2. 设置技能目录
+mkdir -p /Users/etori/.openclaw/workspace/code/EcomAgent/skills
+cp -r skills/* /Users/etori/.openclaw/workspace/code/EcomAgent/skills/
+
+# 3. 重新创建软链接
+cd /opt/homebrew/lib/node_modules/openclaw/skills/
+ln -sf /Users/etori/.openclaw/workspace/code/EcomAgent/skills/amazon-fetcher amazon-fetcher
+```
+
+### 注意事项
+
+- ✅ 软链接是安全的，OpenClaw 升级不会删除它
+- ✅ 用 Git 管理技能目录，方便团队协作
+- ✅ 如果技能目录名不同，软链接名要和目录名一致
+
+---
+
+## 智能选品模块 - 数据库设计
+
+### 数据库方案
+- **类型**: SQLite（轻量级，单文件数据库）
+- **位置**: `data/amazon.db`
+- **跨平台**: ✅ 支持 Windows/macOS/Linux
+
+### 表结构
+
+#### `products` - 商品基础信息表
+| 字段 | 类型 | 说明 |
+|:---|:---|:---|
+| `id` | INTEGER PRIMARY KEY | 主键 |
+| `name` | TEXT NOT NULL UNIQUE | 商品名称（唯一） |
+| `asin` | TEXT | 亚马逊商品ID |
+| `platform` | TEXT DEFAULT 'amazon' | 平台标识 |
+| `created_at` | DATETIME | 创建时间 |
+
+#### `daily_sales` - 每日销量快照表
+| 字段 | 类型 | 说明 |
+|:---|:---|:---|
+| `id` | INTEGER PRIMARY KEY | 主键 |
+| `product_id` | INTEGER NOT NULL | 商品ID（外键） |
+| `date` | DATE NOT NULL | 日期（YYYY-MM-DD） |
+| `sales` | INTEGER | 当日销量 |
+| `price` | REAL | 价格 |
+| `rank` | INTEGER | 排名 |
+| `created_at` | DATETIME | 创建时间 |
+
+### 索引
+- `idx_sales` - 按销量排序
+- `idx_platform` - 按平台过滤
+- `idx_date` - 按日期查询
+- `idx_product_date` - 按商品+日期复合查询
+
+### 爆品判断逻辑（后续实现）
+- **销量趋势**: 7天销量增速
+- **波动率**: 销量标准差/平均值
+- **综合评分**: 增速权重 70% + 稳定性权重 30%
+
+### 自动化计划
+- **频率**: 每天凌晨 2:00
+- **数据量**: Top200 商品
+- **存储**: 每日快照，长期积累
