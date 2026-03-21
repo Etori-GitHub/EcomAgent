@@ -16,6 +16,65 @@ from pathlib import Path
 from typing import List, Union
 
 
+def extract_last_frame(
+    video_path: Union[str, Path],
+    output_frame_path: Union[str, Path]
+) -> dict:
+    """
+    从视频中提取最后一帧作为图片
+    
+    Args:
+        video_path: 视频文件路径
+        output_frame_path: 输出帧图片路径
+    
+    Returns:
+        {
+            "status": "success" | "error",
+            "output_path": str,
+            "error": {...}
+        }
+    """
+    if not MOVIEPY_AVAILABLE:
+        import sys
+        return {
+            "status": "error",
+            "error": {
+                "message": f"moviepy not installed in {sys.executable}. Run: {sys.executable} -m pip install moviepy"
+            }
+        }
+    
+    try:
+        video_path = Path(video_path)
+        output_frame_path = Path(output_frame_path)
+        
+        if not video_path.exists():
+            return {"status": "error", "error": {"message": f"Video not found: {video_path}"}}
+        
+        # 加载视频
+        clip = VideoFileClip(str(video_path))
+        
+        # 提取最后一帧
+        last_frame = clip.get_frame(clip.duration)
+        
+        # 保存为图片
+        from PIL import Image
+        img = Image.fromarray(last_frame)
+        img.save(str(output_frame_path))
+        
+        clip.close()
+        
+        return {
+            "status": "success",
+            "output_path": str(output_frame_path)
+        }
+        
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": {"message": str(e)}
+        }
+
+
 def merge_vovies(
     video_paths: List[Union[str, Path]],
     output_path: Union[str, Path],
@@ -116,7 +175,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    result = merge_movies(args.videos, args.output, args.fps)
+    result = merge_vovies(args.videos, args.output, args.fps)
 
     if result['status'] == 'success':
         print(f"✓ 视频合并成功: {result['output_path']}")

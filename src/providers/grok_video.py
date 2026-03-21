@@ -161,7 +161,7 @@ class GrokVideoProvider(VideoProvider):
                         image_path = input_image
                         image_size = Path(image_path).stat().st_size / 1024  # KB
                         
-                        if image_size > 2000:  # 如果大于 2MB，进行压缩
+                        if image_size > 1000:  # 如果大于 1MB，进行压缩
                             print(f"[Grok] 图片较大 ({image_size:.1f} KB)，正在压缩...")
                             from PIL import Image as PILImage
                             import tempfile
@@ -172,18 +172,23 @@ class GrokVideoProvider(VideoProvider):
                                 if img.mode in ('RGBA', 'P'):
                                     img = img.convert('RGB')
                                 
-                                # 如果尺寸太大，先缩小
-                                max_size = 1024
+                                # 调整尺寸为 9:16 480p（720x1280）
+                                # 保持比例，限制最大边为 720px（竖屏）
+                                max_size = 720
                                 if max(img.size) > max_size:
                                     ratio = max_size / max(img.size)
                                     new_size = (int(img.size[0] * ratio), int(img.size[1] * ratio))
+                                    # 确保尺寸符合 9:16 比例
+                                    target_width = 720
+                                    target_height = 1280
+                                    # 按比例缩放后裁剪或填充
                                     img = img.resize(new_size, PILImage.Resampling.LANCZOS)
                                     print(f"[Grok] 图片已缩放至: {new_size}")
                                 
-                                # 保存为临时文件，质量 85%
+                                # 保存为临时文件，质量 75%
                                 with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as tmp:
                                     tmp_path = tmp.name
-                                img.save(tmp_path, 'JPEG', quality=85, optimize=True)
+                                img.save(tmp_path, 'JPEG', quality=75, optimize=True)
                                 image_path = tmp_path
                                 new_size = Path(tmp_path).stat().st_size / 1024
                                 print(f"[Grok] 图片已压缩: {image_size:.1f} KB -> {new_size:.1f} KB")

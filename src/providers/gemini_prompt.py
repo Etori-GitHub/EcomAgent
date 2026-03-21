@@ -321,6 +321,82 @@ Return ONLY a JSON object in this format:
                 "duration_per_segment": 5
             }
 
+    def generate_model_frame(
+        self,
+        image_path: str,
+        language: str = "english"
+    ) -> Dict:
+        """
+        分析产品图片，生成高质量首帧模特图提示词
+        
+        Args:
+            image_path: 产品图片路径
+            language: 输出语言 (english/chinese)
+        
+        Returns:
+            {
+                "status": "success|error",
+                "prompt": str  # 首帧模特图提示词
+            }
+        """
+        try:
+            # 读取图片
+            image = Image.open(image_path)
+            
+            # 构建提示词
+            lang_instruction = "Write in English" if language == "english" else "用中文撰写"
+            
+            prompt_text = f"""Analyze this product image and generate a prompt for creating a high-quality model frame image featuring a European model.
+
+Requirements:
+1. The prompt should describe a professional e-commerce product photography scene
+2. The scene should feature a European model (male or female) presenting the product
+3. Include details about: model pose, lighting, background, composition, atmosphere
+4. The product should be the clear focal point, held or presented by the model
+5. Premium advertising aesthetic with world-class photography quality
+6. Fixed 9:16 vertical aspect ratio composition optimized for mobile viewing
+7. Clean, uncluttered composition with sophisticated depth of field
+8. Professional color grading with cinematic tonal balance
+9. {lang_instruction} for AI image generation
+
+Return ONLY a JSON object in this format:
+{{"prompt": "complete prompt for AI image generation"}}"""
+
+            # 调用 Gemini (使用新的 google.genai API)
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=[prompt_text, image],
+                config=types.GenerateContentConfig(
+                    temperature=0.7,
+                    max_output_tokens=4096
+                )
+            )
+            
+            # 解析响应
+            content = response.text.strip()
+            if content.startswith('```json'):
+                content = content[7:]
+            if content.startswith('```'):
+                content = content[3:]
+            if content.endswith('```'):
+                content = content[:-3]
+            content = content.strip()
+            
+            data = json.loads(content)
+            prompt = data.get('prompt', '')
+            
+            return {
+                "status": "success",
+                "prompt": prompt
+            }
+            
+        except Exception as e:
+            return {
+                "status": "error",
+                "error": {"message": str(e)},
+                "prompt": ""
+            }
+
 
 if __name__ == "__main__":
     # 测试

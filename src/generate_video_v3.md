@@ -1,8 +1,15 @@
-# 视频生成脚本 V3 - 链式续接方案
+# 视频生成脚本 V3 - 链式续接版（首帧模特图）
+
+## 最新进度
+- **日期**: 2026-03-21
+- **状态**: ✅ 流程设计完成，待测试
+- **核心问题**: Grok API 无法从 ImgBB 下载图片（`Failed to fetch response body while downloading image`）
+
+---
 
 ## 核心思路
-用**首尾帧链式续接**实现15秒连贯广告视频：
-- 第1段：场景图1 → 5秒视频
+用**首帧模特图 + 链式续接**实现15秒连贯广告视频：
+- 第1段：高质量首帧模特图 → 5秒视频
 - 第2段：第1段最后一帧 → 5秒视频
 - 第3段：第2段最后一帧 → 5秒视频
 - 合并：3段 → 15秒完整视频
@@ -30,71 +37,43 @@ Grok Imagine Video API **不支持同时传首帧+尾帧**，只支持：
   - 9:16竖屏，高清细节，无任何失真
 - **生成方式**：Gemini Prompt + FlashImage 生成
 
-### 2. 广告词英文朗读（语音同步）
-- **要求**：
-  - 15秒分3段，每段约5秒
-  - 语言自然流畅，适合口语化朗读
-  - 无复杂术语，节奏感强
-- **实现**：
-  - Gemini生成英文广告词
-  - Grok视频生成时嵌入语音（`voiceover`参数）
-  - 每段视频对应一段广告词
+### 2. 链式续接（保证视觉连贯性）
+- **原理**：每段视频的起始帧 = 上一段的最后一帧
+- **实现**：用 `extract_last_frame` 截取最后一帧 → 传本地路径给 Grok → Grok 自动上传到图床
 
 ---
 
 ## 具体流程
 
-### Step 1: 生成高质量首帧模特图（新增步骤）
-- 用Gemini生成**时尚白人模特图**（帅哥/美女，与产品互动）
-- 质感要求：专业摄影级别，高清细节，9:16竖屏
+### Step 0: 生成高质量首帧模特图
+- 用 Gemini 生成**高质量时尚白人模特图**（帅哥/美女）
+- 要求：专业摄影级别，高清细节，9:16竖屏
 - 输出：`model_frame.png`
 
-### Step 2: 生成3套场景描述
-- 用Gemini生成3套不同风格的场景描述（简约/奢华/生活化）
-- 每套包含场景图生成提示词
-
-### Step 2: 生成3张场景图（可选）
-- 用FlashImage生成3张场景图（scene_01.png ~ scene_03.png）
-- 每张图对应一种风格
-
-### Step 2.5: 生成广告词（关键优化点）
-- 用Gemini生成15秒分3段的广告词（英文）
-- 每段约5秒，对应3段视频
-- **要求**：广告词需适合英文朗读，节奏自然，无复杂术语
-
-### Step 3.5: 生成首帧模特图（关键优化点）
-- 用Gemini生成**高质量时尚白人模特图**（帅哥或美女）
-- **要求**：
-  - 质感极佳（专业摄影级别）
-  - 欧洲面孔，时尚穿搭
-  - 与产品自然互动（如手持、试用）
-  - 9:16竖屏，高清细节
-- **用途**：作为第1段视频的起始帧（替代场景图）
-
-### Step 3: 生成3段视频（链式续接）
+### Step 1: 生成3段视频（链式续接）
 
 #### 第1段视频
 ```
-起始帧：model_frame.png（高质量白人模特图，与产品互动）
-提示词：[VIDEO_PROMPT_TEMPLATE] + [ad_segment_1] + "seamlessly continue from this frame..."
-输出：video_01.mp4（5秒，带英文语音朗读）
+起始帧：model_frame.png（本地路径）
+提示词：[VIDEO_PROMPT_TEMPLATE]
+输出：video_01.mp4（5秒）
 ```
 
 #### 第2段视频
 ```
-起始帧：extract_last_frame(video_01.mp4) → frame_end_01.png
-提示词：[VIDEO_PROMPT_TEMPLATE] + [ad_segment_2] + "seamlessly continue from the exact last frame..."
-输出：video_02.mp4（5秒，带英文语音朗读）
+起始帧：extract_last_frame(video_01.mp4) → frame_end_01.jpg（本地路径）
+提示词：[VIDEO_PROMPT_TEMPLATE]
+输出：video_02.mp4（5秒）
 ```
 
 #### 第3段视频
 ```
-起始帧：extract_last_frame(video_02.mp4) → frame_end_02.png
-提示词：[VIDEO_PROMPT_TEMPLATE] + [ad_segment_3] + "seamlessly continue from the exact last frame..."
-输出：video_03.mp4（5秒，带英文语音朗读）
+起始帧：extract_last_frame(video_02.mp4) → frame_end_02.jpg（本地路径）
+提示词：[VIDEO_PROMPT_TEMPLATE]
+输出：video_03.mp4（5秒）
 ```
 
-### Step 4: 合并视频
+### Step 2: 合并视频
 ```
 输入：video_01.mp4, video_02.mp4, video_03.mp4
 输出：video_merged.mp4（15秒）
@@ -102,57 +81,34 @@ Grok Imagine Video API **不支持同时传首帧+尾帧**，只支持：
 
 ---
 
-## 代码修改点
+## 代码实现要点
 
-### 1. 导入 `extract_last_frame`
+### 1. 所有段都用本地路径
 ```python
-from utils.video_merger import extract_last_frame
-```
+# 第1段：用本地首帧路径
+current_frame = model_frame_path
 
-### 2. 修改视频生成循环（链式续接）
-```python
-# 第1段：用高质量模特图作为起始帧
-input_frame = str(output_dir / "model_frame.png")  # 或输入产品图
-
-for i in range(1, 4):  # 3段视频
-    # 生成视频（带英文语音朗读）
-    ad_segment = ad_segments[i-1] if i <= len(ad_segments) else ""
-    video_prompt_with_voice = f"""{VIDEO_PROMPT_TEMPLATE}
-
-IMPORTANT AUDIO INSTRUCTION:
-This video MUST include voiceover narration with the following script (read aloud naturally, no background music):
-"{ad_segment}"
-
-IMPORTANT VISUAL INSTRUCTION:
-This video MUST seamlessly continue from the exact last frame of the previous video.
-Maintain visual continuity: same product, same lighting, same camera angle progression.
-No cuts, no jumps, no scene changes.
-"""
-    
+for i in range(1, 4):
+    # 生成视频（Grok 会自动上传到图床）
     result = grok.generate_video(
         prompt=video_prompt_with_voice,
         output_path=str(output_dir / f"video_{i:02d}.mp4"),
-        input_image=input_frame,
-        duration=duration,
-        resolution=resolution
+        input_image=current_frame,  # 本地路径
+        ...
     )
     
     # 截取最后一帧（除最后一段外）
     if i < 3:
-        next_input_frame = str(output_dir / f"frame_end_{i:02d}.png")
-        extract_last_frame(str(output_dir / f"video_{i:02d}.mp4"), next_input_frame)
-        input_frame = next_input_frame  # 下一段用这张帧
+        next_input_frame = str(output_dir / f"frame_end_{i:02d}.jpg")
+        extract_last_frame(video_path, next_input_frame)
+        current_frame = next_input_frame  # 下一段用本地路径
 ```
 
-### 3. Prompt增加语音朗读描述
-```python
-video_prompt_with_voice = f"""{VIDEO_PROMPT_TEMPLATE}
-
-IMPORTANT AUDIO INSTRUCTION:
-This video MUST include voiceover narration with the following script (read aloud naturally, no background music):
-"{ad_segment}"
-"""
-```
+### 2. Grok 自动上传机制
+- Grok 的 `generate_video` 方法会自动：
+  1. 检查图片大小（>2MB 自动压缩）
+  2. 上传到 ImgBB
+  3. 获取 URL 并传给 API
 
 ---
 
@@ -160,15 +116,11 @@ This video MUST include voiceover narration with the following script (read alou
 ```
 output/YYYYMMDD_HHMMSS/
 ├── model_frame.png       # 高质量白人模特图（首帧）
-├── scene_01.png          # 场景图1
-├── scene_02.png          # 场景图2
-├── scene_03.png          # 场景图3
-├── ad_script.txt         # 广告词
-├── video_01.mp4          # 第1段视频（带英文语音）
-├── video_02.mp4          # 第2段视频（带英文语音）
-├── video_03.mp4          # 第3段视频（带英文语音）
-├── frame_end_01.png      # 第1段最后一帧（中间文件）
-├── frame_end_02.png      # 第2段最后一帧（中间文件）
+├── video_01.mp4          # 第1段视频
+├── video_02.mp4          # 第2段视频
+├── video_03.mp4          # 第3段视频
+├── frame_end_01.jpg      # 第1段最后一帧（中间文件）
+├── frame_end_02.jpg      # 第2段最后一帧（中间文件）
 ├── video_merged.mp4      # 合成视频（15秒）
 └── result.json           # 结果记录
 ```
@@ -178,29 +130,22 @@ output/YYYYMMDD_HHMMSS/
 ## 依赖检查
 - ✅ `extract_last_frame` 函数（`utils/video_merger.py`）
 - ✅ `ffmpeg` 命令行（用于截取帧）
-- ✅ `PIL`（可选，备用截帧方案）
+- ✅ `PIL`（图片压缩）
 
 ---
 
-## 完整流程图
+## 当前问题
+**Grok API 无法从 ImgBB 下载图片**：
 ```
-输入产品图
-    ↓
-[Step 1] 生成高质量白人模特图（Gemini + FlashImage）
-    ↓
-[Step 2] 生成3套场景描述（Gemini）
-    ↓
-[Step 2.5] 生成广告词（Gemini，15秒分3段）
-    ↓
-[Step 3] 生成3段视频（Grok，链式续接）
-    ├─ video_01.mp4（起始帧：model_frame.png）
-    ├─ video_02.mp4（起始帧：video_01最后一帧）
-    └─ video_03.mp4（起始帧：video_02最后一帧）
-    ↓
-[Step 4] 合并视频（ffmpeg）
-    ↓
-输出：video_merged.mp4（15秒，带英文语音）
+Image URL could not be fetched: Failed to fetch response body while downloading image.
 ```
+
+**可能原因**：
+1. ImgBB 的 URL 有访问限制（需要特定的 User-Agent 或 Referer）
+2. ImgBB 的 URL 有 CDN 重定向，Grok 无法跟随
+3. Grok 的 API 有 bug
+
+**待测试**：直接传本地路径给 Grok，让它自己上传到图床。
 
 ---
 
@@ -208,4 +153,4 @@ output/YYYYMMDD_HHMMSS/
 - 如果连贯性不足，可增加 `prompt` 中的视觉描述一致性
 - 可尝试用 `video_01.mp4` 作为 `video_02` 的 `input_video`（Video-to-Video模式）
 - 可考虑用 `ffmpeg` 做转场淡入淡出，提升观感
-- 如果模特图质感不达标，可尝试调整Gemini提示词（增加"professional photography", "8K detail", "studio lighting"等关键词）
+- 如果模特图质感不达标，可尝试调整 Gemini 提示词（增加 "professional photography", "8K detail", "studio lighting" 等关键词）

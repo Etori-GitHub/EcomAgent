@@ -9,7 +9,7 @@
     },
     "video": {
       "name": "生成视频",
-      "script": "generate_video_v2.py",
+      "script": "generate_video_v3.py",
       "keywords": ["生视频", "视频", "生成视频"],
       "description": "生成3图3视频合成版"
     },

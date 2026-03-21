@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-"""生视频功能脚本 V3 - 连贯广告4帧3视频合成版（链式生成版）
+"""生视频功能脚本 V3 - 链式续接版（首帧模特图 + 3段视频）
 
 核心思路：
-1. Gemini 生成连贯广告的4个关键帧（0s, 5s, 10s, 15s），包含欧洲面孔模特
-2. 保留广告词生成（15秒分3段）
-3. Grok 链式生成3段视频（用上一段最后一帧作为下一段的起始帧）
+1. Gemini 生成高质量首帧模特图（欧洲面孔白人模特）
+2. Grok 链式生成3段视频（用上一段最后一帧作为下一段的起始帧）
+3. 截取最后一帧 → 上传图床 → 传 URL 给 Grok
 
 输入参数：
     --image: 输入产品图片路径（必需）
@@ -14,10 +14,9 @@
     --output_dir: 输出目录（可选，默认按时间创建）
 
 输出：
-    - 4个关键帧：output/YYYYMMDD_HHMMSS/frame_00~03.png
-    - 广告词：output/YYYYMMDD_HHMMSS/ad_script.txt
-    - 3段视频（连贯）：output/YYYYMMDD_HHMMSS/video_01~03.mp4
-    - 1段合成视频：output/YYYYMMDD_HHMMSS/video_merged.mp4
+    - 首帧模特图：output/YYYYMMDD_HHMMSS/model_frame.png
+    - 3段视频：output/YYYYMMDD_HHMMSS/video_01~03.mp4
+    - 合成视频：output/YYYYMMDD_HHMMSS/video_merged.mp4
     - 结果记录：output/YYYYMMDD_HHMMSS/result.json
 """
 # -*- coding: utf-8 -*-
@@ -37,9 +36,11 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from providers.grok_video import GrokVideoProvider
 from providers.gemini_prompt import GeminiPromptProvider
+from providers.flash_image import FlashImageProvider
 from utils.logger import get_logger
 from utils.feishu import send_text, send_image
 from utils.video_merger import merge_vovies, extract_last_frame
+from utils.imgbb_uploader import upload_image
 
 
 # 3套不同风格的场景描述模板
@@ -108,13 +109,15 @@ def generate_scene_prompts(image_path: str, styles: list) -> list:
 def generate_video_v3(image_path: str, user_id: str = None, duration: int = 5,
                       resolution: str = "480p", output_dir: Path = None) -> dict:
     """
-    生成产品营销视频 V2 - 3图3视频合成版
+    生成产品营销视频 V3 - 链式续接版（首帧模特图 + 3段视频）
     
     流程：
-        Step 1: 生成3套场景描述
-        Step 2: 生成3张场景图 (FlashImage)
-        Step 3: 生成3段视频 (Grok)
-        Step 4: 合并视频
+        Step 0: 生成高质量首帧模特图（Gemini + FlashImage）
+        Step 1: 上传首帧到图床，获取 URL
+        Step 2: Grok 用首帧 URL 生成第1段视频
+        Step 3: 截取第1段最后一帧 → 上传图床 → Grok 生成第2段视频
+        Step 4: 截取第2段最后一帧 → 上传图床 → Grok 生成第3段视频
+        Step 5: 合并3段视频
     
     Args:
         image_path: 输入产品图片路径
@@ -127,7 +130,6 @@ def generate_video_v3(image_path: str, user_id: str = None, duration: int = 5,
         {
             "status": "success|error",
             "output_dir": str,
-            "scenes": [...],
             "videos": [...],
             "merged_video": str,
             "user_id": str
@@ -216,172 +218,44 @@ def generate_video_v3(image_path: str, user_id: str = None, duration: int = 5,
     
     print(f"  [OK] 首帧模特图生成成功: {model_frame_path}")
     
-    # 发送给用户
+    # 上传首帧到图床，获取 URL（用于生成第1段视频）
+    print(f"  [Upload] 上传首帧到图床...")
+    upload_result = upload_image(model_frame_path, expiration=600)
+    if upload_result['status'] != 'success':
+        error_msg = f"上传首帧失败: {upload_result.get('error', {}).get('message')}"
+        logger.log_error("generate_video_v3", "upload_model_frame", Exception(error_msg))
+        if user_id:
+            send_text(user_id, f"上传首帧失败: {error_msg}")
+        return {"status": "error", "error": {"message": error_msg}}
+    
+    first_frame_url = upload_result['url']  # 改回 url
+    print(f"  [OK] 首帧上传成功: {first_frame_url}")
+    
+    # 发送首帧给用户
     if user_id:
         send_image(user_id, model_frame_path, "首帧模特图（高质量白人模特）")
     
-    # Step 1: 生成3套场景描述
-    print("[步骤1/4] 生成3套场景描述...")
-    
-    scene_prompts = generate_scene_prompts(image_path, SCENE_STYLES)
-    
-    # Step 2: 生成3张场景图（可选，用于备用）
-    print("[步骤2/4] 生成3张场景图...")
-    
-    flash = FlashImageProvider()
-    
-    scenes = []
-    for i, scene_data in enumerate(scene_prompts, 1):
-        print(f"\n  生成场景图 [{i}/3] - {scene_data['name']}...")
-        
-        scene_path = str(output_dir / f"scene_{i:02d}.png")
-        
-        # 重试机制 - VPN不稳定，增加冗余时间
-        max_retries = 5
-        result = None
-        for attempt in range(max_retries):
-            try:
-                result = flash.generate_image(
-                    prompt=scene_data["prompt"],
-                    output_path=scene_path,
-                    input_image=image_path,
-                    aspect_ratio="9:16",
-                    resolution="2K"
-                )
-                if result['status'] == 'success':
-                    break
-                # 失败时等待后重试 - 指数退避
-                if attempt < max_retries - 1:
-                    wait_time = 5 * (attempt + 1)
-                    print(f"  [Retry] 场景图{i}生成失败，{wait_time}秒后重试 ({attempt+1}/{max_retries-1})...")
-                    time.sleep(wait_time)
-            except Exception as e:
-                if attempt < max_retries - 1:
-                    wait_time = 5 * (attempt + 1)
-                    print(f"  [Retry] 场景图{i}异常，{wait_time}秒后重试 ({attempt+1}/{max_retries-1}): {e}")
-                    time.sleep(wait_time)
-                else:
-                    result = {"status": "error", "error": {"message": str(e)}}
-        
-        if result is None or result['status'] != 'success':
-            error_msg = result.get('error', {}).get('message', f'场景图{i}生成失败') if result else f'场景图{i}生成失败'
-            logger.log_error("generate_video_v3", f"generate_scene_{i}", Exception(error_msg))
-            if user_id:
-                send_text(user_id, f"场景图{i}生成失败: {error_msg}")
-            return {"status": "error", "error": {"message": error_msg}}
-        
-        # 每张图生成后等待，避免API限流 - VPN不稳定多留冗余
-        if i < len(scene_prompts):
-            print(f"  [Wait] 等待3秒后继续生成下一张...")
-            time.sleep(3)
-        
-        print(f"  [OK] 场景图{i}生成成功: {scene_path}")
-        
-        # 保存提示词
-        prompt_file = output_dir / f"prompts_{i:02d}.txt"
-        with open(prompt_file, 'w', encoding='utf-8') as f:
-            f.write(f"场景 {i}: {scene_data['name']}\n")
-            f.write(f"Scene EN: {scene_data['name_en']}\n")
-            f.write(f"描述: {scene_data['scene']}\n")
-            f.write(f"光照: {scene_data['light']}\n\n")
-            f.write("完整提示词:\n")
-            f.write("-" * 60 + "\n")
-            f.write(scene_data["prompt"])
-        print(f"  [OK] 提示词已保存: {prompt_file}")
-        
-        # 发送给用户
-        if user_id:
-            caption = f"场景图 [{i}/3] - {scene_data['name']}"
-            send_image(user_id, scene_path, caption)
-        
-        scenes.append({
-            "index": i,
-            "name": scene_data["name"],
-            "scene_path": scene_path,
-            "prompt_file": str(prompt_file)
-        })
-    
-    # Step 3: 生成广告词
-    print("\n[步骤2/4] 生成广告词...")
-    
-    gemini = GeminiPromptProvider()
-    ad_result = gemini.generate_ad_script(image_path, language="english")
-    
-    if ad_result['status'] != 'success':
-        print(f"  [Warning] 广告词生成失败: {ad_result.get('error', {}).get('message', '未知错误')}")
-        ad_segments = ["", "", ""]
-        full_script = ""
-    else:
-        ad_segments = ad_result['segments']
-        full_script = ad_result['full_script']
-        print(f"  [OK] 广告词生成成功")
-        print(f"  [Script] {full_script[:50]}...")
-        
-        # 分段发送广告词给用户
-        if user_id:
-            send_text(user_id, "📝 广告词生成完成！\n每段约5秒，对应3段视频：")
-            for i, seg in enumerate(ad_segments, 1):
-                send_text(user_id, f"段落 {i}/3:\n{seg}")
-        
-        # 保存广告词
-        script_file = output_dir / "ad_script.txt"
-        with open(script_file, 'w', encoding='utf-8') as f:
-            f.write("=" * 60 + "\n")
-            f.write("广告词 (15秒)\n")
-            f.write("=" * 60 + "\n\n")
-            f.write(f"完整文案:\n{full_script}\n\n")
-            f.write("-" * 60 + "\n")
-            f.write("分段文案 (每段约5秒):\n")
-            for i, seg in enumerate(ad_segments, 1):
-                f.write(f"\n段落 {i}:\n{seg}\n")
-        print(f"  [OK] 广告词已保存: {script_file}")
-    
-    # 通知用户开始生成视频
-    if user_id:
-        send_text(user_id, "第3步：生成3段视频（链式续接，每段带语音朗读）...")
-    
-    # Step 4: 生成3段视频（链式续接）
-    print("\n[步骤3/4] 生成3段视频（链式续接）...")
+    # Step 1: 生成3段视频（链式续接）
+    print("\n[步骤1/3] 生成3段视频（链式续接）...")
     
     grok = GrokVideoProvider()
     videos = []
     
-    # 第1段用高质量模特图作为起始帧
-    input_frame = model_frame_path
+    # 第1段用本地首帧路径，让 Grok 自己上传
+    current_frame = model_frame_path
     
     for i in range(1, 4):  # 3段视频
         print(f"\n  生成视频 [{i}/3]...")
         
         video_path = str(output_dir / f"video_{i:02d}.mp4")
         
-        # 构建带广告词的视频提示词
-        ad_segment = ad_segments[i-1] if i <= len(ad_segments) else ""
-        if ad_segment:
-            video_prompt_with_voice = f"""{VIDEO_PROMPT_TEMPLATE}
-
-IMPORTANT AUDIO INSTRUCTION:
-This video MUST include voiceover narration with the following script (read aloud naturally, no background music):
-"{ad_segment}"
-
-Audio requirements:
-- Clear, professional voiceover narration
-- NO background music
-- Voice should match the premium, high-end feel of the video
-- Natural pacing, approximately 5 seconds of narration
-- The narration should complement the visual storytelling
-
-IMPORTANT VISUAL INSTRUCTION:
-This video MUST seamlessly continue from the exact last frame of the previous video.
-Maintain visual continuity: same product, same lighting, same camera angle progression.
-No cuts, no jumps, no scene changes.
-"""
-        else:
-            video_prompt_with_voice = VIDEO_PROMPT_TEMPLATE
+        # 构建视频提示词（不带广告词）
+        video_prompt_with_voice = VIDEO_PROMPT_TEMPLATE
         
         result = grok.generate_video(
             prompt=video_prompt_with_voice,
             output_path=video_path,
-            input_image=input_frame,
+            input_image=current_frame,  # URL（Grok 支持直接传 URL）
             duration=duration,
             resolution=resolution,
             aspect_ratio="9:16"
@@ -398,7 +272,7 @@ No cuts, no jumps, no scene changes.
         
         # 发送中间视频给用户（实时反馈）
         if user_id:
-            caption = f"视频 [{i}/3] (带语音朗读)"
+            caption = f"视频 [{i}/3]"
             send_image(user_id, video_path, caption)
         
         videos.append({
@@ -408,17 +282,25 @@ No cuts, no jumps, no scene changes.
         
         # 截取最后一帧作为下一段的起始帧（除最后一段外）
         if i < 3:
-            next_input_frame = str(output_dir / f"frame_end_{i:02d}.png")
+            next_input_frame = str(output_dir / f"frame_end_{i:02d}.jpg")  # 改为 JPG
             extract_last_frame(video_path, next_input_frame)
-            input_frame = next_input_frame
+            
+            # 压缩图片（如果太大）
+            from PIL import Image as PILImage
+            with PILImage.open(next_input_frame) as img:
+                if img.mode in ('RGBA', 'P'):
+                    img = img.convert('RGB')
+                img.save(next_input_frame, 'JPEG', quality=85, optimize=True)
+            
+            current_frame = next_input_frame  # 传本地路径，让 Grok 自己上传
             print(f"  [OK] 截取最后一帧: {next_input_frame}")
     
     # 通知用户视频生成完成
     if user_id:
-        send_text(user_id, "3段视频生成完成！\n第4步：合并视频...")
+        send_text(user_id, "3段视频生成完成！\n第2步：合并视频...")
     
-    # Step 5: 合并视频
-    print("\n[步骤4/5] 合并3段视频...")
+    # Step 2: 合并视频
+    print("\n[步骤2/3] 合并3段视频...")
     
     video_paths = [v["video_path"] for v in videos]
     merged_path = str(output_dir / "video_merged.mp4")
@@ -445,8 +327,6 @@ No cuts, no jumps, no scene changes.
     print("\n" + "=" * 60)
     print("[OK] 所有步骤完成!")
     print(f"  首帧模特图: 1 张")
-    print(f"  场景图: {len(scenes)} 张")
-    print(f"  广告词: {full_script[:30]}..." if full_script else "  广告词: 未生成")
     print(f"  视频: {len(videos)} 段")
     print(f"  合成视频: {merged_path if merged_path else '合并失败'}")
     print("=" * 60)
@@ -459,9 +339,6 @@ No cuts, no jumps, no scene changes.
     result = {
         "status": "success",
         "output_dir": str(output_dir),
-        "scenes": scenes,
-        "ad_script": full_script,
-        "ad_segments": ad_segments,
         "videos": videos,
         "merged_video": merged_path if merged_path else None,
         "user_id": user_id
@@ -476,7 +353,7 @@ No cuts, no jumps, no scene changes.
         module="generate_video_v3",
         action="complete",
         params={"image": image_path, "duration": duration, "resolution": resolution},
-        result={"scenes": len(scenes), "videos": len(videos), "merged": merged_path}
+        result={"videos": len(videos), "merged": merged_path}
     )
     
     print(f"\n结果已保存: {result_file}")
