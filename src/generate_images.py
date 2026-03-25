@@ -151,11 +151,11 @@ def generate_images(
                 caption = f"[{i+1}/9] {scene}"
                 print(f"  [OK] 生成完成，立即发送...")
                 try:
-                    # 检查图片大小，如果超过 9MB 进行压缩（飞书限制 10MB）
+                    # 检查图片大小，如果超过 7MB 进行压缩（目标 5MB 以内）
                     image_size = Path(output_path).stat().st_size / (1024 * 1024)  # MB
                     send_path = output_path
                     
-                    if image_size > 9:
+                    if image_size > 7:
                         print(f"  [WARN] 图片较大 ({image_size:.1f} MB)，正在压缩...")
                         from PIL import Image as PILImage
                         import tempfile
@@ -175,7 +175,7 @@ def generate_images(
                                 new_size = Path(tmp_path).stat().st_size / (1024 * 1024)
                                 print(f"  [INFO] 压缩质量 {quality}% -> {new_size:.1f} MB")
                                 
-                                if new_size <= 9 or quality <= 50:
+                                if new_size <= 5 or quality <= 50:
                                     send_path = tmp_path
                                     break
                                 
