@@ -5,7 +5,7 @@
     "asin": "B0BTYCRJSS",
     "price": 19.98,
     "rating": 4.4,
-    "rating_count": 99579,
+    "rating_count": 99588,
     "category": "Electronics",
     "subcategory": "Best Sellers in Electronics"
   },
@@ -25,7 +25,7 @@
     "asin": "B09LYF2ST7",
     "price": 19.99,
     "rating": 4.5,
-    "rating_count": 52642,
+    "rating_count": 52646,
     "category": "Electronics",
     "subcategory": "Best Sellers in Electronics"
   },
@@ -35,12 +35,22 @@
     "asin": "B09SG2Q23M",
     "price": 28.99,
     "rating": 4.8,
-    "rating_count": 18220,
+    "rating_count": 18221,
     "category": "Electronics",
     "subcategory": "Best Sellers in Electronics"
   },
   {
     "rank": 55,
+    "name": "Oura Ring 4 - Silver - Size 8 - Sleep, Activity, Women's Health, AI Advisor, Up to 8 Days of Battery Life, Size Before You Buy, Android & iOS Compatible",
+    "asin": "B0D9WVSZ56",
+    "price": 349.00,
+    "rating": 4.2,
+    "rating_count": 9842,
+    "category": "Electronics",
+    "subcategory": "Best Sellers in Electronics"
+  },
+  {
+    "rank": 56,
     "name": "Delamu Cord Hider, 157in Wire Covers for Cords on Wall, Premium Cable Hider Cord Covers for Wires, Cable Management Wire Hiders for TV, Cable Raceway Kit, W0.95 H0.55in, White",
     "asin": "B07GPFDL1K",
     "price": 13.99,
@@ -50,27 +60,27 @@
     "subcategory": "Best Sellers in Electronics"
   },
   {
-    "rank": 56,
-    "name": "Oura Ring 4 - Silver - Size 8 - Sleep, Activity, Women's Health, AI Advisor, Up to 8 Days of Battery Life, Size Before You Buy, Android & iOS Compatible",
-    "asin": "B0D9WVSZ56",
-    "price": 349.00,
-    "rating": 4.2,
-    "rating_count": 9841,
-    "category": "Electronics",
-    "subcategory": "Best Sellers in Electronics"
-  },
-  {
     "rank": 57,
     "name": "Apple 2026 MacBook Neo 13-inch Laptop with A18 Pro chip: Built for AI and Apple Intelligence, Liquid Retina Display, 8GB Unified Memory, 512GB SSD Storage, 1080p FaceTime HD Camera, Touch ID; Indigo",
     "asin": "B0GR6JMY9W",
     "price": 689.99,
     "rating": 4.8,
-    "rating_count": 91,
+    "rating_count": 92,
     "category": "Electronics",
     "subcategory": "Best Sellers in Electronics"
   },
   {
     "rank": 58,
+    "name": "Soundcore P30i by Anker Noise Cancelling Earbuds, Strong and Smart Noise Cancelling, Powerful Bass, 45H Playtime, 2-in-1 Case and Phone Stand, IP54, Wireless Earbuds, Bluetooth 5.4 (Black)",
+    "asin": "B0CRTYZG5C",
+    "price": 27.99,
+    "rating": 4.4,
+    "rating_count": 28717,
+    "category": "Electronics",
+    "subcategory": "Best Sellers in Electronics"
+  },
+  {
+    "rank": 59,
     "name": "bmani Ear Buds Wireless Earbuds Bluetooth Headphones with 80H Playtime LED Display Case, Over-Ear Hook with Mic, Stereo Sound, Easy Button Controls, Sports Earphones for Running Workout Gym Black",
     "asin": "B09FLNSYDZ",
     "price": 25.99,
@@ -80,22 +90,12 @@
     "subcategory": "Best Sellers in Electronics"
   },
   {
-    "rank": 59,
+    "rank": 60,
     "name": "PocBuds Bluetooth Headphones Wireless Earbuds 80hrs Playtime Wireless Charging Case Digital Display Sports Ear Buds with Earhook Deep Bass IPX7 Waterproof Over-Ear Earphones for TV Phone Laptop Black",
     "asin": "B0C3W4MNN1",
     "price": 25.99,
     "rating": 4.4,
-    "rating_count": 20546,
-    "category": "Electronics",
-    "subcategory": "Best Sellers in Electronics"
-  },
-  {
-    "rank": 60,
-    "name": "Soundcore P30i by Anker Noise Cancelling Earbuds, Strong and Smart Noise Cancelling, Powerful Bass, 45H Playtime, 2-in-1 Case and Phone Stand, IP54, Wireless Earbuds, Bluetooth 5.4 (Black)",
-    "asin": "B0CRTYZG5C",
-    "price": 27.99,
-    "rating": 4.4,
-    "rating_count": 28710,
+    "rating_count": 20549,
     "category": "Electronics",
     "subcategory": "Best Sellers in Electronics"
   }
