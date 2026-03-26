@@ -1,0 +1,52 @@
+[
+  {
+    "rank": 1,
+    "name": "blink plus plan with monthly auto-renewal",
+    "asin": "B08JHCVHTY",
+    "price": 11.99,
+    "rating": 4.4,
+    "rating_count": 273537,
+    "category": "Electronics",
+    "subcategory": "Best Sellers in Electronics"
+  },
+  {
+    "rank": 2,
+    "name": "Apple EarPods Headphones with USB-C Plug, Wired Ear Buds with Built-in Remote to Control Music, Phone Calls, and Volume",
+    "asin": "B0DCH8VDXF",
+    "price": 19.00,
+    "rating": 4.6,
+    "rating_count": 11615,
+    "category": "Electronics",
+    "subcategory": "Best Sellers in Electronics"
+  },
+  {
+    "rank": 3,
+    "name": "AirTag 2nd Generation Tracker",
+    "asin": "B0GJTFXNRX",
+    "price": 29.00,
+    "rating": 4.6,
+    "rating_count": 1285,
+    "category": "Electronics",
+    "subcategory": "Best Sellers in Electronics"
+  },
+  {
+    "rank": 4,
+    "name": "Apple AirPods 4 Wireless Earbuds, Bluetooth Headphones, Personalized Spatial Audio, Sweat and Water Resistant, USB-C Charging Case, H2 Chip, Up to 30 Hours of Battery Life, Effortless Setup for iPhone",
+    "asin": "B0DGHMNQ5Z",
+    "price": 99.99,
+    "rating": 4.5,
+    "rating_count": 45057,
+    "category": "Electronics",
+    "subcategory": "Best Sellers in Electronics"
+  },
+  {
+    "rank": 5,
+    "name": "Apple AirPods Pro 3 Wireless Earbuds, Active Noise Cancellation, Live Translation, Heart Rate Sensing, Hearing Aid Feature, Bluetooth Headphones, Spatial Audio, High-Fidelity Sound, USB-C Charging",
+    "asin": "B0FQFB8FMG",
+    "price": 199.00,
+    "rating": 4.4,
+    "rating_count": 7265,
+    "category": "Electronics",
+    "subcategory": "Best Sellers in Electronics"
+  }
+]

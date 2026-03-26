@@ -2,8 +2,8 @@
 
 **项目描述：** 飞书电商助手，自动处理产品图片生成营销素材（9宫格图片 + 视频）+ 智能选品+货源对接系统
 
-**最后更新：** 2026-03-24  
-**状态：** ✅ 生图/生视频功能稳定运行，亚马逊热销数据抓取功能已完成
+**最后更新：** 2026-03-26  
+**状态：** ✅ 生图/生视频功能稳定运行，亚马逊/TikTok热销数据抓取功能已完成
 
 ---
 
@@ -51,65 +51,51 @@ python test\test_video_flow_v2.py
 
 ---
 
-## 📊 亚马逊热销数据抓取（已完成）
+## 📊 亚马逊/TikTok 热销数据抓取（已完成）
 
 ### 触发命令
 ```
 /amazon
+/tiktok
 ```
 
 ### 功能说明
-- 使用浏览器自动化（OpenClaw `browser` 工具）抓取亚马逊热销榜
-- 数据自动保存到 `data/amazon.db` SQLite 数据库
+- 使用浏览器自动化（OpenClaw `browser` 工具）抓取热销榜
+- 数据保存到 `output/` 目录的 JSON 文件
 - 支持多分类、翻页抓取
-- 同一天多次抓取自动覆盖旧数据
+- 同一天多次抓取生成新文件（按日期命名）
 
-### 数据库位置
+### 数据输出位置
 ```
-code/EcomAgent/data/amazon.db
-```
-
-### 数据库表结构
-```sql
--- 商品表（使用 asin 唯一标识）
-products (
-    id INTEGER PRIMARY KEY,
-    asin TEXT UNIQUE,
-    name TEXT NOT NULL,
-    platform TEXT DEFAULT 'amazon',
-    category TEXT,
-    subcategory TEXT,
-    created_at DATETIME,
-    updated_at DATETIME
-)
-
--- 快照表（记录每日销量快照）
-daily_sales (
-    id INTEGER PRIMARY KEY,
-    product_id INTEGER,
-    date DATE,
-    timestamp DATETIME,
-    price REAL,
-    rank INTEGER,
-    rating REAL,
-    rating_count INTEGER,
-    category TEXT,
-    subcategory TEXT,
-    created_at DATETIME
-)
+code/EcomAgent/output/amazon_bestsellers_YYYYMMDD.json
+code/EcomAgent/output/tiktok_bestsellers_YYYYMMDD.json
 ```
 
-### 查询示例
+### 数据格式
+```json
+[
+  {
+    "rank": 1,
+    "name": "商品名称",
+    "asin": "B08JHCVHTY",
+    "price": 11.99,
+    "rating": 4.4,
+    "rating_count": 273537,
+    "category": "Electronics",
+    "subcategory": "Best Sellers in Electronics"
+  }
+]
+```
+
+### 数据库导入
+使用其他工具定期将 JSON 导入 SQLite 数据库：
 ```bash
-# 查询 Top 10 热销商品
-sqlite3 code/EcomAgent/data/amazon.db "SELECT p.name, ds.price, ds.rating, ds.rating_count, ds.rank FROM daily_sales ds JOIN products p ON ds.product_id = p.id ORDER BY ds.rank LIMIT 10"
-
-# 查看数据库内容
-python view_db.py
+# 示例导入命令（由用户自定义）
+python import_json_to_db.py --platform amazon --file output/amazon_bestsellers_20260326.json
 ```
 
 ### 技能文档
-详见：`skills/amazon-fetcher/SKILL.md`
+详见：`skills/amazon-fetcher/SKILL.md` / `skills/tiktok-fetcher/SKILL.md`
 
 ---
 
@@ -130,17 +116,18 @@ EcomAgent/
 │   ├── generate_video_v2.py  # 生视频 V2
 │   ├── generate_video_v3.py  # 生视频 V3
 │   ├── providers/            # Provider实现
-│   ├── utils/                # 工具层
-│   └── skills/               # 功能脚本
-│       ├── fetch_amazon_bestsellers.py
-│       ├── fetch_amazon_real.py
-│       └── save_to_sqlite.py
+│   └── utils/                # 工具层
 ├── skills/                   # OpenClaw 技能目录
-│   └── amazon-fetcher/       # 亚马逊抓取技能
+│   ├── amazon-fetcher/       # 亚马逊抓取技能
+│   │   └── SKILL.md
+│   └── tiktok-fetcher/       # TikTok 抓取技能
 │       └── SKILL.md
 ├── data/                     # 数据库文件
-│   └── amazon.db
-├── output/                   # 输出文件
+│   ├── amazon.db
+│   └── tiktok.db
+├── output/                   # 输出文件（JSON）
+│   ├── amazon_bestsellers_YYYYMMDD.json
+│   └── tiktok_bestsellers_YYYYMMDD.json
 ├── logs/                     # 日志
 └── temp/                     # 临时文件
 ```
@@ -188,8 +175,8 @@ EcomAgent/
 | 场景图生成 | ✅ 已完成 | 3套差异化风格（简约现代/奢华高端/生活化场景） |
 | 广告词生成 | ✅ 已完成 | 15秒文案，自动分段（每段约5秒） |
 | 实时发送 | ✅ 已完成 | 场景图/广告词/视频均生成一个发送一个 |
-| **亚马逊热销数据抓取** | ✅ 已完成 | 浏览器自动化，数据保存到 SQLite |
-| TikTok热销数据抓取 | 🚧 待实现 | 待开发 |
+| **亚马逊热销数据抓取** | ✅ 已完成 | 浏览器自动化，数据保存到 JSON |
+| **TikTok热销数据抓取** | ✅ 已完成 | 浏览器自动化，数据保存到 JSON |
 | 数据库设计 | ✅ 已完成 | SQLite，支持时间序列分析 |
 
 ---
@@ -201,10 +188,11 @@ EcomAgent/
 - **检查**: triggers.json 配置是否正确
 - **检查**: 图片缓存是否过期（默认10分钟）
 
-### 亚马逊抓取问题
+### 亚马逊/TikTok 抓取问题
 - **检查**: 虚拟网卡是否关闭（IP 被劫持会导致访问失败）
 - **检查**: 浏览器是否正常启动
-- **检查**: 翻页 URL 是否正确（Electronics 分类只有 2 页）
+- **检查**: 翻页 URL 是否正确
+- **检查**: JSON 文件是否正确生成
 
 ---
 
@@ -233,7 +221,7 @@ EcomAgent/
 
 ## 📖 相关文档
 
-- **技能文档**：`skills/amazon-fetcher/SKILL.md`
+- **技能文档**：`skills/amazon-fetcher/SKILL.md` / `skills/tiktok-fetcher/SKILL.md`
 - **OpenClaw 文档**：`docs/` 目录
 
 ---
