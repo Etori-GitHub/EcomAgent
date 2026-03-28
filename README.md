@@ -301,9 +301,3 @@ mklink /D tiktok-fetcher "..\code\EcomAgent\skills\tiktok-fetcher"
 
 - **OpenClaw 文档**：https://docs.openclaw.ai
 - **OpenClaw 社区**：https://discord.com/invite/clawd
-
----
-
-## 📝 更新日志
-
-- **2026-03-28**：优化 README，将软连接配置提到快速开始章节，强调 Git 管理技能的核心设计
