@@ -40,6 +40,31 @@ python src/monitor.py
 - **生9图**：发送"作图" / "生图" / "生9图" / "9图"
 - **生视频 V2**：发送"生视频" / "做视频" / "视频"
 
+### OpenClaw Skill 配置（必读！）
+> **项目技能通过 Git 管理，需软连接接入 OpenClaw 才能生效**
+
+1. 确保 `skills/` 目录存在：
+   ```cmd
+   mkdir "C:\Users\Etroi\.openclaw\workspace\skills"
+   ```
+
+2. 创建软连接（以管理员身份运行 CMD 或 PowerShell）：
+   ```cmd
+   mklink /D "C:\Users\Etroi\.openclaw\workspace\skills\amazon-fetcher" "..\code\EcomAgent\skills\amazon-fetcher"
+   mklink /D "C:\Users\Etroi\.openclaw\workspace\skills\tiktok-fetcher" "..\code\EcomAgent\skills\tiktok-fetcher"
+   ```
+
+3. 重启 OpenClaw Gateway：
+   ```powershell
+   openclaw gateway restart
+   ```
+
+4. 验证技能生效：
+   ```
+   /amazon
+   /tiktok
+   ```
+
 ### 测试功能
 ```bash
 # 测试生图
@@ -226,7 +251,59 @@ EcomAgent/
 
 ---
 
+## ⚙️ OpenClaw Skill 配置说明（进阶）
+
+### 技能目录结构
+
+```
+EcomAgent/
+├── skills/                   # OpenClaw 技能目录（核心）
+│   ├── amazon-fetcher/       # 亚马逊抓取技能
+│   │   └── SKILL.md          # 亚马逊抓取技能文档
+│   └── tiktok-fetcher/       # TikTok 抓取技能
+│       └── SKILL.md          # TikTok 抓取技能文档
+```
+
+### 软连接配置（重要！）
+
+**项目技能通过软连接加入 OpenClaw：**
+
+```bash
+# Windows PowerShell（以管理员身份运行）
+# 创建软连接，将项目技能链接到 OpenClaw 工作区技能目录
+New-Item -ItemType SymbolicLink -Path "C:\Users\etori\.openclaw\workspace\skills\amazon-fetcher" -Target "C:\Users\etori\.openclaw\workspace\code\EcomAgent\skills\amazon-fetcher"
+New-Item -ItemType SymbolicLink -Path "C:\Users\etori\.openclaw\workspace\skills\tiktok-fetcher" -Target "C:\Users\etori\.openclaw\workspace\code\EcomAgent\skills\tiktok-fetcher"
+```
+
+**或者使用 mklink 命令（CMD）：**
+```cmd
+cd /d "C:\Users\Etroi\.openclaw\workspace\skills"
+mklink /D amazon-fetcher "..\code\EcomAgent\skills\amazon-fetcher"
+mklink /D tiktok-fetcher "..\code\EcomAgent\skills\tiktok-fetcher"
+```
+
+### 为什么使用软连接？（Git 管理技能的核心优势）
+
+- **统一管理**：技能版本由 Git 管理，便于团队协作和部署
+- **避免重复**：不需要在多个地方维护技能文件
+- **易于更新**：修改项目技能后，OpenClaw 立即生效（无需重启 Gateway）
+
+### 注意事项
+
+- **软连接必须以管理员权限创建**
+- **如果项目移动位置，需要重新创建软连接**
+- **技能文件修改后，OpenClaw 会自动读取最新版本**
+- **软连接指向的是 `skills/` 目录下的子目录（如 `amazon-fetcher`），不是整个项目**
+
+---
+
 ## 🤝 社区支持
 
 - **OpenClaw 文档**：https://docs.openclaw.ai
 - **OpenClaw 社区**：https://discord.com/invite/clawd
+
+---
+
+## 📝 更新日志
+
+- **2026-03-28**：优化 README，将软连接配置提到快速开始章节，强调 Git 管理技能的核心设计
