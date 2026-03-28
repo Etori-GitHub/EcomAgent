@@ -49,10 +49,19 @@ python src/monitor.py
    ```
 
 2. 创建软连接（以管理员身份运行 CMD 或 PowerShell）：
+
+   **CMD（推荐）：**
    ```cmd
-   cd /d "C:\Users\Etroi\.openclaw\workspace\skills"
+   cd /d "%USERPROFILE%\.openclaw\workspace\skills"
    mklink /D amazon-fetcher "..\code\EcomAgent\skills\amazon-fetcher"
    mklink /D tiktok-fetcher "..\code\EcomAgent\skills\tiktok-fetcher"
+   ```
+
+   **PowerShell：**
+   ```powershell
+   cd "$env:USERPROFILE\.openclaw\workspace\skills"
+   New-Item -ItemType SymbolicLink -Path "amazon-fetcher" -Target "..\code\EcomAgent\skills\amazon-fetcher"
+   New-Item -ItemType SymbolicLink -Path "tiktok-fetcher" -Target "..\code\EcomAgent\skills\tiktok-fetcher"
    ```
 
 3. 重启 OpenClaw Gateway：
@@ -288,7 +297,7 @@ mklink /D tiktok-fetcher "..\code\EcomAgent\skills\tiktok-fetcher"
 - **统一管理**：技能版本由 Git 管理，便于团队协作和部署
 - **避免重复**：不需要在多个地方维护技能文件
 - **易于更新**：修改项目技能后，OpenClaw 立即生效（无需重启 Gateway）
-- **跨平台兼容**：使用相对路径，换电脑只需确保路径结构一致即可
+- **跨平台兼容**：使用环境变量 `%USERPROFILE%` 动态获取用户名，适配不同电脑配置
 
 ### 注意事项
 
@@ -296,7 +305,7 @@ mklink /D tiktok-fetcher "..\code\EcomAgent\skills\tiktok-fetcher"
 - **如果项目移动位置，需要重新创建软连接**
 - **技能文件修改后，OpenClaw 会自动读取最新版本**
 - **软连接指向的是 `skills/` 目录下的子目录（如 `amazon-fetcher`），不是整个项目**
-- **命令中的路径是相对于 OpenClaw 工作区的，换电脑只需确保路径结构一致即可**
+- **命令使用 `%USERPROFILE%` 环境变量，适配不同用户名的电脑**
 
 ---
 
