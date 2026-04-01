@@ -99,125 +99,104 @@ def fetch_tiktok_category_bestsellers(category_url, category_name, subcategory):
                 const results = [];
                 
                 // TikTok Shop 的商品列表选择器
-                // 根据页面结构，商品卡片通常在主内容区域
+                // 商品卡片和分类卡片的区别：
+                // - 分类卡片：圆形图片，下方有文字标签
+                // - 商品卡片：圆角矩形图片，下方有详细的商品信息（标题、价格、评分等）
                 
                 // 尝试多种选择器来定位商品卡片
-                // 1. 包含 'product' 的类名
-                // 2. 包含 'item' 的类名
-                // 3. 包含 'card' 的类名
-                // 4. 包含 'shop' 的类名
+                // 商品卡片通常包含以下特征：
+                // 1. 包含图片
+                // 2. 包含价格信息（包含 $ 或 ¥）
+                // 3. 包含评分信息（包含 ★）
+                // 4. 包含销量信息（包含 "已售出"）
                 
-                const selectors = [
-                    '[class*="product-card"]',
-                    '[class*="product-item"]',
-                    '[class*="item-card"]',
-                    '[class*="shop-item"]',
-                    '[class*="product-wrapper"]',
-                    '[class*="product-grid"] > *',
-                    '[class*="item"]'
-                ];
+                const allCards = document.querySelectorAll('[class*="card"], [class*="item"]');
+                console.log(`找到 ${allCards.length} 个卡片`);
                 
-                let productCards = [];
-                for (const selector of selectors) {
-                    const cards = document.querySelectorAll(selector);
-                    if (cards.length > 0) {
-                        productCards = Array.from(cards);
-                        console.log(`使用选择器 "${selector}" 找到 ${productCards.length} 个卡片`);
-                        break;
-                    }
-                }
-                
-                // 如果没有找到，尝试更通用的选择器
-                if (productCards.length === 0) {
-                    const allDivs = document.querySelectorAll('div');
-                    productCards = Array.from(allDivs).filter(div => {
-                        const hasImage = div.querySelector('img') !== null;
-                        const hasPrice = div.innerText.includes('$') || div.innerText.includes('¥');
-                        const hasRating = div.innerText.includes('★') || div.innerText.includes('rating');
-                        return hasImage && hasPrice && hasRating;
-                    });
-                    console.log(`使用通用选择器找到 ${productCards.length} 个卡片`);
-                }
-                
-                console.log(`总共找到 ${productCards.length} 个可能的商品卡片`);
-                
-                productCards.forEach((card, idx) => {
+                allCards.forEach((card, idx) => {
                     try {
-                        // 尝试提取各种信息
-                        let rank = idx + 1;
-                        let name = '';
-                        let price = 0;
-                        let rating = 0;
-                        let ratingCount = 0;
-                        let soldCount = 0;
+                        // 检查是否是商品卡片（排除分类卡片）
+                        const hasPrice = card.innerText.includes('$') || card.innerText.includes('¥');
+                        const hasRating = card.innerText.includes('★') || card.innerText.includes('rating');
+                        const hasSold = card.innerText.includes('已售出') || card.innerText.includes('sold');
                         
-                        // 提取品牌名
-                        const brandEl = card.querySelector('[class*="brand"], [class*="store"], .brand, .store');
-                        const brand = brandEl?.innerText.trim() || '';
-                        
-                        // 提取商品标题 - 优先使用 h3/h4 标签
-                        const titleEl = card.querySelector('h3, h2, h4');
-                        const title = titleEl?.innerText.trim() || '';
-                        
-                        // 组合名称：品牌 + 标题
-                        name = brand ? (brand + ' ' + title) : title;
-                        
-                        // 如果没有提取到，尝试从链接中获取
-                        if (!name) {
-                            name = card.querySelector('a')?.innerText.trim() || '';
-                        }
-                        
-                        // 提取价格 - 使用 .product-price 选择器
-                        const priceEl = card.querySelector('.product-price, [class*="price"], [class*="current"]');
-                        if (priceEl) {
-                            const priceText = priceEl.innerText.trim();
-                            // 匹配 $11.86 格式
-                            const match = priceText.match(/\\$([\\d,.]+)/);
-                            if (match) {
-                                price = parseFloat(match[1].replace(',', ''));
+                        // 商品卡片应该包含价格、评分和销量
+                        if (hasPrice && (hasRating || hasSold)) {
+                            let rank = idx + 1;
+                            let name = '';
+                            let price = 0;
+                            let rating = 0;
+                            let ratingCount = 0;
+                            let soldCount = 0;
+                            
+                            // 提取品牌名
+                            const brandEl = card.querySelector('[class*="brand"], [class*="store"], .brand, .store');
+                            const brand = brandEl?.innerText.trim() || '';
+                            
+                            // 提取商品标题 - 优先使用 h3/h4 标签
+                            const titleEl = card.querySelector('h3, h2, h4');
+                            const title = titleEl?.innerText.trim() || '';
+                            
+                            // 组合名称：品牌 + 标题
+                            name = brand ? (brand + ' ' + title) : title;
+                            
+                            // 如果没有提取到，尝试从链接中获取
+                            if (!name) {
+                                name = card.querySelector('a')?.innerText.trim() || '';
                             }
-                        }
-                        
-                        // 提取评分和销量 - 使用 .product-rating 选择器
-                        const ratingEl = card.querySelector('.product-rating, .rating, .stars');
-                        if (ratingEl) {
-                            const ratingText = ratingEl.innerText.trim();
-                            // 匹配 4.0 格式
-                            const ratingMatch = ratingText.match(/([\\d.]+)/);
-                            if (ratingMatch) {
-                                rating = parseFloat(ratingMatch[1]);
-                            }
-                            // 匹配销量 3.3K 已售出 格式
-                            const soldMatch = ratingText.match(/([\\d.]+)K?\\s*已售出/);
-                            if (soldMatch) {
-                                soldCount = parseInt(parseFloat(soldMatch[1]) * (soldMatch[0].includes('K') ? 1000 : 1));
-                            }
-                        }
-                        
-                        // 如果没有提取到销量，尝试单独查找
-                        if (soldCount === 0) {
-                            const soldEl = card.querySelector('.sales, .sold, [class*="sold"], [class*="sale"]');
-                            if (soldEl) {
-                                const soldText = soldEl.innerText.trim();
-                                const match = soldText.match(/([\\d.]+)K?\\s*已售出/);
+                            
+                            // 提取价格 - 使用 .product-price 选择器
+                            const priceEl = card.querySelector('.product-price, [class*="price"], [class*="current"]');
+                            if (priceEl) {
+                                const priceText = priceEl.innerText.trim();
+                                // 匹配 $11.86 格式
+                                const match = priceText.match(/\\$([\\d,.]+)/);
                                 if (match) {
-                                    soldCount = parseInt(parseFloat(match[1]) * (match[0].includes('K') ? 1000 : 1));
+                                    price = parseFloat(match[1].replace(',', ''));
                                 }
                             }
-                        }
-                        
-                        // 只保留有实际商品名称的卡片（排除分类链接等）
-                        if (name && name.length > 5 && !name.includes('TikTok') && !name.includes('类目')) {
-                            results.push({
-                                rank,
-                                name,
-                                price,
-                                rating,
-                                rating_count: ratingCount,
-                                sold_count: soldCount,
-                                category: 'CATEGORY_PLACEHOLDER',
-                                subcategory: 'SUBCATEGORY_PLACEHOLDER'
-                            });
+                            
+                            // 提取评分和销量 - 使用 .product-rating 选择器
+                            const ratingEl = card.querySelector('.product-rating, .rating, .stars');
+                            if (ratingEl) {
+                                const ratingText = ratingEl.innerText.trim();
+                                // 匹配 4.0 格式
+                                const ratingMatch = ratingText.match(/([\\d.]+)/);
+                                if (ratingMatch) {
+                                    rating = parseFloat(ratingMatch[1]);
+                                }
+                                // 匹配销量 3.3K 已售出 格式
+                                const soldMatch = ratingText.match(/([\\d.]+)K?\\s*已售出/);
+                                if (soldMatch) {
+                                    soldCount = parseInt(parseFloat(soldMatch[1]) * (soldMatch[0].includes('K') ? 1000 : 1));
+                                }
+                            }
+                            
+                            // 如果没有提取到销量，尝试单独查找
+                            if (soldCount === 0) {
+                                const soldEl = card.querySelector('.sales, .sold, [class*="sold"], [class*="sale"]');
+                                if (soldEl) {
+                                    const soldText = soldEl.innerText.trim();
+                                    const match = soldText.match(/([\\d.]+)K?\\s*已售出/);
+                                    if (match) {
+                                        soldCount = parseInt(parseFloat(match[1]) * (match[0].includes('K') ? 1000 : 1));
+                                    }
+                                }
+                            }
+                            
+                            // 只保留有实际商品名称的卡片（排除分类链接等）
+                            if (name && name.length > 5 && !name.includes('TikTok') && !name.includes('类目')) {
+                                results.push({
+                                    rank,
+                                    name,
+                                    price,
+                                    rating,
+                                    rating_count: ratingCount,
+                                    sold_count: soldCount,
+                                    category: 'CATEGORY_PLACEHOLDER',
+                                    subcategory: 'SUBCATEGORY_PLACEHOLDER'
+                                });
+                            }
                         }
                     } catch (e) {
                         console.log(`商品 ${idx} 解析失败:`, e.message);
