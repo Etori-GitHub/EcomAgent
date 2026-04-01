@@ -99,10 +99,17 @@ def fetch_tiktok_category_bestsellers(category_url, category_name, subcategory):
                 const results = [];
                 
                 // TikTok Shop 的商品列表选择器
-                // 根据页面结构，商品卡片可能包含以下特征
-                const productCards = document.querySelectorAll('[class*="product"], [class*="item"], [class*="card"], [class*="Product"]');
+                // 商品卡片通常包含以下特征
+                // 1. 包含图片、品牌名、商品标题、评分、销量、价格
+                // 2. 通常在主内容区域
                 
-                console.log(`找到 ${productCards.length} 个商品卡片`);
+                // 尝试多种选择器来定位商品卡片
+                const productCards = document.querySelectorAll(
+                    '[class*="product-card"], [class*="product-item"], [class*="item-card"], [class*="card-item"], ' +
+                    '[class*="product-grid"] > *'
+                );
+                
+                console.log(`找到 ${productCards.length} 个可能的商品卡片`);
                 
                 productCards.forEach((card, idx) => {
                     try {
@@ -114,55 +121,57 @@ def fetch_tiktok_category_bestsellers(category_url, category_name, subcategory):
                         let ratingCount = 0;
                         let soldCount = 0;
                         
-                        // 提取名称 - 尝试多种选择器
-                        name = card.querySelector('h3, h2, h4, .title, .name, [class*="title"], [class*="name"]')?.innerText.trim() || '';
+                        // 提取品牌名
+                        const brandEl = card.querySelector('[class*="brand"], [class*="store"], .brand, .store');
+                        const brand = brandEl?.innerText.trim() || '';
+                        
+                        // 提取商品标题 - 优先使用 h3/h4 标签
+                        const titleEl = card.querySelector('h3, h2, h4');
+                        const title = titleEl?.innerText.trim() || '';
+                        
+                        // 组合名称：品牌 + 标题
+                        name = brand ? (brand + ' ' + title) : title;
                         
                         // 如果没有提取到，尝试从链接中获取
                         if (!name) {
                             name = card.querySelector('a')?.innerText.trim() || '';
                         }
                         
-                        // 提取价格
-                        const priceEl = card.querySelector('[class*="price"], [class*="cost"], .price, .cost');
+                        // 提取价格 - 优先查找包含 $ 符号的元素
+                        const priceEl = card.querySelector('[class*="price"], [class*="current"], .price, .current-price');
                         if (priceEl) {
                             const priceText = priceEl.innerText.trim();
-                            const match = priceText.match(/([\\d,.]+)/);
+                            // 匹配 $11.86 格式
+                            const match = priceText.match(/\\$([\\d,.]+)/);
                             if (match) {
                                 price = parseFloat(match[1].replace(',', ''));
                             }
                         }
                         
-                        // 提取评分
-                        const ratingEl = card.querySelector('[class*="rating"], [class*="star"], .rating, .stars');
+                        // 提取评分 - 优先查找 .rating 元素
+                        const ratingEl = card.querySelector('.rating, [class*="rating"], .stars');
                         if (ratingEl) {
                             const ratingText = ratingEl.innerText.trim();
+                            // 匹配 4.0 格式
                             const match = ratingText.match(/([\\d.]+)/);
                             if (match) {
                                 rating = parseFloat(match[1]);
                             }
                         }
                         
-                        // 提取评价数量
-                        const ratingCountEl = card.querySelector('[class*="review"], [class*="comment"], .review, .comment');
-                        if (ratingCountEl) {
-                            const countText = ratingCountEl.innerText.trim();
-                            const match = countText.match(/([\\d,.]+)/);
-                            if (match) {
-                                ratingCount = parseInt(match[1].replace(',', ''));
-                            }
-                        }
-                        
-                        // 提取销量
-                        const soldEl = card.querySelector('[class*="sold"], [class*="sell"], [class*="sale"], .sold, .sell, .sale');
+                        // 提取销量 - 优先查找 .sales 或 .sold 元素
+                        const soldEl = card.querySelector('.sales, .sold, [class*="sold"], [class*="sale"]');
                         if (soldEl) {
                             const soldText = soldEl.innerText.trim();
-                            const match = soldText.match(/([\\d,.]+)/);
+                            // 匹配 16.7K 已售出 格式
+                            const match = soldText.match(/([\\d.]+)K?/);
                             if (match) {
-                                soldCount = parseInt(match[1].replace(',', ''));
+                                soldCount = parseInt(parseFloat(match[1]) * (match[0].includes('K') ? 1000 : 1));
                             }
                         }
                         
-                        if (name) {
+                        // 只保留有实际商品名称的卡片（排除分类链接等）
+                        if (name && name.length > 5 && !name.includes('TikTok') && !name.includes('类目')) {
                             results.push({
                                 rank,
                                 name,
@@ -224,7 +233,7 @@ def fetch_and_save_category(category):
     if data:
         print("\n[示例数据] 前5条:")
         for item in data[:5]:
-            print(f"  - {item['rank']}. {item['name']} (${item['price']}) - {item['rating']}★")
+            print(f"  - {item['rank']}. {item['name']} (${item['price']}) - {item['rating']}★ ({item['sold_count']}销量)")
     
     return data
 
