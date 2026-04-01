@@ -99,17 +99,47 @@ def fetch_tiktok_category_bestsellers(category_url, category_name, subcategory):
                 const results = [];
                 
                 // TikTok Shop 的商品列表选择器
-                // 商品卡片通常包含以下特征
-                // 1. 包含图片、品牌名、商品标题、评分、销量、价格
-                // 2. 通常在主内容区域
+                // 根据页面结构，商品卡片通常在主内容区域
                 
                 // 尝试多种选择器来定位商品卡片
-                const productCards = document.querySelectorAll(
-                    '[class*="product-card"], [class*="product-item"], [class*="item-card"], [class*="card-item"], ' +
-                    '[class*="product-grid"] > *'
-                );
+                // 1. 包含 'product' 的类名
+                // 2. 包含 'item' 的类名
+                // 3. 包含 'card' 的类名
+                // 4. 包含 'shop' 的类名
                 
-                console.log(`找到 ${productCards.length} 个可能的商品卡片`);
+                const selectors = [
+                    '[class*="product-card"]',
+                    '[class*="product-item"]',
+                    '[class*="item-card"]',
+                    '[class*="shop-item"]',
+                    '[class*="product-wrapper"]',
+                    '[class*="product-grid"] > *',
+                    '[class*="item"]'
+                ];
+                
+                let productCards = [];
+                for (const selector of selectors) {
+                    const cards = document.querySelectorAll(selector);
+                    if (cards.length > 0) {
+                        productCards = Array.from(cards);
+                        console.log(`使用选择器 "${selector}" 找到 ${productCards.length} 个卡片`);
+                        break;
+                    }
+                }
+                
+                // 如果没有找到，尝试更通用的选择器
+                if (productCards.length === 0) {
+                    const allDivs = document.querySelectorAll('div');
+                    productCards = Array.from(allDivs).filter(div => {
+                        const hasImage = div.querySelector('img') !== null;
+                        const hasPrice = div.innerText.includes('$') || div.innerText.includes('¥');
+                        const hasRating = div.innerText.includes('★') || div.innerText.includes('rating');
+                        return hasImage && hasPrice && hasRating;
+                    });
+                    console.log(`使用通用选择器找到 ${productCards.length} 个卡片`);
+                }
+                
+                console.log(`总共找到 ${productCards.length} 个可能的商品卡片`);
                 
                 productCards.forEach((card, idx) => {
                     try {
