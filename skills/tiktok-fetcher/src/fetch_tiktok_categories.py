@@ -21,6 +21,45 @@ def random_wait(min_ms=1000, max_ms=3000):
     return wait_ms
 
 
+def parse_category_urls(page):
+    """从 TikTok Shop 首页解析类目 URL"""
+    
+    # 解析类目 URL 的 JavaScript 代码
+    js_code = """
+        () => {
+            const categoryUrls = [];
+            
+            // 尝试多种选择器来定位类目链接
+            // TikTok Shop 的类目链接可能包含 /shop/c/ 路径
+            const allLinks = document.querySelectorAll('a');
+            
+            allLinks.forEach(link => {
+                const href = link.href;
+                // 匹配类目 URL 格式: /shop/c/xxx/xxx
+                if (href && href.includes('/shop/c/')) {
+                    categoryUrls.push({
+                        url: href,
+                        text: link.innerText.trim()
+                    });
+                }
+            });
+            
+            return categoryUrls;
+        }
+    """
+    
+    category_urls = page.evaluate(js_code)
+    print(f"[INFO] 解析到 {len(category_urls)} 个类目链接")
+    
+    # 去重
+    unique_urls = {}
+    for item in category_urls:
+        if item['url'] not in unique_urls:
+            unique_urls[item['url']] = item['text']
+    
+    return unique_urls
+
+
 def fetch_tiktok_category_bestsellers(category_url, category_name, subcategory):
     """抓取指定分类的 Best Sellers 榜单"""
     
@@ -32,7 +71,7 @@ def fetch_tiktok_category_bestsellers(category_url, category_name, subcategory):
         
         page.set_viewport_size({"width": 1920, "height": 5000})
         
-        print(f"[INFO] 访问分类: {category_name}")
+        print(f"[INFO] 访问分类: {category_name} - {category_url}")
         page.goto(category_url, timeout=60000)
         
         page.wait_for_timeout(random_wait(5000, 10000))
@@ -180,63 +219,46 @@ def fetch_all_categories():
     
     print(f"[INFO] 开始抓取 TikTok Shop 所有分类...")
     
-    # TikTok Shop 的正确 URL 是 https://www.tiktok.com/shop
-    # 每个类目都使用相同的 URL，页面上会显示不同的榜单
-    categories = [
-        {
-            "name": "Beauty",
-            "url": "https://www.tiktok.com/shop",
-            "subcategory": "美妆个护"
-        },
-        {
-            "name": "Women's Clothing",
-            "url": "https://www.tiktok.com/shop",
-            "subcategory": "女装与女士内衣"
-        },
-        {
-            "name": "Men's Clothing",
-            "url": "https://www.tiktok.com/shop",
-            "subcategory": "男装与男士内衣"
-        },
-        {
-            "name": "Mobile & Digital",
-            "url": "https://www.tiktok.com/shop",
-            "subcategory": "手机与数码"
-        },
-        {
-            "name": "Fashion Accessories",
-            "url": "https://www.tiktok.com/shop",
-            "subcategory": "时尚配件"
-        },
-        {
-            "name": "Collectibles",
-            "url": "https://www.tiktok.com/shop",
-            "subcategory": "收藏品"
-        },
-        {
-            "name": "Home Goods",
-            "url": "https://www.tiktok.com/shop",
-            "subcategory": "家居用品"
-        },
-        {
-            "name": "Kitchenware",
-            "url": "https://www.tiktok.com/shop",
-            "subcategory": "厨房用品"
-        },
-        {
-            "name": "Shoes",
-            "url": "https://www.tiktok.com/shop",
-            "subcategory": "鞋靴"
-        }
-    ]
-    
-    for i, category in enumerate(categories):
-        fetch_and_save_category(category)
-        if i < len(categories) - 1:
-            wait_ms = random_wait(3000, 8000)
-            print(f"\n[INFO] 等待 {wait_ms}ms 后开始下一个分类...")
-            import time
-            time.sleep(wait_ms / 1000)
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False)
+        page = browser.new_page()
+        
+        page.set_viewport_size({"width": 1920, "height": 5000})
+        
+        print(f"[INFO] 访问 TikTok Shop 首页...")
+        page.goto("https://www.tiktok.com/shop", timeout=60000)
+        
+        page.wait_for_timeout(random_wait(5000, 10000))
+        
+        # 解析类目 URL
+        category_urls = parse_category_urls(page)
+        
+        browser.close()
+        
+        # 构建类目列表
+        categories = []
+        for url, text in category_urls.items():
+            # 从 URL 中提取类目名称
+            # 格式: /shop/c/beauty-personal-care/601450
+            match = re.search(r'/shop/c/([^/]+)/(\d+)', url)
+            if match:
+                category_name = match.group(1).replace('-', ' ').title()
+                category_id = match.group(2)
+                categories.append({
+                    "name": category_name,
+                    "url": f"https://www.tiktok.com/shop/c/{match.group(1)}/{match.group(2)}",
+                    "subcategory": text
+                })
+        
+        print(f"[INFO] 解析到 {len(categories)} 个类目")
+        
+        for i, category in enumerate(categories):
+            fetch_and_save_category(category)
+            if i < len(categories) - 1:
+                wait_ms = random_wait(3000, 8000)
+                print(f"\n[INFO] 等待 {wait_ms}ms 后开始下一个分类...")
+                import time
+                time.sleep(wait_ms / 1000)
     
     print(f"\n[OK] 所有分类抓取完成！")
 
