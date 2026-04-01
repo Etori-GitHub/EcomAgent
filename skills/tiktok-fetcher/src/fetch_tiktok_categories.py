@@ -180,37 +180,36 @@ def fetch_all_categories():
     
     print(f"[INFO] 开始抓取 TikTok Shop 所有分类...")
     
-    # TikTok Shop 各分类 URL
     # TikTok Shop 的正确 URL 是 https://www.tiktok.com/shop
     categories = [
         {
             "name": "Electronics",
-            "url": "https://www.tiktok.com/shop/electronics",
+            "url": "https://www.tiktok.com/shop",
             "subcategory": "Best Sellers in Electronics"
         },
         {
             "name": "Fashion",
-            "url": "https://www.tiktok.com/shop/fashion",
+            "url": "https://www.tiktok.com/shop",
             "subcategory": "Best Sellers in Fashion"
         },
         {
             "name": "Beauty",
-            "url": "https://www.tiktok.com/shop/beauty",
+            "url": "https://www.tiktok.com/shop",
             "subcategory": "Best Sellers in Beauty"
         },
         {
             "name": "Home & Living",
-            "url": "https://www.tiktok.com/shop/home",
+            "url": "https://www.tiktok.com/shop",
             "subcategory": "Best Sellers in Home & Living"
         },
         {
             "name": "Sports & Outdoors",
-            "url": "https://www.tiktok.com/shop/sports",
+            "url": "https://www.tiktok.com/shop",
             "subcategory": "Best Sellers in Sports & Outdoors"
         },
         {
             "name": "Toys & Kids",
-            "url": "https://www.tiktok.com/shop/toys",
+            "url": "https://www.tiktok.com/shop",
             "subcategory": "Best Sellers in Toys & Kids"
         }
     ]
