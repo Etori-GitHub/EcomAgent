@@ -178,36 +178,38 @@ def fetch_all_categories():
     
     print(f"[INFO] 开始抓取 TikTok Shop 所有分类...")
     
-    # TikTok Shop 各分类 URL（需要根据实际页面调整）
+    # TikTok Shop 各分类 URL
+    # TikTok Shop 是跨境电商平台，URL 格式可能为 https://www.tiktok.com/store/xxx
+    # 如果 URL 不正确，请根据实际页面调整
     categories = [
         {
             "name": "Electronics",
-            "url": "https://www.tiktok.com/store/electronics",
+            "url": "https://www.tiktok.com/store/category/electronics",
             "subcategory": "Best Sellers in Electronics"
         },
         {
             "name": "Fashion",
-            "url": "https://www.tiktok.com/store/fashion",
+            "url": "https://www.tiktok.com/store/category/fashion",
             "subcategory": "Best Sellers in Fashion"
         },
         {
             "name": "Beauty",
-            "url": "https://www.tiktok.com/store/beauty",
+            "url": "https://www.tiktok.com/store/category/beauty",
             "subcategory": "Best Sellers in Beauty"
         },
         {
             "name": "Home & Living",
-            "url": "https://www.tiktok.com/store/home",
+            "url": "https://www.tiktok.com/store/category/home",
             "subcategory": "Best Sellers in Home & Living"
         },
         {
             "name": "Sports & Outdoors",
-            "url": "https://www.tiktok.com/store/sports",
+            "url": "https://www.tiktok.com/store/category/sports",
             "subcategory": "Best Sellers in Sports & Outdoors"
         },
         {
             "name": "Toys & Kids",
-            "url": "https://www.tiktok.com/store/toys",
+            "url": "https://www.tiktok.com/store/category/toys",
             "subcategory": "Best Sellers in Toys & Kids"
         }
     ]
