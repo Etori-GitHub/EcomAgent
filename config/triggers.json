@@ -13,6 +13,18 @@
       "keywords": ["生视频", "视频", "生成视频"],
       "description": "生成3图3视频合成版"
     },
+    "amazon": {
+      "name": "抓取亚马逊热销数据",
+      "script": "skills/amazon-fetcher/src/fetch_amazon_main_categories.py",
+      "keywords": ["/amazon", "/亚马逊"],
+      "description": "抓取亚马逊热销榜单数据"
+    },
+    "tiktok": {
+      "name": "抓取TikTok热销数据",
+      "script": "skills/tiktok-fetcher/src/fetch_tiktok_categories.py",
+      "keywords": ["/tiktok", "/tiktok shop"],
+      "description": "抓取TikTok Shop热销榜单数据"
+    },
     "test": {
       "name": "测试模式",
       "script": "test_mode.py",

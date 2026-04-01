@@ -2,7 +2,7 @@
 
 **项目描述：** 飞书电商助手，自动处理产品图片生成营销素材（9宫格图片 + 视频）+ 智能选品+货源对接系统
 
-**最后更新：** 2026-03-26  
+**最后更新：** 2026-04-01  
 **状态：** ✅ 生图/生视频功能稳定运行，亚马逊/TikTok热销数据抓取功能已完成
 
 ---
@@ -102,8 +102,8 @@ python test\test_video_flow_v2.py
 
 ### 数据输出位置
 ```
-code/EcomAgent/output/amazon_bestsellers_YYYYMMDD.json
-code/EcomAgent/output/tiktok_bestsellers_YYYYMMDD.json
+code/EcomAgent/output/scraping/amazon_分类名_YYYYMMDD_HHMMSS.json
+code/EcomAgent/output/scraping/tiktok_分类名_YYYYMMDD_HHMMSS.json
 ```
 
 ### 数据格式
