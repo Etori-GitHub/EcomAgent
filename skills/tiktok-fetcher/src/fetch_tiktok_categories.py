@@ -21,45 +21,6 @@ def random_wait(min_ms=1000, max_ms=3000):
     return wait_ms
 
 
-def parse_category_urls(page):
-    """从 TikTok Shop 首页解析类目 URL"""
-    
-    # 解析类目 URL 的 JavaScript 代码
-    js_code = """
-        () => {
-            const categoryUrls = [];
-            
-            // 尝试多种选择器来定位类目链接
-            // TikTok Shop 的类目链接可能包含 /shop/c/ 路径
-            const allLinks = document.querySelectorAll('a');
-            
-            allLinks.forEach(link => {
-                const href = link.href;
-                // 匹配类目 URL 格式: /shop/c/xxx/xxx
-                if (href && href.includes('/shop/c/')) {
-                    categoryUrls.push({
-                        url: href,
-                        text: link.innerText.trim()
-                    });
-                }
-            });
-            
-            return categoryUrls;
-        }
-    """
-    
-    category_urls = page.evaluate(js_code)
-    print(f"[INFO] 解析到 {len(category_urls)} 个类目链接")
-    
-    # 去重
-    unique_urls = {}
-    for item in category_urls:
-        if item['url'] not in unique_urls:
-            unique_urls[item['url']] = item['text']
-    
-    return unique_urls
-
-
 def fetch_tiktok_category_bestsellers(category_url, category_name, subcategory):
     """抓取指定分类的 Best Sellers 榜单"""
     
@@ -231,13 +192,43 @@ def fetch_all_categories():
         page.wait_for_timeout(random_wait(5000, 10000))
         
         # 解析类目 URL
-        category_urls = parse_category_urls(page)
+        js_code = """
+            () => {
+                const categoryUrls = [];
+                
+                // 尝试多种选择器来定位类目链接
+                // TikTok Shop 的类目链接可能包含 /shop/c/ 路径
+                const allLinks = document.querySelectorAll('a');
+                
+                allLinks.forEach(link => {
+                    const href = link.href;
+                    // 匹配类目 URL 格式: /shop/c/xxx/xxx
+                    if (href && href.includes('/shop/c/')) {
+                        categoryUrls.push({
+                            url: href,
+                            text: link.innerText.trim()
+                        });
+                    }
+                });
+                
+                return categoryUrls;
+            }
+        """
+        
+        category_urls = page.evaluate(js_code)
+        print(f"[INFO] 解析到 {len(category_urls)} 个类目链接")
         
         browser.close()
         
+        # 去重
+        unique_urls = {}
+        for item in category_urls:
+            if item['url'] not in unique_urls:
+                unique_urls[item['url']] = item['text']
+        
         # 构建类目列表
         categories = []
-        for url, text in category_urls.items():
+        for url, text in unique_urls.items():
             # 从 URL 中提取类目名称
             # 格式: /shop/c/beauty-personal-care/601450
             match = re.search(r'/shop/c/([^/]+)/(\d+)', url)
