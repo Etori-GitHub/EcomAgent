@@ -44,9 +44,9 @@ def fetch_tiktok_category_bestsellers(category_url, category_name, subcategory):
             () => {
                 const results = [];
                 
-                // TikTok Shop 的商品列表选择器可能需要调整
-                // 尝试多种可能的选择器
-                const productCards = document.querySelectorAll('[class*="product"], [class*="item"], [class*="card"]');
+                // TikTok Shop 的商品列表选择器
+                // 根据页面结构，商品卡片可能包含以下特征
+                const productCards = document.querySelectorAll('[class*="product"], [class*="item"], [class*="card"], [class*="Product"]');
                 
                 console.log(`找到 ${productCards.length} 个商品卡片`);
                 
@@ -60,47 +60,49 @@ def fetch_tiktok_category_bestsellers(category_url, category_name, subcategory):
                         let ratingCount = 0;
                         let soldCount = 0;
                         
-                        // 提取名称
-                        const nameEl = card.querySelector('[class*="name"], [class*="title"], [class*="product-name"]');
-                        if (nameEl) {
-                            name = nameEl.innerText.trim();
+                        // 提取名称 - 尝试多种选择器
+                        name = card.querySelector('h3, h2, h4, .title, .name, [class*="title"], [class*="name"]')?.innerText.trim() || '';
+                        
+                        // 如果没有提取到，尝试从链接中获取
+                        if (!name) {
+                            name = card.querySelector('a')?.innerText.trim() || '';
                         }
                         
                         // 提取价格
-                        const priceEl = card.querySelector('[class*="price"], [class*="cost"]');
+                        const priceEl = card.querySelector('[class*="price"], [class*="cost"], .price, .cost');
                         if (priceEl) {
                             const priceText = priceEl.innerText.trim();
-                            const match = priceText.match(/([\d,.]+)/);
+                            const match = priceText.match(/([\\d,.]+)/);
                             if (match) {
                                 price = parseFloat(match[1].replace(',', ''));
                             }
                         }
                         
                         // 提取评分
-                        const ratingEl = card.querySelector('[class*="rating"], [class*="star"]');
+                        const ratingEl = card.querySelector('[class*="rating"], [class*="star"], .rating, .stars');
                         if (ratingEl) {
                             const ratingText = ratingEl.innerText.trim();
-                            const match = ratingText.match(/([\d.]+)/);
+                            const match = ratingText.match(/([\\d.]+)/);
                             if (match) {
                                 rating = parseFloat(match[1]);
                             }
                         }
                         
                         // 提取评价数量
-                        const ratingCountEl = card.querySelector('[class*="review"], [class*="comment"]');
+                        const ratingCountEl = card.querySelector('[class*="review"], [class*="comment"], .review, .comment');
                         if (ratingCountEl) {
                             const countText = ratingCountEl.innerText.trim();
-                            const match = countText.match(/([\d,.]+)/);
+                            const match = countText.match(/([\\d,.]+)/);
                             if (match) {
                                 ratingCount = parseInt(match[1].replace(',', ''));
                             }
                         }
                         
                         // 提取销量
-                        const soldEl = card.querySelector('[class*="sold"], [class*="sell"]');
+                        const soldEl = card.querySelector('[class*="sold"], [class*="sell"], [class*="sale"], .sold, .sell, .sale');
                         if (soldEl) {
                             const soldText = soldEl.innerText.trim();
-                            const match = soldText.match(/([\d,.]+)/);
+                            const match = soldText.match(/([\\d,.]+)/);
                             if (match) {
                                 soldCount = parseInt(match[1].replace(',', ''));
                             }
