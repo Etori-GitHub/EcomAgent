@@ -167,8 +167,8 @@ def fetch_tiktok_category_bestsellers(category_url, category_name, subcategory):
                             name = card.querySelector('a')?.innerText.trim() || '';
                         }
                         
-                        // 提取价格 - 优先查找包含 $ 符号的元素
-                        const priceEl = card.querySelector('[class*="price"], [class*="current"], .price, .current-price');
+                        // 提取价格 - 使用 .product-price 选择器
+                        const priceEl = card.querySelector('.product-price, [class*="price"], [class*="current"]');
                         if (priceEl) {
                             const priceText = priceEl.innerText.trim();
                             // 匹配 $11.86 格式
@@ -178,25 +178,31 @@ def fetch_tiktok_category_bestsellers(category_url, category_name, subcategory):
                             }
                         }
                         
-                        // 提取评分 - 优先查找 .rating 元素
-                        const ratingEl = card.querySelector('.rating, [class*="rating"], .stars');
+                        // 提取评分和销量 - 使用 .product-rating 选择器
+                        const ratingEl = card.querySelector('.product-rating, .rating, .stars');
                         if (ratingEl) {
                             const ratingText = ratingEl.innerText.trim();
                             // 匹配 4.0 格式
-                            const match = ratingText.match(/([\\d.]+)/);
-                            if (match) {
-                                rating = parseFloat(match[1]);
+                            const ratingMatch = ratingText.match(/([\\d.]+)/);
+                            if (ratingMatch) {
+                                rating = parseFloat(ratingMatch[1]);
+                            }
+                            // 匹配销量 3.3K 已售出 格式
+                            const soldMatch = ratingText.match(/([\\d.]+)K?\\s*已售出/);
+                            if (soldMatch) {
+                                soldCount = parseInt(parseFloat(soldMatch[1]) * (soldMatch[0].includes('K') ? 1000 : 1));
                             }
                         }
                         
-                        // 提取销量 - 优先查找 .sales 或 .sold 元素
-                        const soldEl = card.querySelector('.sales, .sold, [class*="sold"], [class*="sale"]');
-                        if (soldEl) {
-                            const soldText = soldEl.innerText.trim();
-                            // 匹配 16.7K 已售出 格式
-                            const match = soldText.match(/([\\d.]+)K?/);
-                            if (match) {
-                                soldCount = parseInt(parseFloat(match[1]) * (match[0].includes('K') ? 1000 : 1));
+                        // 如果没有提取到销量，尝试单独查找
+                        if (soldCount === 0) {
+                            const soldEl = card.querySelector('.sales, .sold, [class*="sold"], [class*="sale"]');
+                            if (soldEl) {
+                                const soldText = soldEl.innerText.trim();
+                                const match = soldText.match(/([\\d.]+)K?\\s*已售出/);
+                                if (match) {
+                                    soldCount = parseInt(parseFloat(match[1]) * (match[0].includes('K') ? 1000 : 1));
+                                }
                             }
                         }
                         
