@@ -181,36 +181,52 @@ def fetch_all_categories():
     print(f"[INFO] 开始抓取 TikTok Shop 所有分类...")
     
     # TikTok Shop 的正确 URL 是 https://www.tiktok.com/shop
+    # 每个类目都使用相同的 URL，页面上会显示不同的榜单
     categories = [
-        {
-            "name": "Electronics",
-            "url": "https://www.tiktok.com/shop",
-            "subcategory": "Best Sellers in Electronics"
-        },
-        {
-            "name": "Fashion",
-            "url": "https://www.tiktok.com/shop",
-            "subcategory": "Best Sellers in Fashion"
-        },
         {
             "name": "Beauty",
             "url": "https://www.tiktok.com/shop",
-            "subcategory": "Best Sellers in Beauty"
+            "subcategory": "美妆个护"
         },
         {
-            "name": "Home & Living",
+            "name": "Women's Clothing",
             "url": "https://www.tiktok.com/shop",
-            "subcategory": "Best Sellers in Home & Living"
+            "subcategory": "女装与女士内衣"
         },
         {
-            "name": "Sports & Outdoors",
+            "name": "Men's Clothing",
             "url": "https://www.tiktok.com/shop",
-            "subcategory": "Best Sellers in Sports & Outdoors"
+            "subcategory": "男装与男士内衣"
         },
         {
-            "name": "Toys & Kids",
+            "name": "Mobile & Digital",
             "url": "https://www.tiktok.com/shop",
-            "subcategory": "Best Sellers in Toys & Kids"
+            "subcategory": "手机与数码"
+        },
+        {
+            "name": "Fashion Accessories",
+            "url": "https://www.tiktok.com/shop",
+            "subcategory": "时尚配件"
+        },
+        {
+            "name": "Collectibles",
+            "url": "https://www.tiktok.com/shop",
+            "subcategory": "收藏品"
+        },
+        {
+            "name": "Home Goods",
+            "url": "https://www.tiktok.com/shop",
+            "subcategory": "家居用品"
+        },
+        {
+            "name": "Kitchenware",
+            "url": "https://www.tiktok.com/shop",
+            "subcategory": "厨房用品"
+        },
+        {
+            "name": "Shoes",
+            "url": "https://www.tiktok.com/shop",
+            "subcategory": "鞋靴"
         }
     ]
     
