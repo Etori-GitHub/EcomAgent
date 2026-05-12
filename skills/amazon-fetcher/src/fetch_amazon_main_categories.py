@@ -26,8 +26,17 @@ def fetch_category_bestsellers_pages(category_url, category_name, subcategory, p
     all_items = []
     
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=False, slow_mo=500)
         page = browser.new_page()
+        
+        # 模拟真实用户
+        page.add_init_script("""
+            () => {
+                Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+                navigator.languages = ['en-US', 'en'];
+                navigator.plugins = [1, 2, 3, 4, 5];
+            }
+        """)
         
         page.set_viewport_size({"width": 1920, "height": 5000})
         
@@ -69,10 +78,14 @@ def fetch_category_bestsellers_pages(category_url, category_name, subcategory, p
                         console.log(`商品 ${idx}: rank=${rank}, asin=${asin}, name=${name.substring(0, 30)}...`);
                         
                         if (asin) {
+                            // 构建商品详情页 URL
+                            const productUrl = asin ? `https://www.amazon.com/dp/${asin}` : '';
+                            
                             results.push({
                                 rank,
                                 name,
                                 asin,
+                                product_url: productUrl,
                                 price,
                                 rating,
                                 rating_count: ratingCount,
@@ -100,9 +113,9 @@ def fetch_category_bestsellers_pages(category_url, category_name, subcategory, p
             print(f"[INFO] 访问第 {page_num} 页: {url}")
             page.goto(url, timeout=60000)
             
-            page.wait_for_timeout(random_wait(5000, 10000))  # 随机等待 5-10 秒
+            page.wait_for_timeout(random_wait(10000, 20000))  # 随机等待 10-20 秒
             page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-            page.wait_for_timeout(random_wait(2000, 5000))  # 随机等待 2-5 秒
+            page.wait_for_timeout(random_wait(5000, 10000))  # 随机等待 5-10 秒
             
             # 使用字符串替换注入变量
             page_js_code = js_code.replace('CATEGORY_PLACEHOLDER', category_name).replace('SUBCATEGORY_PLACEHOLDER', subcategory)
@@ -128,27 +141,46 @@ def fetch_and_save_category(category, pages=2):
     
     print(f"\n=== 抓取分类: {category['name']} (前 {pages} 页) ===")
     
-    data = fetch_category_bestsellers_pages(
-        category['url'],
-        category['name'],
-        category['subcategory'],
-        pages
-    )
+    # 添加重试机制
+    max_retries = 3
+    retry_count = 0
+    last_error = None
     
-    # 保存到 JSON
-    with open(output_file, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    while retry_count < max_retries:
+        try:
+            data = fetch_category_bestsellers_pages(
+                category['url'],
+                category['name'],
+                category['subcategory'],
+                pages
+            )
+            
+            # 保存到 JSON
+            with open(output_file, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            
+            print(f"[OK] 分类 {category['name']} 抓取完成，共 {len(data)} 个商品")
+            print(f"[OK] 数据已保存到: {output_file}")
+            
+            # 打印前5条数据作为示例
+            if data:
+                print("\n[示例数据] 前5条:")
+                for item in data[:5]:
+                    print(f"  - {item['rank']}. {item['name']} (${item['price']}) - {item['rating']}★ ({item['rating_count']}评)")
+            
+            return data
+        except Exception as e:
+            retry_count += 1
+            last_error = e
+            print(f"[WARN] 失败 {retry_count}/{max_retries}: {e}")
+            if retry_count < max_retries:
+                wait_ms = random_wait(10000, 20000)
+                print(f"[INFO] 等待 {wait_ms}ms 后重试...")
+                import time
+                time.sleep(wait_ms / 1000)
     
-    print(f"[OK] 分类 {category['name']} 抓取完成，共 {len(data)} 个商品")
-    print(f"[OK] 数据已保存到: {output_file}")
-    
-    # 打印前5条数据作为示例
-    if data:
-        print("\n[示例数据] 前5条:")
-        for item in data[:5]:
-            print(f"  - {item['rank']}. {item['name']} (${item['price']}) - {item['rating']}★ ({item['rating_count']}评)")
-    
-    return data
+    print(f"[ERROR] 分类 {category['name']} 抓取失败（已达最大重试次数）")
+    raise last_error
 
 
 def fetch_all_categories():
@@ -193,7 +225,7 @@ def fetch_all_categories():
     for i, category in enumerate(categories):
         fetch_and_save_category(category, pages=2)
         if i < len(categories) - 1:
-            wait_ms = random_wait(3000, 8000)
+            wait_ms = random_wait(10000, 20000)
             print(f"\n[INFO] 等待 {wait_ms}ms 后开始下一个分类...")
             import time
             time.sleep(wait_ms / 1000)

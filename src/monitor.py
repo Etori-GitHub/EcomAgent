@@ -28,6 +28,7 @@ def _flush_print(*args, **kwargs):
 
 builtins.print = _flush_print
 from utils.logger import get_logger
+from utils.feishu import send_text, send_image
 
 
 def now():
@@ -35,35 +36,19 @@ def now():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
-def _sanitize_log(message: str) -> str:
-    """统一日志内容清理 - 替换特殊字符为ASCII"""
+def log(level: str, message: str):
+    """统一日志输出格式 - 使用ASCII字符避免乱码"""
+    # 替换常见中文字符为英文
     replacements = {
         '✓': '[OK]',
         '✗': '[ERR]',
         '：': ': ',
         '，': ', ',
         '。': '.',
-        '⚠': '[WARN]',
-        '✅': '[SUCCESS]',
-        '❌': '[FAIL]',
-        '📝': '[NOTE]',
-        '🎬': '[VIDEO]',
     }
     for cn, en in replacements.items():
         message = message.replace(cn, en)
-    return message
-
-
-def log(level: str, message: str):
-    """统一日志输出格式 - 使用ASCII字符避免乱码"""
-    message = _sanitize_log(message)
     print(f"[{now()}] [{level}] {message}", flush=True)
-
-
-def log_simple(message: str):
-    """简单日志输出 - 只清理特殊字符"""
-    message = _sanitize_log(message)
-    print(message, flush=True)
 
 
 class ImageCache:
@@ -134,7 +119,7 @@ class ImageCache:
             self.timers[user_id] = timer
             timer.start()
             
-            log("Cache", f"[OK] 缓存图片: user={user_id} -> {image_path}")
+            log("Cache", f"✓ 缓存图片: user={user_id} -> {image_path}")
     
     def get(self, user_id: str) -> str:
         """获取缓存的图片路径"""
@@ -156,7 +141,7 @@ class ImageCache:
         """缓存过期处理"""
         with self.lock:
             if user_id in self.cache:
-                log("Cache", f"[ERR] 缓存过期: user={user_id}")
+                log("Cache", f"✗ 缓存过期: user={user_id}")
                 del self.cache[user_id]
                 self._save_cache()
             if user_id in self.timers:
@@ -169,7 +154,7 @@ class ImageCache:
                 self.timers[user_id].cancel()
                 del self.timers[user_id]
             if user_id in self.cache:
-                log("Cache", f"[ERR] 清除缓存: user={user_id}")
+                log("Cache", f"✗ 清除缓存: user={user_id}")
                 del self.cache[user_id]
                 self._save_cache()
     
@@ -205,7 +190,7 @@ class TestModeCache:
             self.cache[user_id]['timer'] = timer
             timer.start()
             
-            log("TestMode", f"[OK] 测试模式缓存: user={user_id}, path={image_path}, 10分钟后过期")
+            log("TestMode", f"✓ 测试模式缓存: user={user_id}, path={image_path}, 10分钟后过期")
     
     def get(self, user_id: str) -> str:
         """获取测试模式缓存的图片路径"""
@@ -218,7 +203,7 @@ class TestModeCache:
         """测试模式缓存过期处理"""
         with self.lock:
             if user_id in self.cache:
-                log("TestMode", f"[ERR] 测试模式缓存过期: user={user_id}")
+                log("TestMode", f"✗ 测试模式缓存过期: user={user_id}")
                 if 'timer' in self.cache[user_id]:
                     self.cache[user_id]['timer'].cancel()
                 del self.cache[user_id]
@@ -227,7 +212,7 @@ class TestModeCache:
         """手动删除测试模式缓存"""
         with self.lock:
             if user_id in self.cache:
-                log("TestMode", f"[ERR] 测试模式缓存已删除: user={user_id}")
+                log("TestMode", f"✗ 测试模式缓存已删除: user={user_id}")
                 if 'timer' in self.cache[user_id]:
                     self.cache[user_id]['timer'].cancel()
                 del self.cache[user_id]
@@ -486,13 +471,6 @@ class FeishuMonitor:
                             )
                             if queued_match:
                                 message_text = queued_match.group(1).strip()
-                                # 从 text_content 中提取 user_id
-                                sender_match = re.search(
-                                    r'"sender_id":\s*"(ou_[a-f0-9]+)"',
-                                    text_content
-                                )
-                                if sender_match:
-                                    user_id = sender_match.group(1)
                                 log("Session", "解析到队列消息格式")
                         
                         # 处理提取到的消息
@@ -510,7 +488,7 @@ class FeishuMonitor:
             log("Error", f"读取 session 文件错误: {e}, 总耗时={total_elapsed*1000:.1f}ms")
     
     def _process_message(self, user_id: str, message_text: str):
-        """处理用户消息，检查触发词并启动对应脚本"""
+        """处理用户消息，检查触发词并执行对应操作"""
         start_time = time.time()
         log("Debug", f"[Process] 开始处理消息: user={user_id}, msg={message_text[:50]}...")
         
@@ -519,7 +497,7 @@ class FeishuMonitor:
             log("Session", f"用户 {user_id} 无缓存图片，忽略")
             return
         
-        # 防重复触发检查
+        # 防重复触发检查（参考 monitor_service.py）
         with self.processing_lock:
             if user_id in self.processing_users:
                 log("Process", f"用户 {user_id} 正在处理中，跳过重复触发")
@@ -532,27 +510,31 @@ class FeishuMonitor:
         if trigger_id:
             elapsed = time.time() - start_time
             log("Debug", f"[Trigger] 检测到触发词! user={user_id}, trigger={trigger_id}, msg='{message_text}', 耗时={elapsed*1000:.1f}ms")
-            log("Trigger", f"[OK] 检测到触发词! user={user_id}, trigger={trigger_id}, msg='{message_text}'")
+            log("Trigger", f"✓ 检测到触发词! user={user_id}, trigger={trigger_id}, msg='{message_text}'")
+            log("Trigger", f"当前缓存用户: {self.cache.list_active()}")
             
             # 标记为处理中
             with self.processing_lock:
                 self.processing_users.add(user_id)
             
             try:
-                # 重置缓存计时器
+                # 重置计时器（给用户更多时间等待生成）
                 image_path = self.cache.get(user_id)
                 if image_path:
+                    cache_elapsed = time.time() - start_time
+                    log("Debug", f"[Trigger] 重置缓存耗时: {cache_elapsed*1000:.1f}ms")
                     self.cache.set(user_id, image_path)
                 
-                # 启动对应脚本
+                # 执行对应脚本
                 script = trigger_info.get('script')
                 if script:
-                    log("Trigger", f"启动脚本: {script}")
+                    script_elapsed = time.time() - start_time
+                    log("Debug", f"[Trigger] 准备执行脚本: {script}, 耗时={script_elapsed*1000:.1f}ms")
                     self._call_script(script, user_id, image_path)
                 else:
                     log("Error", f"触发器 {trigger_id} 未配置脚本")
             finally:
-                # 清除缓存和标记
+                # 执行后清除缓存和标记
                 self.cache.delete(user_id)
                 with self.processing_lock:
                     self.processing_users.discard(user_id)
@@ -563,7 +545,7 @@ class FeishuMonitor:
         log("Debug", f"[Process] 消息处理完成: user={user_id}, 总耗时={total_elapsed*1000:.1f}ms")
     
     def _call_script(self, script: str, user_id: str, image_path: str) -> bool:
-        """调用生成脚本 - 只负责启动，不处理返回"""
+        """调用生成脚本 - 参考 monitor_service.py"""
         start_time = time.time()
         if not image_path:
             log("Error", f"无缓存图片: {user_id}")
@@ -578,6 +560,7 @@ class FeishuMonitor:
         log("Debug", f"[Script] 脚本准备完成: {script}, 耗时={elapsed*1000:.1f}ms")
         
         try:
+            # 使用明确的 Python 路径，确保依赖可用
             python_exe = sys.executable
             cmd = [
                 python_exe,
@@ -588,13 +571,20 @@ class FeishuMonitor:
             
             # 根据脚本类型添加参数
             if script == "generate_images.py":
-                pass  # 只需要 --image 和 --user_id
+                # generate_images.py 只需要 --image 和 --user_id，不需要额外参数
+                pass
             elif script == "generate_video_v2.py":
-                cmd.extend([
+                # V2版本：3图3视频合成
+                cmd = [
+                    sys.executable,
+                    str(script_path),
+                    "--image", image_path,
+                    "--user_id", user_id,
                     "--duration", "5",
                     "--resolution", "480p"
-                ])
+                ]
             
+            # 记录命令行
             log("Debug", f"[Script] 执行命令: {' '.join(cmd)}")
             
             result = subprocess.run(
@@ -607,14 +597,15 @@ class FeishuMonitor:
             elapsed = time.time() - start_time
             log("Debug", f"[Script] 脚本执行完成: {script}, 耗时={elapsed*1000:.1f}ms, returncode={result.returncode}")
             
-            # 安全解码输出
+            # 安全解码输出（处理 Windows 编码问题）
             def safe_decode(data: bytes) -> str:
+                """尝试多种编码解码字节数据"""
                 for encoding in ['utf-8', 'gbk', 'gb2312', 'utf-16', 'latin-1']:
                     try:
                         return data.decode(encoding, errors='replace')
                     except (UnicodeDecodeError, LookupError):
                         continue
-                return data.decode('utf-8', errors='replace')
+                return data.decode('utf-8', errors='replace')  # 最后尝试
             
             stdout_str = safe_decode(result.stdout)
             stderr_str = safe_decode(result.stderr)
@@ -622,18 +613,146 @@ class FeishuMonitor:
             log("Script", f"脚本输出:\n{stdout_str}")
             
             if result.returncode == 0:
-                log("Script", f"[OK] 脚本执行成功: {script}")
+                log("Script", f"✓ 脚本执行成功: {script}")
+                # 解析结果并发送消息
+                parse_start = time.time()
+                self._parse_result(user_id, stdout_str, script)
+                parse_elapsed = time.time() - parse_start
+                log("Debug", f"[Script] 解析结果耗时: {parse_elapsed*1000:.1f}ms")
                 return True
             else:
                 log("Error", f"脚本执行失败: {stderr_str}")
+                send_text(user_id, "生成失败，请稍后重试~")
                 return False
                 
         except subprocess.TimeoutExpired:
             log("Error", f"脚本执行超时: {script}")
+            send_text(user_id, "生成超时，请稍后重试~")
             return False
         except Exception as e:
             log("Error", f"调用脚本错误: {e}")
+            send_text(user_id, f"生成出错: {str(e)}")
             return False
+    
+    def _parse_result(self, user_id: str, stdout: str, script: str):
+        """解析生成结果并发送给用户 - 参考 monitor_service.py"""
+        start_time = time.time()
+        # 确定结果标记
+        if "generate_images.py" in script:
+            marker = "[GENERATION_RESULT]"
+        elif "generate_video" in script:
+            # 支持 generate_video.py 和 generate_video_v2.py
+            marker = "[VIDEO_RESULT]"
+        elif "test_mode.py" in script:
+            marker = "[TEST_MODE_RESULT]"
+        else:
+            return
+        
+        log("Parse", f"Looking for marker: {marker}")
+        found = False
+        
+        for line in stdout.split('\n'):
+            if marker in line:
+                elapsed = time.time() - start_time
+                log("Debug", f"[Parse] 找到结果标记: {line[:100]}..., 耗时={elapsed*1000:.1f}ms")
+                found = True
+                log("Parse", f"Found marker in line: {line[:100]}...")
+                try:
+                    json_str = line.split(marker)[1].strip()
+                    log("Parse", f"JSON string: {json_str[:200]}...")
+                    result = json.loads(json_str)
+                    
+                    status = result.get('status')
+                    log("Parse", f"Parsed status: {status}")
+                    
+                    if status == 'success':
+                        log("Result", f"Success: {user_id}")
+                        self._send_results_to_user(user_id, result, script)
+                    else:
+                        log("Error", f"Failed: {user_id}, status={status}")
+                        error_msg = result.get('error', {}).get('message', '生成失败')
+                        send_text(user_id, f"生成失败: {error_msg}")
+                    
+                    return
+                except Exception as e:
+                    log("Error", f"Parse error: {e}, line: {line[:200]}")
+                    send_text(user_id, "处理结果时出错，请稍后重试~")
+        
+        if not found:
+            log("Error", f"Marker not found in output")
+    
+    def _send_results_to_user(self, user_id: str, result: dict, script: str):
+        """发送生成的文件给用户 - 参考 monitor_service.py
+        
+        注意：generate_images.py 已经逐张发送，这里只处理视频和汇总
+        """
+        if "test_mode.py" in script:
+            # 测试模式：已保存图片并发送回飞书
+            output_path = result.get('output_path')
+            status = result.get('status')
+            
+            if status == 'success' and output_path:
+                log("Result", f"测试模式成功: user={user_id}, output={output_path}")
+                send_text(user_id, f"测试模式成功！图片已保存到: {output_path}")
+            else:
+                error_msg = result.get('error', {}).get('message', '测试失败')
+                log("Error", f"测试模式失败: {error_msg}")
+                send_text(user_id, f"测试失败: {error_msg}")
+            return
+            
+        if "generate_video" in script:
+            # 视频生成结果 - 支持 generate_video.py 和 generate_video_v2.py
+            # V2版本: merged_video, videos, scenes
+            # V1版本: video_path, scene_path
+            file_path = result.get('merged_video') or result.get('video_path')
+            scene_path = result.get('scene_path')
+            output_dir = result.get('output_dir', 'N/A')
+            
+            caption = "视频生成完成！🎬"
+            
+            # 转换为绝对路径（相对于项目根目录）
+            if file_path:
+                file_path = str(self.project_root / file_path)
+            if scene_path:
+                scene_path = str(self.project_root / scene_path)
+            
+            if file_path and Path(file_path).exists():
+                file_size = Path(file_path).stat().st_size / (1024 * 1024)  # MB
+                log("Send", f"发送视频文件: {file_path} ({file_size:.1f} MB)")
+                
+                # 检查文件大小（飞书限制 10MB）
+                if file_size > 9.5:
+                    log("Error", f"视频文件过大: {file_size:.1f} MB > 9.5 MB")
+                    send_text(user_id, f"视频生成完成，但文件过大 ({file_size:.1f} MB)，无法发送。请使用低分辨率或短时间参数重新生成。")
+                    return
+                
+                # 先发送场景图预览
+                if scene_path and Path(scene_path).exists():
+                    scene_size = Path(scene_path).stat().st_size / (1024 * 1024)
+                    if scene_size > 9.5:
+                        log("Warn", f"场景图过大，跳过发送: {scene_size:.1f} MB")
+                    else:
+                        send_image(user_id, scene_path, "Scene Preview")
+                
+                # 再发送视频
+                log("Send", f"Sending video to user...")
+                send_start = time.time()
+                send_success = send_image(user_id, file_path, caption)
+                send_elapsed = time.time() - send_start
+                log("Debug", f"[Send] 发送视频耗时: {send_elapsed*1000:.1f}ms, success={send_success}")
+                if not send_success:
+                    log("Error", f"Failed to send video via Feishu")
+                    # 如果发送失败，提供文件路径给用户
+                    abs_path = Path(file_path).absolute()
+                    send_text(user_id, f"Video generated but failed to send via Feishu. Please check the file manually: {abs_path}")
+            else:
+                log("Error", f"Video file not found: {file_path}")
+                send_text(user_id, "Video generation completed but file not found")
+        else:
+            # 图片生成结果 - generate_images.py 已经逐张发送，这里只记录日志
+            success_count = result.get('success_count', 0)
+            total = result.get('total', 0)
+            log("Send", f"图片生成完成: {success_count}/{total}，已由脚本逐张发送")
     
     def _check_log(self):
         """检查日志文件更新 - 参考 monitor_service.py"""

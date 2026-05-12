@@ -2,6 +2,10 @@
 config/api_keys.json
 config/secrets.json
 
+# Database
+data/*.db
+!data/.gitkeep
+
 # Python
 __pycache__/
 *.py[cod]
@@ -17,6 +21,7 @@ logs/*.log
 # Output (generated files)
 output/*/
 !output/.gitkeep
+output/scraping/*.json
 
 # Test output
 test/test_output/*
@@ -25,6 +30,11 @@ test/test_output/*
 # Temp files
 temp/
 *.tmp
+
+# Backup files
+*.bak
+*.backup
+README_副本.md
 
 # IDE
 .vscode/

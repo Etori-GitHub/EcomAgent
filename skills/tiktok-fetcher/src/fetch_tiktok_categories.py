@@ -2,14 +2,18 @@
 # -*- coding: utf-8 -*-
 """
 TikTok Shop 热销榜单抓取脚本
-抓取多个分类的热销商品数据
+稳健版本：使用动态选择器和相对定位
+
+功能：
+1. 从首页提取类目列表（使用 /shop/c/ 过滤）
+2. 点击"查看更多"按钮加载商品
+3. 提取商品数据（名称、评分、销量、价格等）
+4. 保存到 JSON 文件
 """
 
 import json
 import random
 import re
-import subprocess
-import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -23,228 +27,370 @@ def random_wait(min_ms=1000, max_ms=3000):
     return wait_ms
 
 
-def fetch_category_urls():
-    """从 TikTok Shop 首页解析类目 URL"""
+def extract_categories(page):
+    """从首页提取类目列表（使用 /shop/c/ 过滤）"""
     
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
-        page = browser.new_page()
-        
-        page.set_viewport_size({"width": 1920, "height": 5000})
-        
-        print(f"[INFO] 访问 TikTok Shop 首页...")
-        page.goto("https://www.tiktok.com/shop", timeout=60000)
-        
-        page.wait_for_timeout(random_wait(5000, 10000))
-        
-        # 解析类目 URL
-        js_code = """
-            () => {
-                const categoryUrls = [];
+    print(f"\n[INFO] 正在提取类目列表...")
+    
+    category_js = """
+        () => {
+            const categories = [];
+            
+            // 策略：找到所有包含 /shop/c/ 的链接
+            const allLinks = Array.from(document.querySelectorAll('a'));
+            
+            console.log('=== 总共找到 ' + allLinks.length + ' 个链接 ===');
+            
+            allLinks.forEach((link, idx) => {
+                const href = link.href;
+                const text = (link.innerText || link.textContent || '').trim();
+                const dataId = link.getAttribute('data-id');
                 
-                // 尝试多种选择器来定位类目链接
-                // TikTok Shop 的类目链接可能包含 /shop/c/ 路径
-                const allLinks = document.querySelectorAll('a');
-                
-                allLinks.forEach(link => {
-                    const href = link.href;
-                    // 匹配类目 URL 格式: /shop/c/xxx/xxx
-                    if (href && href.includes('/shop/c/')) {
-                        categoryUrls.push({
-                            url: href,
-                            text: link.innerText.trim()
-                        });
+                // 只提取包含 /shop/c/ 的链接
+                if (href && href.includes('/shop/c/') && text) {
+                    categories.push({
+                        name: text,
+                        url: href,
+                        data_id: dataId || '',
+                        className: link.className || ''
+                    });
+                    
+                    if (categories.length <= 5) {
+                        console.log('[' + (categories.length-1) + '] ' + text + ' -> ' + href);
                     }
-                });
-                
-                return categoryUrls;
-            }
-        """
-        
-        category_urls = page.evaluate(js_code)
-        print(f"[INFO] 解析到 {len(category_urls)} 个类目链接")
-        
-        browser.close()
-        
-        # 去重
-        unique_urls = {}
-        for item in category_urls:
-            if item['url'] not in unique_urls:
-                unique_urls[item['url']] = item['text']
-        
-        return unique_urls
+                }
+            });
+            
+            return categories;
+        }
+    """
+    
+    categories = page.evaluate(category_js)
+    print(f"[OK] 找到 {len(categories)} 个类目")
+    
+    return categories
 
 
-def fetch_tiktok_category_bestsellers(category_url, category_name, subcategory):
-    """抓取指定分类的 Best Sellers 榜单"""
+def fetch_category_products_from_page(page, category_name):
+    """从已打开的页面抓取商品数据（使用稳健的选择器）"""
     
-    all_items = []
+    # 等待页面加载
+    page.wait_for_timeout(random_wait(10000, 20000))
     
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
-        page = browser.new_page()
-        
-        page.set_viewport_size({"width": 1920, "height": 5000})
-        
-        print(f"[INFO] 访问分类: {category_name} - {category_url}")
-        page.goto(category_url, timeout=60000)
-        
-        page.wait_for_timeout(random_wait(5000, 10000))
-        page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-        page.wait_for_timeout(random_wait(3000, 6000))
-        
-        # 提取商品数据的 JavaScript 代码
-        js_code = """
-            () => {
-                const results = [];
-                
-                // TikTok Shop 的商品列表选择器
-                // 使用 .product-card 选择器定位商品卡片
-                const productCards = document.querySelectorAll('.product-card, [class*="product-card"]');
-                
-                console.log(`找到 ${productCards.length} 个商品卡片`);
-                
-                productCards.forEach((card, idx) => {
-                    try {
-                        let rank = idx + 1;
-                        let name = '';
-                        let price = 0;
-                        let rating = 0;
-                        let ratingCount = 0;
-                        let soldCount = 0;
+    # 点击"查看更多"按钮加载更多商品
+    print(f"[INFO] 点击'查看更多'按钮加载更多商品...")
+    try:
+        # 使用 Playwright 的 get_by_role 和 get_by_text
+        load_more_btn = page.get_by_role("button", name="查看更多").first
+        if load_more_btn.is_enabled():
+            load_more_btn.click()
+            page.wait_for_timeout(random_wait(5000, 10000))
+            print(f"[OK] 已点击'查看更多'按钮")
+        else:
+            print(f"[WARN] 未找到'查看更多'按钮，继续抓取")
+    except Exception as e:
+        print(f"[WARN] 点击'查看更多'失败：{e}")
+    
+    # 滚动页面加载更多内容
+    print(f"[INFO] 滚动页面加载更多内容...")
+    for i in range(3):
+        try:
+            page.evaluate("""
+                () => {
+                    if (document.body) {
+                        window.scrollTo(0, document.body.scrollHeight);
+                    }
+                }
+            """)
+        except Exception as e:
+            print(f"[WARN] 滚动失败：{e}")
+        page.wait_for_timeout(random_wait(3000, 5000))
+    
+    # 最终等待
+    page.wait_for_timeout(random_wait(10000, 20000))
+    
+    # 提取商品数据 - 使用稳健的选择器
+    print(f"[INFO] 正在提取商品数据...")
+    
+    product_js = """
+        () => {
+            const products = [];
+            
+            // 策略：从价格元素向上查找商品容器
+            // 1. 找到所有包含 $ 价格的元素
+            const priceElements = Array.from(document.querySelectorAll('*')).filter(el => {
+                const text = el.innerText || el.textContent || '';
+                return text.includes('$') && /\\$\\d+\\.\\d+/.test(text);
+            });
+            
+            console.log('=== 找到 ' + priceElements.length + ' 个包含价格的元素 ===');
+            
+            // 2. 从价格元素向上查找商品容器
+            priceElements.forEach((priceEl, idx) => {
+                try {
+                    const text = priceEl.innerText.trim();
+                    
+                    // 跳过导航元素和页脚
+                    if (text.includes('Orders') || text.includes('销售') || 
+                        text.includes('客户支持') || text.includes('TikTok Shop')) {
+                        return;
+                    }
+                    
+                    // 向上查找商品容器（最多 6 层）
+                    let container = priceEl.parentElement;
+                    let depth = 0;
+                    const maxDepth = 6;
+                    
+                    while (container && depth < maxDepth) {
+                        // 检查是否是商品容器
+                        const nameEl = container.querySelector('h3');
+                        const ratingEl = container.querySelector('span');
                         
-                        // 提取商品标题 - 使用 .product-title 选择器
-                        const titleEl = card.querySelector('.product-title, .title, h3');
-                        if (titleEl) {
-                            name = titleEl.innerText.trim();
-                        }
-                        
-                        // 提取价格 - 使用 .product-price 选择器
-                        const priceEl = card.querySelector('.product-price, .price, .current-price');
-                        if (priceEl) {
-                            const priceText = priceEl.innerText.trim();
-                            const match = priceText.match(/\\$([\\d,.]+)/);
-                            if (match) {
-                                price = parseFloat(match[1].replace(',', ''));
+                        if (nameEl && ratingEl) {
+                            const name = nameEl.innerText.trim();
+                            
+                            // 过滤掉空名称或导航元素
+                            if (!name || name.length < 5 || name.includes('Orders') || 
+                                name.includes('销售') || name.includes('客户支持')) {
+                                container = container.parentElement;
+                                depth++;
+                                continue;
                             }
-                        }
-                        
-                        // 提取评分和销量 - 使用 .product-rating 选择器
-                        const ratingEl = card.querySelector('.product-rating, .rating');
-                        if (ratingEl) {
-                            const ratingText = ratingEl.innerText.trim();
-                            // 匹配 4.0 格式
-                            const ratingMatch = ratingText.match(/([\\d.]+)/);
-                            if (ratingMatch) {
-                                rating = parseFloat(ratingMatch[1]);
+                            
+                            // 提取评分
+                            const ratingText = ratingEl.innerText;
+                            const ratingMatch = ratingText.match(/(\\d+\\.\\d+)/);
+                            const rating = ratingMatch ? parseFloat(ratingMatch[1]) : null;
+                            
+                            // 提取销售量（查找包含"已售出"的元素）
+                            const soldEl = Array.from(container.querySelectorAll('span')).find(el => 
+                                el.innerText.includes('已售出')
+                            );
+                            const sold = soldEl ? soldEl.innerText.trim() : null;
+                            
+                            // 提取价格
+                            const priceMatch = text.match(/\\$(\\d+\\.\\d+)/);
+                            const price = priceMatch ? parseFloat(priceMatch[1]) : null;
+                            
+                            // 提取原价（查找删除线元素）
+                            const originalPriceEl = Array.from(container.querySelectorAll('span')).find(el => 
+                                el.innerText.startsWith('$') && el.classList.contains('line-through')
+                            );
+                            const originalPrice = originalPriceEl ? 
+                                parseFloat(originalPriceEl.innerText.replace('$', '')) : null;
+                            
+                            // 提取商品详情页 URL（关键！用于获取唯一 ID）
+                            const linkEl = container.querySelector('a[href*="/shop/pdp/"]');
+                            let tiktokshop_id = null;
+                            let product_url = null;
+                            
+                            if (linkEl && linkEl.href) {
+                                product_url = linkEl.href;
+                                // 从 URL 中提取 ID：https://www.tiktok.com/shop/pdp/xxx/1729641467854885041
+                                const urlMatch = product_url.match(/\/shop\/pdp\/[^/]+\/(\d+)/);
+                                if (urlMatch) {
+                                    tiktokshop_id = urlMatch[1];
+                                }
                             }
-                            // 匹配销量 3.3K 已售出 格式
-                            const soldMatch = ratingText.match(/([\\d.]+)K?\\s*已售出/);
-                            if (soldMatch) {
-                                soldCount = parseInt(parseFloat(soldMatch[1]) * (soldMatch[0].includes('K') ? 1000 : 1));
-                            }
-                        }
-                        
-                        // 只保留有实际商品名称的卡片
-                        if (name && name.length > 5 && !name.includes('TikTok') && !name.includes('类目')) {
-                            results.push({
-                                rank,
-                                name,
-                                price,
-                                rating,
-                                rating_count: ratingCount,
-                                sold_count: soldCount,
-                                category: 'CATEGORY_PLACEHOLDER',
-                                subcategory: 'SUBCATEGORY_PLACEHOLDER'
+                            
+                            products.push({
+                                name: name,
+                                rating: rating,
+                                sold: sold,
+                                price: price,
+                                original_price: originalPrice,
+                                tiktokshop_id: tiktokshop_id,
+                                product_url: product_url,
+                                rank: products.length + 1  // 按抓取顺序排名
                             });
+                            
+                            if (products.length <= 5) {
+                                console.log('[' + (products.length-1) + '] ' + name.substring(0, 50));
+                                console.log('    Rating: ' + rating + ', Sold: ' + sold);
+                                console.log('    Price: $' + price + ', Original: $' + originalPrice);
+                                console.log('    TikTokShop ID: ' + tiktokshop_id);
+                                console.log('    URL: ' + product_url);
+                            }
+                            
+                            break; // 找到商品容器，跳出循环
                         }
-                    } catch (e) {
-                        console.log(`商品 ${idx} 解析失败:`, e.message);
+                        
+                        container = container.parentElement;
+                        depth++;
                     }
-                });
-                
-                return results;
-            }
-        """
-        
-        # 使用字符串替换注入变量
-        page_js_code = js_code.replace('CATEGORY_PLACEHOLDER', category_name).replace('SUBCATEGORY_PLACEHOLDER', subcategory)
-        items = page.evaluate(page_js_code)
-        
-        print(f"[INFO] 成功提取 {len(items)} 个商品")
-        all_items.extend(items)
-        
-        browser.close()
+                } catch (e) {
+                    console.log('商品 ' + idx + ' 解析失败:', e.message);
+                }
+            });
+            
+            return products;
+        }
+    """
     
-    return all_items
+    products = page.evaluate(product_js)
+    print(f"[OK] 找到 {len(products)} 个商品")
+    
+    return products
 
 
-def fetch_and_save_category(category):
-    """抓取单个分类并保存到独立文件"""
+def fetch_and_save_category(category, page):
+    """抓取单个分类并保存到独立文件（复用浏览器实例）"""
+    
     base_dir = Path(__file__).parent.parent.parent.parent
     output_dir = base_dir / "output" / "scraping"
     output_dir.mkdir(parents=True, exist_ok=True)
     
     now = datetime.now()
     timestamp = now.strftime("%Y%m%d_%H%M%S")
-    output_file = output_dir / f"tiktok_{category['name']}_{timestamp}.json"
     
-    print(f"\n=== 抓取分类: {category['name']} ===")
+    # 生成文件名
+    category_slug = category['name'].lower().replace(' ', '_').replace('&', 'and').replace('/', '_')
+    output_file = output_dir / f"tiktok_{category_slug}_{timestamp}.json"
     
-    data = fetch_tiktok_category_bestsellers(
-        category['url'],
-        category['name'],
-        category.get('subcategory', category['name'])
-    )
+    print(f"\n=== 抓取分类：{category['name']} ===")
+    print(f"[INFO] 文件名：{output_file.name}")
+    
+    # 访问分类页面
+    print(f"[INFO] 访问分类页面：{category['name']}")
+    print(f"[INFO] URL: {category['url']}")
+    
+    try:
+        page.goto(category['url'], timeout=120000)
+    except Exception as e:
+        print(f"[ERROR] 访问页面失败：{e}")
+        return None
+    
+    # 从页面提取商品数据
+    data = fetch_category_products_from_page(page, category['name'])
+    
+    if not data:
+        print(f"[WARN] 没有抓取到商品数据")
+        return None
+    
+    # 去重处理：使用 tiktokshop_id 作为唯一标识
+    print(f"[INFO] 正在去重...")
+    seen_ids = set()
+    unique_products = []
+    duplicates = 0
+    
+    for product in data:
+        tiktokshop_id = product.get('tiktokshop_id')
+        if tiktokshop_id and tiktokshop_id not in seen_ids:
+            seen_ids.add(tiktokshop_id)
+            unique_products.append(product)
+        elif tiktokshop_id:
+            duplicates += 1
+    
+    if duplicates > 0:
+        print(f"[OK] 去重完成：原始 {len(data)} 个商品，去重后 {len(unique_products)} 个，删除 {duplicates} 个重复项")
+    
+    data = unique_products
+    
+    # 添加元数据
+    enriched_data = {
+        "metadata": {
+            "platform": "tiktok",
+            "category": category['name'],
+            "category_slug": category_slug,
+            "category_url": category['url'],
+            "scraped_at": now.isoformat(),
+            "scraped_date": now.strftime("%Y-%m-%d"),
+            "scraped_time": now.strftime("%H:%M:%S"),
+            "total_items": len(data)
+        },
+        "products": data
+    }
     
     # 保存到 JSON
     with open(output_file, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+        json.dump(enriched_data, f, ensure_ascii=False, indent=2)
     
     print(f"[OK] 分类 {category['name']} 抓取完成，共 {len(data)} 个商品")
-    print(f"[OK] 数据已保存到: {output_file}")
+    print(f"[OK] 数据已保存到：{output_file}")
     
-    # 打印前5条数据作为示例
+    # 打印前 5 条数据
     if data:
-        print("\n[示例数据] 前5条:")
+        print("\n[示例数据] 前 5 条:")
         for item in data[:5]:
-            print(f"  - {item['rank']}. {item['name']} (${item['price']}) - {item['rating']}★ ({item['sold_count']}销量)")
+            sold_info = f" ({item.get('sold', 'N/A')})" if item.get('sold') else ""
+            print(f"  - {item.get('name', 'N/A')}${item.get('price', 'N/A')}{sold_info}")
     
-    return data
+    return enriched_data
 
 
 def fetch_all_categories():
-    """抓取所有 TikTok Shop 分类的热销数据"""
+    """抓取所有 TikTok Shop 分类的热销数据（复用浏览器实例）"""
     
     print(f"[INFO] 开始抓取 TikTok Shop 所有分类...")
     
-    # 首先解析类目 URL
-    category_urls = fetch_category_urls()
-    
-    # 构建类目列表
-    categories = []
-    for url, text in category_urls.items():
-        # 从 URL 中提取类目名称
-        # 格式: /shop/c/beauty-personal-care/601450
-        match = re.search(r'/shop/c/([^/]+)/(\d+)', url)
-        if match:
-            category_name = match.group(1).replace('-', ' ').title()
-            category_id = match.group(2)
-            categories.append({
-                "name": category_name,
-                "url": f"https://www.tiktok.com/shop/c/{match.group(1)}/{match.group(2)}",
-                "subcategory": text
-            })
-    
-    print(f"[INFO] 解析到 {len(categories)} 个类目")
-    
-    for i, category in enumerate(categories):
-        fetch_and_save_category(category)
-        if i < len(categories) - 1:
-            wait_ms = random_wait(3000, 8000)
-            print(f"\n[INFO] 等待 {wait_ms}ms 后开始下一个分类...")
-            import time
-            time.sleep(wait_ms / 1000)
+    with sync_playwright() as p:
+        # 使用 persistent context 复用登录状态
+        user_data_dir = r"C:\Users\Etroi\AppData\Local\Google\Chrome\User Data\Profile 1"
+        
+        browser = p.chromium.launch_persistent_context(
+            user_data_dir=user_data_dir,
+            headless=False,
+            slow_mo=500,
+            args=[
+                '--disable-blink-features=AutomationControlled',
+                '--disable-web-security',
+                '--allow-running-insecure-content'
+            ]
+        )
+        page = browser.new_page()
+        
+        page.set_viewport_size({"width": 1920, "height": 1080})
+        
+        # 访问首页
+        print(f"[INFO] 访问 TikTok Shop 首页...")
+        page.goto("https://www.tiktok.com/shop", timeout=120000)
+        
+        # 等待页面加载
+        page.wait_for_timeout(random_wait(10000, 15000))
+        
+        # 滚动页面
+        print(f"[INFO] 滚动页面加载更多内容...")
+        for i in range(5):
+            try:
+                page.evaluate("""
+                    () => {
+                        if (document.body) {
+                            window.scrollTo(0, document.body.scrollHeight);
+                        }
+                    }
+                """)
+            except Exception as e:
+                print(f"[WARN] 滚动失败：{e}")
+            page.wait_for_timeout(random_wait(3000, 5000))
+        
+        # 最终等待
+        page.wait_for_timeout(random_wait(10000, 20000))
+        
+        # 提取类目
+        categories = extract_categories(page)
+        
+        if not categories:
+            print(f"[ERROR] 没有提取到任何类目！")
+            browser.close()
+            return
+        
+        # 保存类目列表
+        categories_file = Path(__file__).parent.parent / "screenshots" / "categories.json"
+        categories_file.parent.mkdir(parents=True, exist_ok=True)
+        with open(categories_file, "w", encoding="utf-8") as f:
+            json.dump(categories, f, ensure_ascii=False, indent=2)
+        print(f"[OK] 类目列表已保存到：{categories_file}")
+        
+        # 抓取每个分类（复用同一个 page 和 browser）
+        for i, category in enumerate(categories):
+            fetch_and_save_category(category, page)
+            if i < len(categories) - 1:
+                wait_ms = random_wait(5000, 10000)
+                print(f"\n[INFO] 等待 {wait_ms}ms 后开始下一个分类...")
+                import time
+                time.sleep(wait_ms / 1000)
+        
+        browser.close()
     
     print(f"\n[OK] 所有分类抓取完成！")
 

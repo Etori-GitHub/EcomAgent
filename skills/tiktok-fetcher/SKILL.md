@@ -1,12 +1,19 @@
 ---
 name: tiktok
-description: 抓取TikTok Shop热销榜单数据。使用浏览器自动化抓取数据并保存到本地JSON文件。
+description: 抓取 TikTok Shop 热销榜单数据。使用浏览器自动化抓取数据并保存到本地 JSON 文件。
 ---
 # TikTok Shop 热销榜单抓取
 
-**当前版本支持抓取多个分类的热销商品数据。**
+**当前版本支持抓取 28 个分类的热销商品数据。**
 
 专门用于抓取 TikTok Shop 热销榜单数据，使用浏览器自动化抓取并提取各分类的商品信息。**数据保存到 JSON 文件**！
+
+## 技术特点
+
+- ✅ **复用登录状态**：使用 persistent context 复用 Chrome 登录状态，避免反机器人验证
+- ✅ **智能选择器**：自动定位类目列表，提取 28 个分类
+- ✅ **数据输出**：每个分类保存为独立 JSON 文件
+- ✅ **反爬策略**：随机等待、模拟真实用户行为
 
 ## 数据输出位置
 
@@ -15,25 +22,50 @@ description: 抓取TikTok Shop热销榜单数据。使用浏览器自动化抓�
 code/EcomAgent/output/scraping/
 
 # JSON 文件命名格式
-tiktok_分类名_YYYYMMDD_HHMMSS.json
+tiktok_分类英文名_YYYYMMDD_HHMMSS.json
+
+# 示例
+tiktok_beauty_personal_care_20260509_104700.json
+tiktok_electronics_20260509_104730.json
+tiktok_womenswear_underwear_20260509_104800.json
 ```
 
 ## 数据格式
 
 ```json
-[
-  {
-    "rank": 1,
-    "name": "商品名称",
-    "price": 19.99,
-    "rating": 4.8,
-    "rating_count": 1234,
-    "sold_count": 5678,
-    "category": "Electronics",
-    "subcategory": "Best Sellers in Electronics"
-  }
-]
+{
+  "metadata": {
+    "platform": "tiktok",
+    "category": "美妆个护",
+    "category_slug": "beauty_personal_care",
+    "category_url": "https://www.tiktok.com/shop/c/beauty-personal-care/601450",
+    "scraped_at": "2026-05-09T10:47:00.123456",
+    "scraped_date": "2026-05-09",
+    "scraped_time": "10:47:00",
+    "total_items": 150
+  },
+  "products": [
+    {
+      "tag": "DIV",
+      "className": "product-card-classname...",
+      "text": "商品名称 $19.99",
+      "price": "19.99",
+      "rating": "4.8"
+    }
+  ]
+}
 ```
+
+**字段说明**：
+- `metadata.platform`: 平台标识（"tiktok"）
+- `metadata.category`: 分类中文名
+- `metadata.category_slug`: 分类英文名（用于文件名）
+- `metadata.category_url`: 分类页面 URL
+- `metadata.scraped_at`: 抓取时间（ISO 8601 格式）
+- `metadata.scraped_date`: 抓取日期（用于数据库分组）
+- `metadata.scraped_time`: 抓取时间（用于数据库分组）
+- `metadata.total_items`: 商品总数
+- `products`: 商品列表数组
 
 ## 使用步骤
 
@@ -48,22 +80,46 @@ playwright install chromium
 ### 2. 运行抓取脚本
 
 ```bash
-# 抓取多个分类的热销数据
+# 抓取所有 28 个分类
 python code/EcomAgent/skills/tiktok-fetcher/src/fetch_tiktok_categories.py
 ```
 
 ### 3. 数据自动保存
 
-脚本会自动将数据保存到 `code/EcomAgent/output/scraping/` 目录，按分类和时间戳命名！
+脚本会自动：
+1. 访问 TikTok Shop 首页
+2. 提取 28 个分类 URL
+3. 逐个抓取分类页面数据
+4. 保存到 `output/scraping/` 目录
+
+---
+
+## 类目列表
+
+脚本会自动提取以下 28 个分类：
+
+1. 美妆个护
+2. 女装与女士内衣
+3. 男装与男士内衣
+4. 手机与数码
+5. 时尚配件
+6. 收藏品
+7. 家居用品
+8. 厨房用品
+9. 鞋靴
+10. 运动与户外
+...（共 28 个）
+
+类目列表会保存到：`skills/tiktok-fetcher/screenshots/categories.json`
 
 ---
 
 ## 注意事项
 
-- 脚本使用浏览器自动化（Playwright）模拟真实用户操作
-- 已添加随机等待机制，避免触发反爬
-- 建议在非高峰时段运行
-- TikTok Shop 的页面结构可能随时间变化，如抓取失败请检查页面选择器
+- **首次运行需要手动登录**：确保 Chrome Profile 1 已登录 TikTok 账号
+- **页面加载时间**：每个分类页面需要 10-30 秒加载时间
+- **反爬机制**：已添加随机等待和模拟真实用户行为
+- **数据格式**：当前版本提取基础信息，后续可优化选择器提取更详细数据
 
 ## 文件结构
 
@@ -72,9 +128,18 @@ tiktok-fetcher/
 ├── SKILL.md                    # 技能说明文档
 ├── docs/                       # 开发文档
 ├── src/
-│   └── fetch_tiktok_categories.py  # 抓取脚本
+│   ├── fetch_tiktok_categories.py  # 主抓取脚本（重构版）
+│   └── old/                    # 旧代码参考
+├── screenshots/                # 截图和类目列表
 └── requirements.txt
 ```
+
+---
+
+## 开发文档
+
+详细的技术方案、开发经验和扩展说明请参考：
+- [开发文档](docs/TikTok-SHOP-SCRAPER.md)
 
 ---
 

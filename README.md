@@ -1,17 +1,65 @@
 # EcomAgent - 电商智能体
 
-**项目描述：** 飞书电商助手，自动处理产品图片生成营销素材（9宫格图片 + 视频）+ 智能选品+货源对接系统
+**项目描述：** 抓取平台数据 + 智能选品数据分析 + 自动处理产品图片生成营销素材（9宫格图片 + 视频）+ 货源对接系统
 
-**最后更新：** 2026-04-01  
-**状态：** ✅ 生图/生视频功能稳定运行，亚马逊/TikTok热销数据抓取功能已完成
+**最后更新：** 2026-05-12  
+**状态：** ✅ Web UI 数据可视化功能完成，生图/生视频功能稳定运行
 
 ---
 
-## 📦 依赖库安装
+## 更新日志
+
+### 2026-05-12
+- ✅ Web UI Bug 修复（编码、标签、追踪按钮）
+- ✅ 追踪按钮改为星星图标（☆ 未追踪 / ★ 已追踪）
+- ✅ 文件备份机制建立
+- ✅ 文档更新（MEMORY.md、PHASES.md、README.md）
+
+### 2026-05-11
+- ✅ Web UI OpenClaw 风格重构
+- ✅ 主题切换功能（深色/浅色）
+- ✅ 导航折叠功能
+- ✅ 响应式布局优化
+
+### 2026-03-14
+- ✅ Monitor 职责分离重构完成
+  - 监听脚本只做调度（监听→识别→启动脚本）
+  - 功能脚本自己负责生成+发送结果
+  - 删除 `_parse_result()` 和 `_send_results_to_user()` 方法
+  - 所有 `✓` / `✗` / `⚠` 替换为 `[OK]` / `[ERR]` / `[WARN]`
+- ✅ 修复飞书消息发送问题
+  - `feishu.py` 使用 `subprocess.run` 替代 `os.system`
+  - 添加 `--channel feishu` 参数支持多 channel 配置
+- ✅ 修复队列消息格式解析，正确提取 `user_id`
+- 🚧 智能选品模块开发中（架构设计完成）
+
+### 2026-03-12
+- 🚧 新增智能选品模块架构设计（三阶段异步流程）
+- 🚧 亚马逊/TikTok热销数据抓取模块
+- 🚧 1688货源搜索模块
+- 🚧 数据库设计（A库/B库/C库分层架构）
+- 🚧 商品聚合去重逻辑（品名+规格）
+- 🚧 多货源管理（防断货策略）
+
+### 2026-03-10
+- ✅ 场景图/视频/广告词实时发送（生成一个发一个，不等全部完成）
+- ✅ 添加 `video_v2` 触发词区分单视频和3视频版本
+- ✅ Flash Image Provider 重试机制增强（5次重试，指数退避 5s/10s/15s/20s）
+- ✅ 场景图生成重试机制（5次重试 + 图间3秒延迟，防API限流）
+- ✅ 修复 monitor 硬编码调用问题，支持根据 triggers.json 配置动态调用
+
+### 2026-03-08
+- ✅ 修复 monitor.py 编码错误（Windows GBK 解码问题）
+- ✅ 简化视频提示词（删除产品互动描述，保留中心突出展示）
+- ✅ 视频生成功能稳定运行
+
+---
+
+## 依赖库安装
 
 ### Python 依赖
 ```bash
-pip install pillow requests python-dotenv
+pip install pillow requests python-dotenv fastapi uvicorn
 ```
 
 ### 系统依赖
@@ -25,7 +73,17 @@ pip install pillow requests python-dotenv
 
 ---
 
-## 🚀 快速开始（生图/生视频）
+## 快速开始
+
+### 启动 Web UI（数据可视化）
+```bash
+python run_viewer.py
+# 或
+python -m src.data_viewer.main
+```
+访问 http://localhost:8000
+
+### 启动生图/生视频服务
 
 ### 启动服务
 ```bash
@@ -40,41 +98,6 @@ python src/monitor.py
 - **生9图**：发送"作图" / "生图" / "生9图" / "9图"
 - **生视频 V2**：发送"生视频" / "做视频" / "视频"
 
-### OpenClaw Skill 配置（必读！）
-> **项目技能通过 Git 管理，需软连接接入 OpenClaw 才能生效**
-
-1. 确保 `skills/` 目录存在（在 OpenClaw 工作区下）：
-   ```cmd
-   mkdir skills
-   ```
-
-2. 创建软连接（以管理员身份运行 CMD 或 PowerShell）：
-
-   **CMD（推荐）：**
-   ```cmd
-   cd /d "%USERPROFILE%\.openclaw\workspace\skills"
-   mklink /D amazon-fetcher "..\code\EcomAgent\skills\amazon-fetcher"
-   mklink /D tiktok-fetcher "..\code\EcomAgent\skills\tiktok-fetcher"
-   ```
-
-   **PowerShell：**
-   ```powershell
-   cd "$env:USERPROFILE\.openclaw\workspace\skills"
-   New-Item -ItemType SymbolicLink -Path "amazon-fetcher" -Target "..\code\EcomAgent\skills\amazon-fetcher"
-   New-Item -ItemType SymbolicLink -Path "tiktok-fetcher" -Target "..\code\EcomAgent\skills\tiktok-fetcher"
-   ```
-
-3. 重启 OpenClaw Gateway：
-   ```powershell
-   openclaw gateway restart
-   ```
-
-4. 验证技能生效：
-   ```
-   /amazon
-   /tiktok
-   ```
-
 ### 测试功能
 ```bash
 # 测试生图
@@ -86,118 +109,7 @@ python test\test_video_flow_v2.py
 
 ---
 
-## 📊 亚马逊/TikTok 热销数据抓取（已完成）
-
-### 触发命令
-```
-/amazon
-/tiktok
-```
-
-### 功能说明
-- 使用浏览器自动化（OpenClaw `browser` 工具）抓取热销榜
-- 数据保存到 `output/` 目录的 JSON 文件
-- 支持多分类、翻页抓取
-- 同一天多次抓取生成新文件（按日期命名）
-
-### 数据输出位置
-```
-code/EcomAgent/output/scraping/amazon_分类名_YYYYMMDD_HHMMSS.json
-code/EcomAgent/output/scraping/tiktok_分类名_YYYYMMDD_HHMMSS.json
-```
-
-### 数据格式
-```json
-[
-  {
-    "rank": 1,
-    "name": "商品名称",
-    "asin": "B08JHCVHTY",
-    "price": 11.99,
-    "rating": 4.4,
-    "rating_count": 273537,
-    "category": "Electronics",
-    "subcategory": "Best Sellers in Electronics"
-  }
-]
-```
-
-### 数据库导入
-使用其他工具定期将 JSON 导入 SQLite 数据库：
-```bash
-# 示例导入命令（由用户自定义）
-python import_json_to_db.py --platform amazon --file output/amazon_bestsellers_20260326.json
-```
-
-### 技能文档
-详见：`skills/amazon-fetcher/SKILL.md` / `skills/tiktok-fetcher/SKILL.md`
-
----
-
-## 📁 项目结构
-
-```
-EcomAgent/
-├── README.md                 # 本文件
-├── start_gateway.ps1         # 启动脚本（仅启动 Gateway）
-├── config/                   # 配置文件
-│   ├── api_keys.json         # API密钥（gitignore）
-│   ├── models.json           # 模型配置
-│   └── triggers.json         # 触发词配置
-├── src/                      # 源码
-│   ├── monitor.py            # 飞书监听服务
-│   ├── generate_images.py    # 生9图功能
-│   ├── generate_video.py     # 生视频功能
-│   ├── generate_video_v2.py  # 生视频 V2
-│   ├── generate_video_v3.py  # 生视频 V3
-│   ├── providers/            # Provider实现
-│   └── utils/                # 工具层
-├── skills/                   # OpenClaw 技能目录
-│   ├── amazon-fetcher/       # 亚马逊抓取技能
-│   │   └── SKILL.md
-│   └── tiktok-fetcher/       # TikTok 抓取技能
-│       └── SKILL.md
-├── data/                     # 数据库文件
-│   ├── amazon.db
-│   └── tiktok.db
-├── output/                   # 输出文件（JSON）
-│   ├── amazon_bestsellers_YYYYMMDD.json
-│   └── tiktok_bestsellers_YYYYMMDD.json
-├── logs/                     # 日志
-└── temp/                     # 临时文件
-```
-
----
-
-## 🔄 核心流程
-
-### 生9图流程
-```
-用户发送图片 → 监听服务缓存图片(10分钟) → 用户发送"作图" 
-    ↓
-触发 generate_images.py → 分析产品 → 生成9张营销图
-    ↓
-自动发送给用户
-```
-
-### 生视频 V2 流程（3图3视频合成版）
-```
-用户发送图片 → 监听服务缓存图片(10分钟) → 用户发送"生视频v2"
-    ↓
-触发 generate_video_v2.py
-    ↓
-[步骤1/4] 生成3张场景图 → 每生成1张立即发送
-    ↓
-[步骤2/4] 生成广告词 → 分段实时发送（3条消息）
-    ↓
-[步骤3/4] 生成3段视频（带语音朗读）→ 每生成1段立即发送
-    ↓
-[步骤4/4] 合并视频 → 发送合成版
-```
-
----
-
-## 📋 项目状态
+## 项目状态
 
 | 模块 | 状态 | 说明 |
 |------|------|------|
@@ -210,28 +122,368 @@ EcomAgent/
 | 场景图生成 | ✅ 已完成 | 3套差异化风格（简约现代/奢华高端/生活化场景） |
 | 广告词生成 | ✅ 已完成 | 15秒文案，自动分段（每段约5秒） |
 | 实时发送 | ✅ 已完成 | 场景图/广告词/视频均生成一个发送一个 |
-| **亚马逊热销数据抓取** | ✅ 已完成 | 浏览器自动化，数据保存到 JSON |
-| **TikTok热销数据抓取** | ✅ 已完成 | 浏览器自动化，数据保存到 JSON |
-| 数据库设计 | ✅ 已完成 | SQLite，支持时间序列分析 |
+| **Web UI 数据可视化** | ✅ 已完成 | OpenClaw 风格，主题切换，导航折叠 |
+| 数据概览 | ✅ 已完成 | Amazon/TikTok 统计展示 |
+| 商品总库 | ✅ 已完成 | 搜索、过滤、追踪功能 |
+| 今日TOP榜 | ✅ 已完成 | 按分类显示热销产品 |
+| **智能选品模块** | 🚧 开发中 | 三阶段异步流程架构设计完成 |
+| 亚马逊热销数据抓取 | ✅ 已完成 | 6个主分类抓取 |
+| TikTok热销数据抓取 | ✅ 已完成 | 28个分类抓取 |
+| 数据库设计 | ✅ 已完成 | A库/B库/C库分层架构 |
+
 
 ---
 
-## 🛠️ 故障排查
+## 智能选品模块核心逻辑（开发中）
 
-### 生图/生视频问题
+### 1. 重复商品聚合
+- **标识规则**：【品名+规格】（如：东方树叶茉莉花茶500ml）
+- **销量合并**：A库销量 + B库销量 = 聚合销量
+- **去重策略**：相同标识的商品合并为一条记录
+
+### 2. 爆品筛选
+- **条件**：A库销量高 + B库销量低
+- **标记**：在C库中标记为"潜力爆品"
+- **用途**：优先寻找货源，快速上架
+
+### 3. 多货源策略
+- **1688搜索**：按【品名+规格】搜索
+- **商家列表**：保存多个商家信息（价格、库存、信誉）
+- **防断货**：至少保存3个商家，避免单卖家断货
+
+### 4. 数据库设计
+| 库名 | 用途 | 关键字段 |
+|------|------|----------|
+| A库 | 亚马逊热销数据 | 商品ID、名称、规格、销量、价格、链接 |
+| B库 | TikTok热销数据 | 商品ID、名称、规格、销量、价格、链接 |
+| C库 | 主库（状态中心） | 商品ID、聚合销量、货源状态、1688链接列表、上架状态 |
+
+---
+
+## 关键配置
+
+### API Keys - config/api_keys.json
+```json
+{
+    "google": "your-google-api-key",
+    "grok": "your-grok-api-key"
+}
+```
+
+### 模型配置 - config/models.json
+```json
+{
+  "image_providers": {
+    "flash_image": {
+      "model": "gemini-2.0-flash-exp-image-generation"
+    }
+  },
+  "video_providers": {
+    "grok": {
+      "model": "grok-2-video"
+    }
+  },
+  "gemini": {
+    "model": "gemini-2.5-flash"
+  }
+}
+```
+
+### 触发词配置 - config/triggers.json
+```json
+{
+  "triggers": {
+    "image": {
+      "name": "生成图片",
+      "script": "generate_images.py",
+      "keywords": ["作图", "生图", "生9图", "9图", "生成图片"],
+      "description": "生成9张电商营销图"
+    },
+    "video": {
+      "name": "生成视频",
+      "script": "generate_video_v2.py",
+      "keywords": ["生视频", "视频", "生成视频"],
+      "description": "生成3图3视频合成版"
+    }
+  },
+  "settings": {
+    "cache_expire_minutes": 10,
+    "case_sensitive": false
+  }
+}
+```
+
+---
+
+## 项目结构
+
+```
+EcomAgent/
+├── README.md                 # 本文件
+├── start_gateway.ps1         # 启动脚本（仅启动 Gateway）
+├── config/                   # 配置文件
+│   ├── api_keys.json         # API密钥（gitignore）
+│   ├── models.json           # 模型配置
+│   ├── templates.json        # 9图模板配置
+│   └── triggers.json         # 触发词配置
+├── src/                      # 源码
+│   ├── monitor.py            # 飞书监听服务（改进版日志）
+│   ├── generate_images.py    # 生9图功能
+│   ├── generate_video.py     # 生视频功能（单视频版）
+│   ├── generate_video_v2.py  # 生视频功能 V2（3图3视频合成版）
+│   ├── generate_video_v2_backup.py  # V2备份
+│   ├── test_mode.py          # 测试模式
+│   ├── data_viewer/          # Web UI 模块
+│   │   ├── __init__.py
+│   │   ├── main.py           # FastAPI 服务
+│   │   ├── cli.py            # CLI 工具
+│   │   └── static/           # 静态文件
+│   │       └── index.html
+│   ├── providers/            # Provider实现
+│   │   ├── base.py           # 基础Provider接口
+│   │   ├── flash_image.py    # Google Flash Image（带重试机制）
+│   │   ├── gemini_prompt.py  # Gemini提示词优化（含比例约束）
+│   │   └── grok_video.py     # Grok视频生成
+│   └── utils/                # 工具层
+│       ├── logger.py         # 日志工具
+│       ├── feishu.py         # 飞书消息发送
+│       └── video_merger.py   # 视频合并工具
+├── skills/                   # OpenClaw 技能
+│   ├── amazon-fetcher/       # 亚马逊抓取技能
+│   ├── tiktok-fetcher/       # TikTok 抓取技能
+│   └── db-importer/          # 数据库导入技能
+├── data/                     # 数据库
+│   ├── amazon.db
+│   └── tiktok.db
+├── test/                     # 测试
+│   ├── test_full_flow.py     # 完整流程测试
+│   ├── test_video.py         # 视频生成测试
+│   └── img/                  # 测试图片
+├── output/                   # 输出文件
+│   └── scraping/             # JSON 数据
+├── docs/                     # 文档
+│   ├── ARCHITECTURE.md
+│   ├── PHASES.md
+│   ├── DATA-VIEWER-SPEC.md
+│   └── monitor_refactor_plan.md
+├── logs/                     # 日志
+│   └── YYYYMMDD.log          # 运行日志
+└── temp/                     # 临时文件
+    └── image_cache.json      # 图片缓存
+```
+
+---
+
+## 核心流程
+
+### 生9图流程
+```
+用户发送图片 → 监听服务缓存图片(10分钟) → 用户发送"作图" 
+    ↓
+触发 generate_images.py → 分析产品 → 生成9张营销图
+    ↓
+自动发送给用户
+```
+
+### 生视频流程（15秒长视频）
+```
+用户发送图片 → 监听服务缓存图片(10分钟) → 用户发送"生视频v2"
+    ↓
+触发 generate_video_v3.py
+    ↓
+[步骤] 生成1张场景图（首帧） → 发送场景图
+    ↓
+[步骤] 生成广告词 → 分段实时发送（3条消息）
+    ↓
+[步骤] 使用首帧生成视频1（带语音朗读）→ 生成后立即发送
+    ↓
+[步骤] 接收视频1，截取最后一帧，作为新首帧生成视频2（带语音朗读）  → 生成后立即发送
+    ↓
+[步骤] 接收视频2，截取最后一帧，作为新首帧生成视频3（带语音朗读）  → 生成后立即发送
+    ↓
+[步骤] 合并视频1&2&3 → 发送合成版
+```
+
+---
+
+## 重试机制说明
+
+### Flash Image Provider（场景图生成）
+- **重试次数**: 5次
+- **等待时间**: 5s → 10s → 15s → 20s（指数退避）
+- **原因**: VPN不稳定，增加冗余时间
+
+### 场景图批量生成
+- **单图重试**: 5次
+- **图间延迟**: 3秒（防API限流）
+
+---
+
+## 监听服务日志说明
+
+改进后的 `monitor.py` 提供清晰的日志输出：
+
+```
+[2026-03-08 02:00:48] [Init] 项目根目录: C:\Users\etori\.openclaw\workspace\code\EcomAgent
+[2026-03-08 02:00:48] [Init] 日志文件: logs\gateway.log
+[2026-03-08 02:00:48] [Config] 加载配置: 2个触发器, 6个关键词
+[2026-03-08 02:00:48] [Cache] 加载缓存: 0个有效
+[2026-03-08 02:00:48] [Start] 监听服务启动
+[2026-03-08 02:00:48] [Start] 使用编码: utf-8
+[2026-03-08 02:00:48] [Start] 文件大小: 1234 bytes，从末尾开始监听
+[2026-03-08 02:00:48] [Start] 等待飞书消息...
+
+[2026-03-08 02:01:15] [Raw] Image saved: media/inbound/abc123.png for user ou_xxx...
+[2026-03-08 02:01:15] [Parse] 检测到图片: user=ou_xxx
+[2026-03-08 02:01:15] [Cache] ✓ 缓存图片: user=ou_xxx, path=media/inbound/abc123.png
+
+[2026-03-08 02:01:30] [Raw] Feishu[default] DM from ou_xxx: 作图
+[2026-03-08 02:01:30] [Parse] 检测到消息: user=ou_xxx, content='作图'
+[2026-03-08 02:01:30] [Trigger] ✓ 匹配触发词 'image': user=ou_xxx
+[2026-03-08 02:01:30] [Exec] 调用脚本: generate_images.py
+[2026-03-08 02:01:30] [Exec] 命令: python src/generate_images.py --image ...
+[2026-03-08 02:01:30] [Exec] ✓ 进程已启动: PID=12345
+[2026-03-08 02:01:30] [Cache] ✗ 清除缓存: user=ou_xxx
+[2026-03-08 02:01:30] [Trigger] ✓ 已触发并清除缓存: user=ou_xxx
+```
+
+**日志标签说明：**
+- `[Init]` - 初始化信息
+- `[Config]` - 配置加载
+- `[Cache]` - 缓存操作（✓ 设置/✗ 清除/过期）
+- `[Start]` - 服务启动
+- `[Raw]` - 原始日志行
+- `[Parse]` - 解析结果
+- `[Trigger]` - 触发词匹配
+- `[Exec]` - 脚本执行
+- `[Error]` - 错误信息
+- `[Heartbeat]` - 心跳（每30秒）
+
+---
+
+## 视频生成参数
+
+### 单视频版（generate_video.py）
+- **时长**: 5秒
+- **分辨率**: 720p
+- **比例**: 9:16（竖屏，适合抖音/小红书）
+- **比例约束**: Gemini 自动生成动态比例参照
+
+### V2版（generate_video_v2.py）
+- **单段时长**: 5秒
+- **总时长**: 15秒（3段合成）
+- **分辨率**: 480p/720p 可选
+- **比例**: 9:16（竖屏）
+- **语音**: 每段带独立语音朗读（5秒广告词）
+- **广告词**: 15秒完整文案，自动分段（每段约5秒）
+
+---
+
+## 提示词模板
+
+### 场景图提示词（V2）
+```
+Create a premium advertising product photography scene for: {product_desc}
+
+Scene Style: {style_name} - {scene_desc}
+Lighting: {light_desc}
+
+CRITICAL REQUIREMENTS:
+- Premium advertising aesthetic with world-class photography quality
+- Fixed 9:16 vertical aspect ratio composition optimized for mobile viewing
+- Subject positioned as the clear focal point commanding viewer attention
+- Clean, uncluttered composition with sophisticated depth of field
+- Professional color grading with cinematic tonal balance
+- No text, watermarks, or UI elements
+- Photorealistic rendering with meticulous attention to material textures
+```
+
+### 视频提示词（带比例约束）
+```
+CRITICAL PROPORTION CONSTRAINTS:
+- Analyze the product in the reference image and maintain its exact real-world proportions
+- Human hands, if shown interacting with the product, must be anatomically correct and proportionally realistic
+- The product should never appear unnaturally large or small relative to human scale
+- Maintain consistent perspective and depth throughout the video
+- NEVER create "tiny hands holding giant objects" or disproportionate scaling effects
+- The product and any human elements must coexist in believable, physically accurate scale
+```
+
+---
+
+## 故障排查
+
+### Server disconnected without sending a response
+- **原因**: Flash Image API 连接断开（VPN不稳定）
+- **解决**: 已添加5次重试机制，如仍失败请检查 VPN 稳定性
+
+### 视频生成失败
+- **检查**: Grok API Key 是否有效
+- **检查**: 输入图片格式是否支持（JPG/PNG）
+
+### 飞书消息未触发
 - **检查**: monitor.py 是否正常运行
 - **检查**: triggers.json 配置是否正确
 - **检查**: 图片缓存是否过期（默认10分钟）
 
-### 亚马逊/TikTok 抓取问题
-- **检查**: 虚拟网卡是否关闭（IP 被劫持会导致访问失败）
-- **检查**: 浏览器是否正常启动
-- **检查**: 翻页 URL 是否正确
-- **检查**: JSON 文件是否正确生成
+---
+
+## 智能选品模块（开发中）
+
+### 架构设计
+
+**三阶段异步流程：**
+
+```
+阶段1：数据抓取
+├─ A库（亚马逊热销数据）
+└─ B库（TikTok热销数据）
+
+阶段2：智能筛选
+├─ 聚合去重（品名+规格）
+├─ 销量合并统计
+└─ C库（主库，标记爆品+货源状态）
+
+阶段3：货源对接
+├─ 1688货源搜索
+├─ 多商家列表（防断货）
+└─ 妙手ERP对接（草稿箱更新）
+```
+
+### 数据库设计
+
+| 库名 | 用途 | 关键字段 |
+|------|------|----------|
+| A库 | 亚马逊热销数据 | 商品ID、名称、规格、销量、价格、链接 |
+| B库 | TikTok热销数据 | 商品ID、名称、规格、销量、价格、链接 |
+| C库 | 主库（状态中心） | 商品ID、聚合销量、货源状态、1688链接列表、上架状态 |
+
+### 核心逻辑
+
+1. **重复商品聚合**：以【品名+规格】为唯一标识，合并A库+B库销量
+2. **爆品筛选**：A库销量高 + B库销量低 → 标记为"潜力爆品"
+3. **多货源策略**：1688搜索结果存为列表，避免单卖家断货风险
+4. **状态追踪**：C库记录货源链接、上架状态、最后更新时间
 
 ---
 
-## 📝 开发规范
+## 开发计划
+
+- [x] 亚马逊热销数据抓取模块
+- [x] TikTok热销数据抓取模块
+- [x] 数据库设计与实现
+- [x] Web UI 数据可视化
+- [ ] 商品聚合去重逻辑
+- [ ] 1688货源搜索模块
+- [ ] 妙手ERP对接模块
+- [ ] 视频生成添加更多时长选项（3秒/10秒）
+- [ ] 支持自定义场景风格模板
+- [ ] 添加视频背景音乐选项
+- [ ] 支持批量产品处理
+
+---
+
+## 开发规范
 
 ### 代码注释
 - **代码注释**：小秘密注释（如加密逻辑、特殊处理）写在代码顶部或关键函数前，**不写在文档里**
@@ -250,66 +502,115 @@ EcomAgent/
 ### 参数传递规范
 - **统一参数格式**：所有功能脚本接收 `--image` 和 `--user_id` 参数
 - **可选参数**：根据需要添加 `--duration` / `--resolution` / `--provider` 等参数
-- **输出格式**：统一输出 `[RESULT_MARKER]` 格式的 JSON 结果（如 `[GENERATION_RESULT]` / `[VIDEO_RESULT]`）
+- **输出格式**：统一输出 `[RESULT_MARKER]` 格式的 JSON 结果（如 `[GENERATION_RESULT]` / `[VIDEO_RESULT]` / `[TEST_MODE_RESULT]`）
 
 ---
 
-## 📖 相关文档
+## OpenClaw 技能配置（软链接）
 
-- **技能文档**：`skills/amazon-fetcher/SKILL.md` / `skills/tiktok-fetcher/SKILL.md`
-- **OpenClaw 文档**：`docs/` 目录
+### 为什么需要软链接？
 
----
+OpenClaw 的技能默认从全局目录 `/opt/homebrew/lib/node_modules/openclaw/skills/` 加载，但：
+- 全局目录是 npm 包的一部分，升级时会被覆盖
+- 你的自定义技能应该用 Git 管理，放在项目里
 
-## ⚙️ OpenClaw Skill 配置说明（进阶）
+**解决方案：软链接** - 让 OpenClaw 从项目目录读取技能。
 
-### 技能目录结构
+### 设置步骤
 
-```
-EcomAgent/
-├── skills/                   # OpenClaw 技能目录（核心）
-│   ├── amazon-fetcher/       # 亚马逊抓取技能
-│   │   └── SKILL.md          # 亚马逊抓取技能文档
-│   └── tiktok-fetcher/       # TikTok 抓取技能
-│       └── SKILL.md          # TikTok 抓取技能文档
-```
+1. **确保技能放在项目目录**
+   ```
+   /Users/etori/.openclaw/workspace/code/EcomAgent/skills/
+   └── amazon-fetcher/
+       └── SKILL.md
+   ```
 
-### 软连接配置（重要！）
+2. **创建软链接**
+   ```bash
+   # 进入 OpenClaw 全局技能目录
+   cd /opt/homebrew/lib/node_modules/openclaw/skills/
+   
+   # 创建软链接（指向项目技能目录）
+   ln -sf /Users/etori/.openclaw/workspace/code/EcomAgent/skills/amazon-fetcher amazon-fetcher
+   ```
 
-**项目技能通过软连接加入 OpenClaw：**
+3. **验证软链接**
+   ```bash
+   ls -la amazon-fetcher
+   # 应该显示：lrwxr-xr-x ... amazon-fetcher -> /Users/etori/.openclaw/workspace/code/EcomAgent/skills/amazon-fetcher
+   ```
+
+4. **测试技能**
+   ```bash
+   # 在 OpenClaw 中调用技能
+   /fetch_amazon_bestsellers
+   ```
+
+### 重装系统/换环境时的恢复步骤
 
 ```bash
-# Windows PowerShell（以管理员身份运行）
-# 创建软连接，将项目技能链接到 OpenClaw 工作区技能目录
-New-Item -ItemType SymbolicLink -Path "C:\Users\etori\.openclaw\workspace\skills\amazon-fetcher" -Target "C:\Users\etori\.openclaw\workspace\code\EcomAgent\skills\amazon-fetcher"
-New-Item -ItemType SymbolicLink -Path "C:\Users\etori\.openclaw\workspace\skills\tiktok-fetcher" -Target "C:\Users\etori\.openclaw\workspace\code\EcomAgent\skills\tiktok-fetcher"
+# 1. 克隆项目
+git clone https://github.com/your-repo/EcomAgent.git
+cd EcomAgent
+
+# 2. 设置技能目录
+mkdir -p /Users/etori/.openclaw/workspace/code/EcomAgent/skills
+cp -r skills/* /Users/etori/.openclaw/workspace/code/EcomAgent/skills/
+
+# 3. 重新创建软链接
+cd /opt/homebrew/lib/node_modules/openclaw/skills/
+ln -sf /Users/etori/.openclaw/workspace/code/EcomAgent/skills/amazon-fetcher amazon-fetcher
 ```
-
-**或者使用 mklink 命令（CMD）：**
-```cmd
-cd /d "C:\Users\Etroi\.openclaw\workspace\skills"
-mklink /D amazon-fetcher "..\code\EcomAgent\skills\amazon-fetcher"
-mklink /D tiktok-fetcher "..\code\EcomAgent\skills\tiktok-fetcher"
-```
-
-### 为什么使用软连接？（Git 管理技能的核心优势）
-
-- **统一管理**：技能版本由 Git 管理，便于团队协作和部署
-- **避免重复**：不需要在多个地方维护技能文件
-- **易于更新**：修改项目技能后，OpenClaw 立即生效（无需重启 Gateway）
-- **跨平台兼容**：使用环境变量 `%USERPROFILE%` 动态获取用户名，适配不同电脑配置
 
 ### 注意事项
 
-- **软连接必须以管理员权限创建**
-- **如果项目移动位置，需要重新创建软连接**
-- **技能文件修改后，OpenClaw 会自动读取最新版本**
-- **软连接指向的是 `skills/` 目录下的子目录（如 `amazon-fetcher`），不是整个项目**
-- **命令使用 `%USERPROFILE%` 环境变量，适配不同用户名的电脑**
+- ✅ 软链接是安全的，OpenClaw 升级不会删除它
+- ✅ 用 Git 管理技能目录，方便团队协作
+- ✅ 如果技能目录名不同，软链接名要和目录名一致
 
 ---
 
-## 🤝 社区支持
+## 智能选品模块 - 数据库设计
 
-- **OpenClaw 文档**：https://docs.openclaw.ai
-- **OpenClaw 社区**：https://discord.com/invite/clawd
+### 数据库方案
+- **类型**: SQLite（轻量级，单文件数据库）
+- **位置**: `data/amazon.db`
+- **跨平台**: ✅ 支持 Windows/macOS/Linux
+
+### 表结构
+
+#### `products` - 商品基础信息表
+| 字段 | 类型 | 说明 |
+|:---|:---|:---|
+| `id` | INTEGER PRIMARY KEY | 主键 |
+| `name` | TEXT NOT NULL UNIQUE | 商品名称（唯一） |
+| `asin` | TEXT | 亚马逊商品ID |
+| `platform` | TEXT DEFAULT 'amazon' | 平台标识 |
+| `created_at` | DATETIME | 创建时间 |
+
+#### `daily_sales` - 每日销量快照表
+| 字段 | 类型 | 说明 |
+|:---|:---|:---|
+| `id` | INTEGER PRIMARY KEY | 主键 |
+| `product_id` | INTEGER NOT NULL | 商品ID（外键） |
+| `date` | DATE NOT NULL | 日期（YYYY-MM-DD） |
+| `sales` | INTEGER | 当日销量 |
+| `price` | REAL | 价格 |
+| `rank` | INTEGER | 排名 |
+| `created_at` | DATETIME | 创建时间 |
+
+### 索引
+- `idx_sales` - 按销量排序
+- `idx_platform` - 按平台过滤
+- `idx_date` - 按日期查询
+- `idx_product_date` - 按商品+日期复合查询
+
+### 爆品判断逻辑（后续实现）
+- **销量趋势**: 7天销量增速
+- **波动率**: 销量标准差/平均值
+- **综合评分**: 增速权重 70% + 稳定性权重 30%
+
+### 自动化计划
+- **频率**: 每天凌晨 2:00
+- **数据量**: Top200 商品
+- **存储**: 每日快照，长期积累
