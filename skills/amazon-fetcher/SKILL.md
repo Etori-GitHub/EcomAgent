@@ -4,7 +4,7 @@ description: 抓取亚马逊热销榜单数据。使用 Python 脚本抓取数�
 ---
 # 亚马逊热销榜单抓取
 
-**当前版本支持抓取 6 个主要分类的前 2 页数据，共 600 个商品。**
+**当前版本支持抓取所有 40 个分类的前 2 页数据，每个分类约 100 个商品。**
 
 专门用于抓取亚马逊热销榜单数据，使用 Python 脚本抓取并提取各分类的商品信息。**数据保存到 JSON 文件**！
 
@@ -48,8 +48,8 @@ playwright install chromium
 ### 2. 运行抓取脚本
 
 ```bash
-# 抓取 6 个主要分类的前2页（共600个商品）
-python code/EcomAgent/skills/amazon-fetcher/src/fetch_amazon_main_categories.py
+# 抓取所有 40 个分类的前2页（每个分类约100个商品）
+python code/EcomAgent/skills/amazon-fetcher/src/fetch_amazon_all_categories.py
 ```
 
 ### 3. 数据自动保存
@@ -63,8 +63,9 @@ python code/EcomAgent/skills/amazon-fetcher/src/fetch_amazon_main_categories.py
 - 脚本使用浏览器自动化（Playwright）模拟真实用户操作
 - 已添加随机等待机制，避免触发反爬
 - 建议在非高峰时段运行
-- 当前版本支持 6 个主要分类，每分类 2 页（100 个商品）
+- 当前版本支持 40 个分类，每分类 2 页（约 100 个商品）
 - 数据保存在 `output/scraping/` 目录，便于统一管理
+- 分类列表从首页动态提取，无需手动维护
 
 ## 开发文档
 
@@ -79,7 +80,9 @@ amazon-fetcher/
 ├── docs/
 │   └── AMAZON-BESTSELLER-SCRAPER.md  # 开发文档
 ├── src/
-│   └── fetch_amazon_main_categories.py  # 抓取 6 个主要分类（推荐使用）
+│   ├── fetch_amazon_all_categories.py  # 抓取所有分类（推荐使用）
+│   ├── fetch_amazon_main_categories.py # 抓取 6 个主分类（旧版）
+│   └── test_extract_categories.py      # 测试脚本
 └── requirements.txt
 ```
 
