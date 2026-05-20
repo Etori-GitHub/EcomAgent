@@ -19,6 +19,16 @@ export async function getStats(): Promise<StatsResponse> {
   return request<StatsResponse>(`${API_BASE}/stats`);
 }
 
+// 分类列表
+export async function getCategories(platform?: string): Promise<{
+  amazon: string[];
+  tiktok: string[];
+  all: Array<{ platform: string; category: string }>;
+}> {
+  const query = platform ? `?platform=${platform}` : '';
+  return request(`${API_BASE}/categories${query}`);
+}
+
 // 商品主库
 export async function getProducts(params: {
   page?: number;
@@ -26,6 +36,8 @@ export async function getProducts(params: {
   search?: string;
   platform?: string;
   category?: string;
+  sort_by?: string;
+  sort_order?: string;
 }): Promise<PaginatedResponse<Product> & { stats: Record<string, number> }> {
   const query = new URLSearchParams(
     Object.entries(params)
@@ -33,6 +45,14 @@ export async function getProducts(params: {
       .map(([k, v]) => [k, String(v)])
   );
   return request(`${API_BASE}/product-master?${query}`);
+}
+
+// 销售趋势小图
+export async function getSalesTrend(ecomCode: string, days: number = 7): Promise<{
+  ecom_code: string;
+  trend: Array<{ date: string; value: number | null }>;
+}> {
+  return request(`${API_BASE}/sales-trend/${ecomCode}?days=${days}`);
 }
 
 // 追踪商品

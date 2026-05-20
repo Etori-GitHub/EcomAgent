@@ -175,13 +175,54 @@ async def get_stats_endpoint():
     return StatsResponse(**stats)
 
 
+@app.get("/api/categories")
+async def get_categories(platform: Optional[str] = None):
+    """获取分类列表"""
+    categories = set()
+    
+    # Amazon 分类
+    amazon_db = DATA_DIR / "amazon.db"
+    if amazon_db.exists() and (platform is None or platform == "amazon"):
+        conn = get_db_connection(amazon_db)
+        cursor = conn.cursor()
+        cursor.execute("SELECT DISTINCT category FROM products WHERE category IS NOT NULL")
+        for row in cursor.fetchall():
+            if row[0]:
+                categories.add(("amazon", row[0]))
+        conn.close()
+    
+    # TikTok 分类
+    tiktok_db = DATA_DIR / "tiktok.db"
+    if tiktok_db.exists() and (platform is None or platform == "tiktok"):
+        conn = get_db_connection(tiktok_db)
+        cursor = conn.cursor()
+        cursor.execute("SELECT DISTINCT category FROM tiktok_products WHERE category IS NOT NULL")
+        for row in cursor.fetchall():
+            if row[0]:
+                categories.add(("tiktok", row[0]))
+        conn.close()
+    
+    # 按平台分组
+    result = {"amazon": [], "tiktok": [], "all": []}
+    for p, c in categories:
+        result[p].append(c)
+        result["all"].append({"platform": p, "category": c})
+    
+    result["amazon"].sort()
+    result["tiktok"].sort()
+    
+    return result
+
+
 @app.get("/api/product-master")
 async def get_product_master(
     page: int = Query(1, ge=1),
     limit: int = Query(50, ge=1, le=200),
     search: Optional[str] = None,
     platform: Optional[str] = None,
-    category: Optional[str] = None
+    category: Optional[str] = None,
+    sort_by: Optional[str] = Query(None, description="排序字段: price, rating, sales_count"),
+    sort_order: Optional[str] = Query("desc", description="排序方向: asc, desc")
 ):
     """获取商品主库列表"""
     db_path = DATA_DIR / "product_master.db"
@@ -191,7 +232,7 @@ async def get_product_master(
     conn = get_db_connection(db_path)
     cursor = conn.cursor()
 
-    # 构建查询
+    # 构建查询 - 不分页，先获取所有数据
     base_query = "SELECT * FROM product_master WHERE 1=1"
     count_query = "SELECT COUNT(*) FROM product_master WHERE 1=1"
     params = []
@@ -211,11 +252,7 @@ async def get_product_master(
         count_query += " AND category LIKE ?"
         params.append(f"%{category}%")
 
-    # 分页
-    offset = (page - 1) * limit
-    base_query += f" ORDER BY id DESC LIMIT {limit} OFFSET {offset}"
-
-    # 执行查询
+    # 执行查询 - 获取所有数据
     cursor.execute(base_query, params)
     rows = cursor.fetchall()
 
@@ -245,6 +282,7 @@ async def get_product_master(
     for product in products:
         product['price'] = None
         product['rating'] = None
+        product['sales_count'] = None
         product['last_updated_at'] = product.get('last_updated_at')
 
         if product['platform'] == 'amazon' and amazon_db_path.exists():
@@ -252,7 +290,7 @@ async def get_product_master(
                 amazon_conn = get_db_connection(amazon_db_path)
                 amazon_cursor = amazon_conn.cursor()
                 amazon_cursor.execute("""
-                    SELECT ds.price, ds.rating, ds.date
+                    SELECT ds.price, ds.rating, ds.date, ds.sales_count, p.local_image_path
                     FROM products p
                     LEFT JOIN daily_sales ds ON p.id = ds.product_id
                         AND ds.date = (SELECT MAX(date) FROM daily_sales WHERE product_id = p.id)
@@ -263,6 +301,8 @@ async def get_product_master(
                 if result:
                     product['price'] = result['price']
                     product['rating'] = result['rating']
+                    product['sales_count'] = result['sales_count']
+                    product['local_image_path'] = result['local_image_path']
                     if result['date']:
                         product['last_updated_at'] = result['date']
                 amazon_conn.close()
@@ -274,7 +314,7 @@ async def get_product_master(
                 tiktok_conn = get_db_connection(tiktok_db_path)
                 tiktok_cursor = tiktok_conn.cursor()
                 tiktok_cursor.execute("""
-                    SELECT ds.price, ds.rating, ds.date
+                    SELECT ds.price, ds.rating, ds.date, ds.sales_count, p.local_image_path
                     FROM tiktok_products p
                     LEFT JOIN tiktok_daily_sales ds ON p.id = ds.product_id
                         AND ds.date = (SELECT MAX(date) FROM tiktok_daily_sales WHERE product_id = p.id)
@@ -285,18 +325,32 @@ async def get_product_master(
                 if result:
                     product['price'] = result['price']
                     product['rating'] = result['rating']
+                    product['sales_count'] = result['sales_count']
+                    product['local_image_path'] = result['local_image_path']
                     if result['date']:
                         product['last_updated_at'] = result['date']
                 tiktok_conn.close()
             except:
                 pass
+    
+    # 排序
+    if sort_by in ['price', 'rating', 'sales_count']:
+        reverse = sort_order == 'desc'
+        # 处理 None 值，排序时放到最后
+        products.sort(
+            key=lambda x: (x.get(sort_by) is None, x.get(sort_by) or 0),
+            reverse=reverse
+        )
 
     conn.close()
 
+    # 分页 - 排序后再分页
     pages = (total + limit - 1) // limit
+    offset = (page - 1) * limit
+    paginated_products = products[offset:offset + limit]
 
     return {
-        "data": products,
+        "data": paginated_products,
         "stats": {
             "total": total_count,
             "amazon": amazon_count,
@@ -333,7 +387,7 @@ async def get_amazon_products(
     base_query = """
         SELECT
             p.id, p.asin, p.name, p.short_name, p.search_keyword, p.product_url,
-            p.category, p.subcategory, p.platform,
+            p.category, p.subcategory, p.platform, p.image_url, p.local_image_path,
             ds.price, ds.rating, ds.rating_count, ds.rank, ds.date
         FROM products p
         LEFT JOIN daily_sales ds ON p.id = ds.product_id
@@ -466,7 +520,7 @@ async def get_tiktok_products(
     base_query = """
         SELECT
             p.id, p.name, p.short_name, p.search_keyword, p.product_url,
-            p.category, p.platform, p.tiktokshop_id,
+            p.category, p.platform, p.tiktokshop_id, p.image_url, p.local_image_path,
             ds.price, ds.original_price, ds.rating, ds.sales_count, ds.date
         FROM tiktok_products p
         LEFT JOIN tiktok_daily_sales ds ON p.id = ds.product_id
@@ -581,9 +635,13 @@ async def get_tiktok_sales(
 @app.get("/api/product-trend/{ecom_code}")
 async def get_product_trend(
     ecom_code: str,
-    days: int = Query(7, ge=1, le=90)
+    days: int = Query(7, ge=1, le=90),
+    start_date: Optional[str] = Query(None, description="自定义开始日期 YYYY-MM-DD"),
+    end_date: Optional[str] = Query(None, description="自定义结束日期 YYYY-MM-DD"),
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100)
 ):
-    """获取商品趋势数据"""
+    """获取商品趋势数据（图表+详细表格）"""
     from datetime import timedelta
     
     master_db = DATA_DIR / "product_master.db"
@@ -605,8 +663,169 @@ async def get_product_trend(
     product_id = product['id']
     
     # 计算日期范围
+    if start_date and end_date:
+        # 自定义时间区间
+        query_start = start_date
+        query_end = end_date
+    else:
+        # 快速选择
+        query_end = datetime.now().strftime("%Y-%m-%d")
+        query_start = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
+    
+    trend = []
+    details = []
+    total_records = 0
+    
+    if platform == 'amazon':
+        amazon_db = DATA_DIR / "amazon.db"
+        if amazon_db.exists():
+            aconn = get_db_connection(amazon_db)
+            acursor = aconn.cursor()
+            
+            # 查询平台产品ID
+            acursor.execute("SELECT id, name, search_keyword FROM products WHERE master_id = ?", (product_id,))
+            p_row = acursor.fetchone()
+            if p_row:
+                platform_product_id = p_row['id']
+                platform_name = p_row['name']
+                platform_keyword = p_row['search_keyword']
+                
+                # 获取趋势数据（图表用）
+                acursor.execute("""
+                    SELECT date, price, rating, rank, sales_count
+                    FROM daily_sales
+                    WHERE product_id = ? AND date >= ? AND date <= ?
+                    ORDER BY date ASC
+                """, (platform_product_id, query_start, query_end))
+                for r in acursor.fetchall():
+                    trend.append(dict(r))
+                
+                # 获取详细数据总数
+                acursor.execute("""
+                    SELECT COUNT(*) FROM daily_sales
+                    WHERE product_id = ? AND date >= ? AND date <= ?
+                """, (platform_product_id, query_start, query_end))
+                total_records = acursor.fetchone()[0]
+                
+                # 获取详细数据（分页）
+                offset = (page - 1) * limit
+                acursor.execute("""
+                    SELECT date, timestamp, price, rating, rank, sales_count
+                    FROM daily_sales
+                    WHERE product_id = ? AND date >= ? AND date <= ?
+                    ORDER BY date DESC
+                    LIMIT ? OFFSET ?
+                """, (platform_product_id, query_start, query_end, limit, offset))
+                for r in acursor.fetchall():
+                    record = dict(r)
+                    record['short_name'] = product.get('short_name')
+                    record['search_keyword'] = platform_keyword
+                    record['events'] = ''  # 暂不支持事件
+                    details.append(record)
+            
+            aconn.close()
+    
+    elif platform == 'tiktok':
+        tiktok_db = DATA_DIR / "tiktok.db"
+        if tiktok_db.exists():
+            tconn = get_db_connection(tiktok_db)
+            tcursor = tconn.cursor()
+            
+            # 查询平台产品ID
+            tcursor.execute("SELECT id, name, search_keyword FROM tiktok_products WHERE master_id = ?", (product_id,))
+            p_row = tcursor.fetchone()
+            if p_row:
+                platform_product_id = p_row['id']
+                platform_name = p_row['name']
+                platform_keyword = p_row['search_keyword']
+                
+                # 获取趋势数据（图表用）
+                tcursor.execute("""
+                    SELECT date, price, rating, sales_count
+                    FROM tiktok_daily_sales
+                    WHERE product_id = ? AND date >= ? AND date <= ?
+                    ORDER BY date ASC
+                """, (platform_product_id, query_start, query_end))
+                for r in tcursor.fetchall():
+                    trend.append({
+                        'date': r['date'],
+                        'price': r['price'],
+                        'rating': r['rating'],
+                        'rank': None,
+                        'sales_count': r['sales_count']
+                    })
+                
+                # 获取详细数据总数
+                tcursor.execute("""
+                    SELECT COUNT(*) FROM tiktok_daily_sales
+                    WHERE product_id = ? AND date >= ? AND date <= ?
+                """, (platform_product_id, query_start, query_end))
+                total_records = tcursor.fetchone()[0]
+                
+                # 获取详细数据（分页）
+                offset = (page - 1) * limit
+                tcursor.execute("""
+                    SELECT date, timestamp, price, rating, sales_count
+                    FROM tiktok_daily_sales
+                    WHERE product_id = ? AND date >= ? AND date <= ?
+                    ORDER BY date DESC
+                    LIMIT ? OFFSET ?
+                """, (platform_product_id, query_start, query_end, limit, offset))
+                for r in tcursor.fetchall():
+                    record = dict(r)
+                    record['short_name'] = product.get('short_name')
+                    record['search_keyword'] = platform_keyword
+                    record['rank'] = None
+                    record['events'] = ''  # 暂不支持事件
+                    details.append(record)
+            
+            tconn.close()
+    
+    conn.close()
+    
+    pages = (total_records + limit - 1) // limit if total_records > 0 else 1
+    
+    return {
+        "product": product,
+        "trend": trend,
+        "details": details,
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total": total_records,
+            "pages": pages
+        },
+        "date_range": {
+            "start": query_start,
+            "end": query_end
+        }
+    }
+
+
+@app.get("/api/sales-trend/{ecom_code}")
+async def get_sales_trend_mini(ecom_code: str, days: int = Query(7, ge=1, le=30)):
+    """获取商品销售趋势小图数据"""
+    from datetime import timedelta
+    
+    master_db = DATA_DIR / "product_master.db"
+    if not master_db.exists():
+        raise HTTPException(status_code=404, detail="Product master database not found")
+    
+    conn = get_db_connection(master_db)
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT id, platform FROM product_master WHERE ecom_code = ?", (ecom_code,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    master_id = row['id']
+    platform = row['platform']
+    
+    # 计算日期范围
     end_date = datetime.now().strftime("%Y-%m-%d")
-    start_date = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
+    start_date = (datetime.now() - timedelta(days=days-1)).strftime("%Y-%m-%d")
     
     trend = []
     
@@ -616,13 +835,18 @@ async def get_product_trend(
             aconn = get_db_connection(amazon_db)
             acursor = aconn.cursor()
             acursor.execute("""
-                SELECT date, price, rating, rank
-                FROM daily_sales
-                WHERE product_id = ? AND date >= ? AND date <= ?
-                ORDER BY date DESC
-            """, (product_id, start_date, end_date))
-            for r in acursor.fetchall():
-                trend.append(dict(r))
+                SELECT p.id FROM products p WHERE p.master_id = ?
+            """, (master_id,))
+            p_row = acursor.fetchone()
+            if p_row:
+                acursor.execute("""
+                    SELECT date, sales_count
+                    FROM daily_sales
+                    WHERE product_id = ? AND date >= ? AND date <= ?
+                    ORDER BY date ASC
+                """, (p_row['id'], start_date, end_date))
+                for r in acursor.fetchall():
+                    trend.append({"date": r['date'], "value": r['sales_count']})
             aconn.close()
     
     elif platform == 'tiktok':
@@ -631,26 +855,22 @@ async def get_product_trend(
             tconn = get_db_connection(tiktok_db)
             tcursor = tconn.cursor()
             tcursor.execute("""
-                SELECT date, price, rating
-                FROM tiktok_daily_sales
-                WHERE product_id = ? AND date >= ? AND date <= ?
-                ORDER BY date DESC
-            """, (product_id, start_date, end_date))
-            for r in tcursor.fetchall():
-                trend.append({
-                    'date': r['date'],
-                    'price': r['price'],
-                    'rating': r['rating'],
-                    'rank': None
-                })
+                SELECT p.id FROM tiktok_products p WHERE p.master_id = ?
+            """, (master_id,))
+            p_row = tcursor.fetchone()
+            if p_row:
+                tcursor.execute("""
+                    SELECT date, sales_count
+                    FROM tiktok_daily_sales
+                    WHERE product_id = ? AND date >= ? AND date <= ?
+                    ORDER BY date ASC
+                """, (p_row['id'], start_date, end_date))
+                for r in tcursor.fetchall():
+                    trend.append({"date": r['date'], "value": r['sales_count']})
             tconn.close()
     
     conn.close()
-    
-    return {
-        "product": product,
-        "trend": trend
-    }
+    return {"ecom_code": ecom_code, "trend": trend}
 
 
 @app.get("/api/amazon/top-by-category")
@@ -1183,6 +1403,11 @@ def run_server(host: str = "0.0.0.0", port: int = 8000):
 
     # 挂载静态文件 - 根目录(用于 index.html 等)
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+    
+    # 挂载图片目录 - 用于商品图片访问
+    images_dir = DATA_DIR / "images"
+    if images_dir.exists():
+        app.mount("/images", StaticFiles(directory=str(images_dir)), name="images")
 
     print(f"\n{'='*60}")
     print(f"EcomAgent Data Viewer")

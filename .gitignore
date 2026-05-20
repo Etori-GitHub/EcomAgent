@@ -27,6 +27,10 @@ output/scraping/*.json
 # Test output
 test/test_output/*
 !test/test_output/.gitkeep
+test/index.html
+
+# Skills old files
+skills/*/src/old/
 
 # Temp files
 temp/

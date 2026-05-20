@@ -7,7 +7,7 @@ TikTok Shop 热销榜单抓取脚本
 功能：
 1. 从首页提取类目列表（使用 /shop/c/ 过滤）
 2. 点击"查看更多"按钮加载商品
-3. 提取商品数据（名称、评分、销量、价格等）
+3. 提取商品数据（名称、评分、销量、价格、图片等）
 4. 保存到 JSON 文件
 """
 
@@ -193,6 +193,10 @@ def fetch_category_products_from_page(page, category_name):
                                 }
                             }
                             
+                            // 提取图片 URL
+                            const imgEl = container.querySelector('img');
+                            const imageUrl = imgEl?.src || '';
+                            
                             products.push({
                                 name: name,
                                 rating: rating,
@@ -201,6 +205,7 @@ def fetch_category_products_from_page(page, category_name):
                                 original_price: originalPrice,
                                 tiktokshop_id: tiktokshop_id,
                                 product_url: product_url,
+                                image_url: imageUrl,
                                 rank: products.length + 1  // 按抓取顺序排名
                             });
                             
@@ -210,6 +215,7 @@ def fetch_category_products_from_page(page, category_name):
                                 console.log('    Price: $' + price + ', Original: $' + originalPrice);
                                 console.log('    TikTokShop ID: ' + tiktokshop_id);
                                 console.log('    URL: ' + product_url);
+                                console.log('    Image: ' + imageUrl.substring(0, 50));
                             }
                             
                             break; // 找到商品容器，跳出循环
@@ -278,6 +284,10 @@ def fetch_and_save_category(category, page):
         if tiktokshop_id and tiktokshop_id not in seen_ids:
             seen_ids.add(tiktokshop_id)
             unique_products.append(product)
+            # 去重后只保留前 20 个
+            if len(unique_products) >= 20:
+                print(f"[INFO] 已达到 20 个商品，停止处理")
+                break
         elif tiktokshop_id:
             duplicates += 1
     
@@ -382,9 +392,10 @@ def fetch_all_categories():
         print(f"[OK] 类目列表已保存到：{categories_file}")
         
         # 抓取每个分类（复用同一个 page 和 browser）
-        for i, category in enumerate(categories):
+        # 测试模式：只抓第一个分类
+        for i, category in enumerate(categories[:1]):
             fetch_and_save_category(category, page)
-            if i < len(categories) - 1:
+            if i < len(categories[:1]) - 1:
                 wait_ms = random_wait(5000, 10000)
                 print(f"\n[INFO] 等待 {wait_ms}ms 后开始下一个分类...")
                 import time
@@ -392,7 +403,7 @@ def fetch_all_categories():
         
         browser.close()
     
-    print(f"\n[OK] 所有分类抓取完成！")
+    print(f"\n[OK] 抓取完成！")
 
 
 if __name__ == "__main__":

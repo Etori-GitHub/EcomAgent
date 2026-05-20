@@ -31,9 +31,12 @@ export interface Product {
   category?: string;
   price?: number;
   rating?: number;
+  sales_count?: number;
   product_url?: string;
   last_updated_at?: string;
   tiktokshop_id?: string;
+  image_url?: string;
+  local_image_path?: string;
 }
 
 export interface PaginatedResponse<T> {
@@ -72,7 +75,8 @@ export type PageName =
   | 'today-top' 
   | 'raw-data' 
   | 'export' 
-  | 'settings';
+  | 'settings'
+  | 'product-trend';
 
 export interface AppState {
   currentPage: PageName;

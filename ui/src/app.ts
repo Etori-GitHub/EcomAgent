@@ -11,6 +11,7 @@ import './pages/raw-data';
 import './pages/cross-platform';
 import './pages/export';
 import './pages/product-trend';
+import './pages/product-trend-page';
 
 // 全局状态
 const _listeners: Set<(page: PageName) => void> = new Set();
@@ -28,16 +29,35 @@ window.ecomagentOnPageChange = (callback: (page: PageName) => void) => {
   _listeners.add(callback);
 };
 
+// 趋势页面跳转（保存来源状态）
+window.ecomagentOpenTrend = (ecomCode: string, fromPage: string = 'product-master') => {
+  // 保存来源信息
+  sessionStorage.setItem('trend-source-page', fromPage);
+  sessionStorage.setItem('trend-source-state', JSON.stringify({
+    page: _currentPage,
+    scrollY: window.scrollY
+  }));
+  // 跳转到趋势页面
+  _currentPage = 'product-trend' as PageName;
+  // 存储商品编码
+  sessionStorage.setItem('trend-ecom-code', ecomCode);
+  _listeners.forEach(fn => fn('product-trend' as PageName));
+};
+
 @customElement('ecomagent-app')
 export class EcomagentApp extends LitElement {
   static styles = css`:host { display: block; min-height: 100vh; }`;
 
   @state() private _page: PageName = _currentPage;
+  @state() private _trendCode = '';
 
   constructor() {
     super();
     _listeners.add((page) => {
       this._page = page;
+      if (page === 'product-trend') {
+        this._trendCode = sessionStorage.getItem('trend-ecom-code') || '';
+      }
       this.requestUpdate();
     });
   }
@@ -49,6 +69,12 @@ export class EcomagentApp extends LitElement {
   }
 
   private _renderPage() {
+    // 趋势页面独立渲染（不在布局内）
+    if (this._page === 'product-trend') {
+      return html`<ea-product-trend-page ecomCode=${this._trendCode}></ea-product-trend-page>`;
+    }
+
+    // 其他页面在布局内
     switch (this._page) {
       case 'dashboard': return html`<ea-dashboard></ea-dashboard>`;
       case 'settings': return html`<ea-settings></ea-settings>`;
@@ -63,10 +89,30 @@ export class EcomagentApp extends LitElement {
   }
 
   render() {
+    // 趋势页面在布局内渲染
+    if (this._page === 'product-trend') {
+      return html`
+        <ea-layout currentPage=${this._page}>
+          <div style="padding:24px">${this._renderPage()}</div>
+        </ea-layout>
+      `;
+    }
+
+    // 其他页面在布局内
     return html`
       <ea-layout currentPage=${this._page}>
         ${this._renderPage()}
       </ea-layout>
     `;
+  }
+}
+
+// 扩展 window 类型
+declare global {
+  interface Window {
+    ecomagentNavigate: (page: PageName) => void;
+    ecomagentGetCurrentPage: () => PageName;
+    ecomagentOnPageChange: (callback: (page: PageName) => void) => void;
+    ecomagentOpenTrend: (ecomCode: string, fromPage?: string) => void;
   }
 }

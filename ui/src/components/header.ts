@@ -11,6 +11,7 @@ const PAGE_TITLES: Record<PageName, { title: string; subtitle: string }> = {
   'raw-data': { title: '原始数据', subtitle: '查看和搜索原始数据' },
   'export': { title: '数据导出', subtitle: '导出数据为 CSV 或 Excel' },
   'settings': { title: '系统设置', subtitle: '配置数据源和其他选项' },
+  'product-trend': { title: '商品趋势', subtitle: '查看商品各维度数据随时间变化' },
 };
 
 @customElement('ea-header')
