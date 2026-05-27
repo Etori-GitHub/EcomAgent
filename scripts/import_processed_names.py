@@ -29,7 +29,7 @@ def import_processed_names():
         return False
     
     try:
-        with open(PROCESSED_FILE, "r", encoding="utf-8") as f:
+        with open(PROCESSED_FILE, "r", encoding="utf-8-sig") as f:
             data = json.load(f)
     except Exception as e:
         print(f"[ERROR] 读取文件失败: {e}")
@@ -64,16 +64,25 @@ def import_processed_names():
             skipped += 1
             continue
         
+        # 优先使用 ecom_code 匹配，其次尝试 platform_id
         cursor.execute("SELECT id FROM product_master WHERE ecom_code = ?", (ecom_code,))
         if not cursor.fetchone():
-            skipped += 1
-            continue
-        
-        cursor.execute("""
-            UPDATE product_master 
-            SET short_name = ?, last_updated_at = ?
-            WHERE ecom_code = ?
-        """, (short_name, datetime.now().isoformat(), ecom_code))
+            # 尝试 platform_id (ASIN)
+            cursor.execute("SELECT id FROM product_master WHERE platform_id = ?", (ecom_code,))
+            if not cursor.fetchone():
+                skipped += 1
+                continue
+            cursor.execute("""
+                UPDATE product_master 
+                SET short_name = ?, last_updated_at = ?
+                WHERE platform_id = ?
+            """, (short_name, datetime.now().isoformat(), ecom_code))
+        else:
+            cursor.execute("""
+                UPDATE product_master 
+                SET short_name = ?, last_updated_at = ?
+                WHERE ecom_code = ?
+            """, (short_name, datetime.now().isoformat(), ecom_code))
         
         updated += 1
         print(f"[OK] {ecom_code}: {short_name}")

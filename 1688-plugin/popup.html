@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcomAgent 1688货源采集</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      width: 320px;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f6f8fa;
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .header-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+    }
+    
+    .header-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .section {
+      background: white;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .section-title {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 8px;
+    }
+    
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #52c41a;
+    }
+    
+    .status-dot.offline {
+      background: #f5222d;
+    }
+    
+    .status-text {
+      font-size: 14px;
+      color: #333;
+    }
+    
+    .ecom-code {
+      font-size: 13px;
+      color: #667eea;
+      font-weight: 600;
+      word-break: break-all;
+    }
+    
+    .ecom-code.empty {
+      color: #999;
+      font-weight: normal;
+    }
+    
+    .input-group {
+      margin-top: 8px;
+    }
+    
+    .input-label {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+    
+    .input-field {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+    }
+    
+    .input-field:focus {
+      border-color: #667eea;
+    }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    
+    .stat-item {
+      text-align: center;
+      padding: 8px;
+      background: #f6f8fa;
+      border-radius: 6px;
+    }
+    
+    .stat-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .stat-label {
+      font-size: 11px;
+      color: #999;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: #666;
+      border: 1px solid #ddd;
+    }
+    
+    .btn-secondary:hover {
+      background: #f6f8fa;
+    }
+    
+    .footer {
+      font-size: 11px;
+      color: #999;
+      text-align: center;
+      margin-top: 12px;
+    }
+    
+    .footer a {
+      color: #667eea;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-icon">📦</div>
+    <div class="header-title">1688货源采集</div>
+  </div>
+  
+  <div class="section">
+    <div class="section-title">服务状态</div>
+    <div class="status">
+      <div class="status-dot" id="statusDot"></div>
+      <div class="status-text" id="statusText">检测中...</div>
+    </div>
+  </div>
+  
+  <div class="section">
+    <div class="section-title">关联商品</div>
+    <div class="ecom-code" id="ecomCode">未设置</div>
+    <div class="input-group">
+      <div class="input-label">手动设置商品编码</div>
+      <input type="text" class="input-field" id="ecomCodeInput" placeholder="ECAM000001">
+    </div>
+    <button class="btn btn-secondary" id="setEcomCode">设置</button>
+  </div>
+  
+  <div class="section">
+    <div class="section-title">采集统计</div>
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-value" id="collectedCount">0</div>
+        <div class="stat-label">已采集</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="pendingCount">0</div>
+        <div class="stat-label">待同步</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="syncBtn">同步到服务器</button>
+  </div>
+  
+  <div class="footer">
+    <a href="http://127.0.0.1:8000" target="_blank">EcomAgent</a> v1.0
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

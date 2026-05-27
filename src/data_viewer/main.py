@@ -5,7 +5,7 @@ EcomAgent Data Viewer - FastAPI 服务
 import sqlite3
 from pathlib import Path
 from datetime import datetime
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI, Query, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -1117,6 +1117,21 @@ async def get_tracked_products(ids: str = Query(..., description="商品编码�
     return {"products": products}
 
 
+# ==================== 1688 搜索 URL API ====================
+
+@app.get("/api/1688-search-url")
+async def get_1688_search_url(keyword: str = Query(..., description="搜索关键词")):
+    """生成 1688 搜索 URL（GBK 编码）"""
+    import urllib.parse
+    
+    # 将关键词编码为 GBK，然后转为 URL 编码
+    gbk_encoded = keyword.encode('gbk')
+    encoded_keyword = urllib.parse.quote(gbk_encoded, safe='')
+    
+    url = f"https://s.1688.com/selloffer/offer_search.htm?keywords={encoded_keyword}"
+    return {"url": url, "keyword": keyword}
+
+
 # ==================== 配置管理 API ====================
 
 CONFIG_DIR = BASE_DIR / "config"
@@ -1386,6 +1401,189 @@ async def backup_all_configs():
         "backups": backed_up,
         "timestamp": timestamp
     }
+
+
+# ==================== 货源采集 API ====================
+
+SOURCING_DB_PATH = DATA_DIR / "sourcing.db"
+
+def get_sourcing_db():
+    """获取货源数据库连接"""
+    conn = sqlite3.connect(SOURCING_DB_PATH)
+    conn.row_factory = sqlite3.Row
+    
+    # 创建表
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS sourcing_1688 (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ecom_code TEXT NOT NULL,
+            offer_id TEXT NOT NULL,
+            title TEXT,
+            price REAL,
+            min_order INTEGER DEFAULT 1,
+            shop_name TEXT,
+            shop_url TEXT,
+            product_url TEXT,
+            image_url TEXT,
+            collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(ecom_code, offer_id)
+        )
+    ''')
+    conn.commit()
+    return conn
+
+
+@app.post("/api/sourcing")
+async def add_sourcing(request: Request):
+    """添加货源记录"""
+    data = await request.json()
+    
+    ecom_code = data.get("ecom_code")
+    offer_id = data.get("offerId")
+    
+    if not ecom_code or not offer_id:
+        raise HTTPException(status_code=400, detail="缺少 ecom_code 或 offerId")
+    
+    conn = get_sourcing_db()
+    try:
+        conn.execute('''
+            INSERT OR REPLACE INTO sourcing_1688
+            (ecom_code, offer_id, title, price, min_order, shop_name, shop_url, product_url, image_url, collected_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            ecom_code,
+            offer_id,
+            data.get("title", "")[:200],
+            data.get("price", 0),
+            data.get("minOrder", 1),
+            data.get("shopName", "")[:100],
+            data.get("shopUrl", ""),
+            data.get("productUrl", ""),
+            data.get("image", ""),
+            data.get("collected_at", datetime.now().isoformat())
+        ))
+        conn.commit()
+        
+        return {"success": True, "ecom_code": ecom_code, "offer_id": offer_id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        conn.close()
+
+
+@app.get("/api/sourcing/list")
+async def list_sourcing(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    search: Optional[str] = None,
+    ecom_code: Optional[str] = None
+):
+    """获取货源列表（分页、搜索）"""
+    conn = get_sourcing_db()
+    try:
+        # 构建查询
+        base_query = "SELECT * FROM sourcing_1688 WHERE 1=1"
+        count_query = "SELECT COUNT(*) FROM sourcing_1688 WHERE 1=1"
+        params = []
+        
+        if search:
+            base_query += " AND (title LIKE ? OR shop_name LIKE ? OR offer_id LIKE ?)"
+            count_query += " AND (title LIKE ? OR shop_name LIKE ? OR offer_id LIKE ?)"
+            params.extend([f"%{search}%", f"%{search}%", f"%{search}%"])
+        
+        if ecom_code:
+            base_query += " AND ecom_code = ?"
+            count_query += " AND ecom_code = ?"
+            params.append(ecom_code)
+        
+        # 获取总数
+        cursor = conn.execute(count_query, params)
+        total = cursor.fetchone()[0]
+        
+        # 分页
+        offset = (page - 1) * limit
+        base_query += " ORDER BY collected_at DESC LIMIT ? OFFSET ?"
+        params.extend([limit, offset])
+        
+        cursor = conn.execute(base_query, params)
+        rows = cursor.fetchall()
+        
+        # 计算页数
+        pages = (total + limit - 1) // limit if limit > 0 else 0
+        
+        return {
+            "data": [dict(row) for row in rows],
+            "pagination": {
+                "page": page,
+                "limit": limit,
+                "total": total,
+                "pages": pages
+            }
+        }
+    finally:
+        conn.close()
+
+
+@app.get("/api/sourcing/stats")
+async def get_sourcing_stats():
+    """获取货源统计信息"""
+    conn = get_sourcing_db()
+    try:
+        # 总数
+        cursor = conn.execute("SELECT COUNT(*) FROM sourcing_1688")
+        total = cursor.fetchone()[0]
+        
+        # 关联商品数
+        cursor = conn.execute("SELECT COUNT(DISTINCT ecom_code) FROM sourcing_1688")
+        products_linked = cursor.fetchone()[0]
+        
+        # 今日采集数
+        cursor = conn.execute("SELECT COUNT(*) FROM sourcing_1688 WHERE date(collected_at) = date('now')")
+        today_count = cursor.fetchone()[0]
+        
+        # 最后更新时间
+        cursor = conn.execute("SELECT MAX(collected_at) FROM sourcing_1688")
+        last_updated = cursor.fetchone()[0]
+        
+        return {
+            "total": total,
+            "products_linked": products_linked,
+            "today_count": today_count,
+            "last_updated": last_updated
+        }
+    finally:
+        conn.close()
+
+
+@app.get("/api/sourcing/{ecom_code}")
+async def get_sourcing(ecom_code: str):
+    """获取商品关联的货源列表"""
+    conn = get_sourcing_db()
+    try:
+        cursor = conn.execute('''
+            SELECT * FROM sourcing_1688
+            WHERE ecom_code = ?
+            ORDER BY collected_at DESC
+        ''', (ecom_code,))
+        rows = cursor.fetchall()
+        return [dict(row) for row in rows]
+    finally:
+        conn.close()
+
+
+@app.delete("/api/sourcing/{ecom_code}/{offer_id}")
+async def delete_sourcing(ecom_code: str, offer_id: str):
+    """删除货源记录"""
+    conn = get_sourcing_db()
+    try:
+        conn.execute('''
+            DELETE FROM sourcing_1688
+            WHERE ecom_code = ? AND offer_id = ?
+        ''', (ecom_code, offer_id))
+        conn.commit()
+        return {"success": True}
+    finally:
+        conn.close()
 
 
 # ==================== 服务启动 ====================

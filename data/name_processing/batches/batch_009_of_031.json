@@ -1,0 +1,256 @@
+{
+  "batch_num": 9,
+  "total_batches": 31,
+  "items": [
+    {
+      "platform": "amazon",
+      "id": "B07P6Y7954",
+      "name": "Apple iPhone XR"
+    },
+    {
+      "platform": "amazon",
+      "id": "B07H6QCGGZ",
+      "name": "Apple Airpods In-Ear Bluetooth Wireless Headset (Renewed)"
+    },
+    {
+      "platform": "amazon",
+      "id": "B09S6TSCJ3",
+      "name": "PlayStation Sony DualSense Wireless Controller 5"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0C544TBQM",
+      "name": ""
+    },
+    {
+      "platform": "amazon",
+      "id": "B0C21QMW48",
+      "name": ""
+    },
+    {
+      "platform": "amazon",
+      "id": "B07RJZMC49",
+      "name": "Lenovo 11.6\" 300e Chromebook Touchscreen LCD 2 in"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0DHJCTZ4D",
+      "name": "Apple iPhone 16 Plus"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0CWQ649LG",
+      "name": "Roku Express 4K 2022"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0BN733951",
+      "name": "Apple iPhone 14"
+    },
+    {
+      "platform": "amazon",
+      "id": "B08VLMQ3KS",
+      "name": ""
+    },
+    {
+      "platform": "amazon",
+      "id": "B09VD33WHW",
+      "name": ""
+    },
+    {
+      "platform": "amazon",
+      "id": "B0BX4XG53Z",
+      "name": ""
+    },
+    {
+      "platform": "amazon",
+      "id": "B07P9TJGRX",
+      "name": "Apple Pencil for iPad (2nd generation) Bluetooth"
+    },
+    {
+      "platform": "amazon",
+      "id": "B08PMYLKVF",
+      "name": "Apple iPhone 12 Pro"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0F53SQRH4",
+      "name": "Dell Latitude 5420 14\" FHD Business Laptop Computer"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0D241GHP5",
+      "name": "Ring Outdoor Cam Plus"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0CM7X424T",
+      "name": "Amazon Kindle Paperwhite and Kindle Colorsoft Case"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0F968JH9R",
+      "name": "Blink Outdoor 2K+ (newest model)"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0F14N7HHH",
+      "name": "Ring Battery Doorbell Plus (newest model)"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0F151GFYR",
+      "name": "Ring Wired Doorbell Pro (newest model)"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0FJJ66YZ1",
+      "name": "Ring Wired Doorbell (newest model)"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0DV4VQL6Y",
+      "name": "Blink Outdoor 4 XR"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0B5VGZTXH",
+      "name": "Blink Wired Floodlight Camera"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0D954FD8R",
+      "name": "Amazon eero 7 dual-band mesh Wi-Fi 7 router (newest model)"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0F7RZ1MS9",
+      "name": "INSIGNIA 32\" Class F20 Series LED HD Smart Fire TV"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0BN71VW28",
+      "name": "Apple iPhone 14"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0CMZ8ZBVN",
+      "name": "Apple iPhone 15 Pro"
+    },
+    {
+      "platform": "amazon",
+      "id": "B08PPDJWC8",
+      "name": "Apple iPhone 12 Mini"
+    },
+    {
+      "platform": "amazon",
+      "id": "B09LP77GDL",
+      "name": "Apple iPhone 13 Pro"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0BS9Y9L2Y",
+      "name": "Nintendo Switch with Neon Blue and Red Joy-Con (Renewed)"
+    },
+    {
+      "platform": "amazon",
+      "id": "B097YYGXY5",
+      "name": "PlayStation DualSense Wireless Controller Midnight"
+    },
+    {
+      "platform": "amazon",
+      "id": "B07NWB8H5S",
+      "name": "Roku Premiere"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0D3KKP8GL",
+      "name": "Beats Solo 4"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0BWHZJHPL",
+      "name": "EUHOMY Countertop Ice Maker Machine with Handle"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0G259S2QJ",
+      "name": "NEWBULIG Ice Makers Countertop with Handle"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0F64WHP74",
+      "name": "Kismile Nugget Ice Makers Countertop"
+    },
+    {
+      "platform": "amazon",
+      "id": "B07JBJWP2W",
+      "name": ""
+    },
+    {
+      "platform": "amazon",
+      "id": "B0C32SGKMJ",
+      "name": "EUHOMY Nugget Ice Maker Countertop with Handle"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0GW85J213",
+      "name": "DUMOS Ice Maker Countertop"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0F42MT8JX",
+      "name": "Countertop Ice Maker Machine, 8 Ice Cubes in 6 mins"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0DCJ78D27",
+      "name": "EUHOMY Ice Maker Countertop, 9 Cubes Ready in 6 Mins"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0C9SWH3RC",
+      "name": "Nugget Ice Maker Countertop"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0BXXKFJK2",
+      "name": "Silonn Ice Maker Countertop"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0D3GV1VQS",
+      "name": "EUHOMY Ice Maker Countertop"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0G4VFK3ZW",
+      "name": "EUHOMY Nugget Ice Maker Countertop, Ready in 7 Mins"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0F1Z3T3DS",
+      "name": ""
+    },
+    {
+      "platform": "amazon",
+      "id": "B0CQT26VCW",
+      "name": "Midea MERC07C4BAWW Chest Freezer"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0B22PSR1B",
+      "name": "Igloo Portable Ice Maker with Handle & Scoop-"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0DW94FWJS",
+      "name": "Silonn Countertop Ice Maker with Expanding Ice Basket"
+    },
+    {
+      "platform": "amazon",
+      "id": "B0DV4F454Z",
+      "name": "Antarctic Star Nugget Ice Maker Countertop with"
+    }
+  ]
+}

@@ -423,9 +423,15 @@ export class EaProductMaster extends LitElement {
     this.trendCode = '';
   }
 
-  private _open1688(name: string | undefined) {
+  private _showSourcingModal(ecomCode: string) {
+    // 跳转到货源页面，带 ecom_code 参数
+    window.ecomagentNavigateToSourcing(ecomCode);
+  }
+
+  private async _open1688(name: string | undefined, ecomCode: string) {
     if (!name) return;
-    const url = `https://s.1688.com/selloffer/offer_search.htm?keywords=${encodeURIComponent(name)}`;
+    // 带 ecom_code 参数跳转，让插件能识别来源
+    const url = `https://s.1688.com/selloffer/offer_search.htm?keywords=${encodeURIComponent(name)}&ecom_code=${encodeURIComponent(ecomCode)}`;
     window.open(url, '_blank');
   }
 
@@ -645,8 +651,9 @@ export class EaProductMaster extends LitElement {
                 <td class="sparkline-cell">${this._renderSparkline(p.ecom_code)}</td>
                 <td>
                   <button class="action-btn" @click=${() => this._showTrendPage(p.ecom_code)} title="查看趋势">趋势</button>
+                  <button class="action-btn" @click=${() => this._showSourcingModal(p.ecom_code)} title="查看货源">货源</button>
                   <button class="action-btn" @click=${() => window.open(p.product_url || '#', '_blank')} title="查看详情">查看</button>
-                  <button class="action-btn" @click=${() => this._open1688(p.short_name || p.name)} title="1688搜索">1688</button>
+                  <button class="action-btn" @click=${() => this._open1688(p.short_name || p.name, p.ecom_code)} title="1688搜索">1688</button>
                 </td>
               </tr>
             `)}

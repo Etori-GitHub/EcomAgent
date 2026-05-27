@@ -12,6 +12,7 @@ import './pages/cross-platform';
 import './pages/export';
 import './pages/product-trend';
 import './pages/product-trend-page';
+import './pages/sourcing';
 
 // 全局状态
 const _listeners: Set<(page: PageName) => void> = new Set();
@@ -44,12 +45,24 @@ window.ecomagentOpenTrend = (ecomCode: string, fromPage: string = 'product-maste
   _listeners.forEach(fn => fn('product-trend' as PageName));
 };
 
+// 货源页面跳转
+window.ecomagentNavigateToSourcing = (ecomCode?: string) => {
+  _currentPage = 'sourcing' as PageName;
+  if (ecomCode) {
+    sessionStorage.setItem('sourcing-ecom-code', ecomCode);
+  } else {
+    sessionStorage.removeItem('sourcing-ecom-code');
+  }
+  _listeners.forEach(fn => fn('sourcing' as PageName));
+};
+
 @customElement('ecomagent-app')
 export class EcomagentApp extends LitElement {
   static styles = css`:host { display: block; min-height: 100vh; }`;
 
   @state() private _page: PageName = _currentPage;
   @state() private _trendCode = '';
+  @state() private _sourcingCode = '';
 
   constructor() {
     super();
@@ -57,6 +70,9 @@ export class EcomagentApp extends LitElement {
       this._page = page;
       if (page === 'product-trend') {
         this._trendCode = sessionStorage.getItem('trend-ecom-code') || '';
+      }
+      if (page === 'sourcing') {
+        this._sourcingCode = sessionStorage.getItem('sourcing-ecom-code') || '';
       }
       this.requestUpdate();
     });
@@ -72,6 +88,11 @@ export class EcomagentApp extends LitElement {
     // 趋势页面独立渲染（不在布局内）
     if (this._page === 'product-trend') {
       return html`<ea-product-trend-page ecomCode=${this._trendCode}></ea-product-trend-page>`;
+    }
+
+    // 货源页面
+    if (this._page === 'sourcing') {
+      return html`<ea-sourcing ecomCode=${this._sourcingCode}></ea-sourcing>`;
     }
 
     // 其他页面在布局内
@@ -114,5 +135,6 @@ declare global {
     ecomagentGetCurrentPage: () => PageName;
     ecomagentOnPageChange: (callback: (page: PageName) => void) => void;
     ecomagentOpenTrend: (ecomCode: string, fromPage?: string) => void;
+    ecomagentNavigateToSourcing: (ecomCode?: string) => void;
   }
 }

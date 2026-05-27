@@ -1,122 +1,124 @@
-#!/usr/bin/env python3
 """
 更新数据库中的 short_name 字段
+从 translated 文件夹读取翻译好的 JSON 文件，更新对应的数据库记录
 """
 
+import json
 import sqlite3
 from pathlib import Path
 
+# 路径配置
+TRANSLATED_DIR = Path("data/name_processing/translated")
+DATA_DIR = Path("data")
 
-def generate_short_name(name: str) -> str:
-    """从商品名称生成简短描述"""
-    if not name:
-        return ""
-    
-    # 常见产品类型关键词
-    product_types = [
-        'body wash', 'face wash', 'cleanser', 'toner', 'serum', 'cream', 'lotion',
-        'moisturizer', 'shampoo', 'conditioner', 'oil', 'mask', 'scrub', 'gel',
-        'spray', 'powder', 'soap', 'balm', 'treatment', 'essence', 'sunscreen',
-        'lip balm', 'eye cream', 'night cream', 'day cream', 'hand cream',
-        'vitamin', 'supplement', 'capsule', 'tablet', 'gummies',
-        'headphones', 'earbuds', 'speaker', 'charger', 'cable', 'adapter',
-        'phone case', 'screen protector', 'stand', 'holder', 'mount',
-        'knife', 'knife set', 'pan', 'pot', 'utensil', 'cutting board',
-        'blender', 'mixer', 'toaster', 'air fryer', 'coffee maker',
-        'dress', 'shirt', 'pants', 'shoes', 'socks', 'jacket', 'coat',
-        'bag', 'backpack', 'wallet', 'belt', 'watch', 'sunglasses',
-        'pad', 'patch', 'mask', 'swabs', 'cotton'
-    ]
-    
-    name_lower = name.lower()
-    
-    # 1. 尝试提取品牌名（前 1-3 个单词）
-    words = name.split()
-    brand = words[0] if words else ""
-    
-    # 2. 查找产品类型
-    found_type = None
-    for ptype in product_types:
-        if ptype in name_lower:
-            found_type = ptype.title()
-            break
-    
-    # 3. 组合结果
-    if found_type:
-        brand_short = brand if len(brand) <= 15 else brand[:12] + "..."
-        return f"{brand_short} {found_type}"
-    
-    # 如果没找到产品类型，返回前 30 个字符
-    return name[:30] + "..." if len(name) > 30 else name
+def get_db_path(platform: str) -> Path:
+    """根据平台获取数据库路径"""
+    return DATA_DIR / f"{platform}.db"
 
+def get_table_info(platform: str) -> tuple:
+    """根据平台获取表名和ID字段名"""
+    if platform == "amazon":
+        return "products", "asin"
+    elif platform == "tiktok":
+        # TikTok 翻译文件里的 id 对应数据库的自增主键 id
+        return "tiktok_products", "id"
+    else:
+        return None, None
 
-def update_amazon_short_names():
-    """更新 Amazon 数据库的 short_name"""
-    db_path = Path("C:/Users/Etroi/.openclaw/workspace/code/EcomAgent/data/amazon.db")
-    
+def update_short_name(platform: str, product_id: str, short_name: str) -> bool:
+    """更新单个商品的 short_name"""
+    db_path = get_db_path(platform)
     if not db_path.exists():
-        print(f"❌ Database not found: {db_path}")
-        return
+        print(f"  [WARN] 数据库不存在: {db_path}")
+        return False
     
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
-    # 获取所有产品
-    cursor.execute("SELECT id, name FROM products WHERE short_name IS NULL OR short_name = ''")
-    rows = cursor.fetchall()
-    
-    print(f"📊 Found {len(rows)} products to update")
-    
-    updated = 0
-    for product_id, name in rows:
-        short_name = generate_short_name(name)
-        cursor.execute("UPDATE products SET short_name = ? WHERE id = ?", (short_name, product_id))
-        updated += 1
-    
-    conn.commit()
-    conn.close()
-    
-    print(f"✅ Updated {updated} Amazon products")
+    try:
+        # 根据平台获取表名和ID字段名
+        table_name, id_field = get_table_info(platform)
+        if not table_name:
+            print(f"  [WARN] 未知平台: {platform}")
+            return False
+        
+        # 检查记录是否存在
+        cursor.execute(f"SELECT id FROM {table_name} WHERE {id_field} = ?", (product_id,))
+        result = cursor.fetchone()
+        
+        if not result:
+            print(f"  [WARN] 商品不存在: {platform}/{product_id}")
+            return False
+        
+        # 更新 short_name
+        cursor.execute(
+            f"UPDATE {table_name} SET short_name = ? WHERE {id_field} = ?",
+            (short_name, product_id)
+        )
+        conn.commit()
+        return True
+        
+    except Exception as e:
+        print(f"  [ERROR] 更新失败: {platform}/{product_id} - {e}")
+        return False
+    finally:
+        conn.close()
 
-
-def update_tiktok_short_names():
-    """更新 TikTok 数据库的 short_name"""
-    db_path = Path("C:/Users/Etroi/.openclaw/workspace/code/EcomAgent/data/tiktok.db")
+def main():
+    """主函数"""
+    print("=" * 60)
+    print("更新数据库 short_name 字段")
+    print("=" * 60)
     
-    if not db_path.exists():
-        print(f"❌ Database not found: {db_path}")
-        return
+    # 统计
+    total_files = 0
+    total_records = 0
+    success_count = 0
+    fail_count = 0
     
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
+    # 遍历所有 JSON 文件
+    json_files = sorted(TRANSLATED_DIR.glob("batch_*.json"))
     
-    # 获取所有产品
-    cursor.execute("SELECT id, name FROM tiktok_products WHERE short_name IS NULL OR short_name = ''")
-    rows = cursor.fetchall()
+    for json_file in json_files:
+        total_files += 1
+        print(f"\n处理文件: {json_file.name}")
+        
+        with open(json_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        
+        translations = data.get("translations", [])
+        batch_success = 0
+        batch_fail = 0
+        
+        for item in translations:
+            total_records += 1
+            platform = item.get("platform")
+            product_id = item.get("id")
+            short_name = item.get("short_name")
+            
+            if not all([platform, product_id, short_name]):
+                print(f"  [WARN] 数据不完整: {item}")
+                batch_fail += 1
+                continue
+            
+            if update_short_name(platform, product_id, short_name):
+                batch_success += 1
+            else:
+                batch_fail += 1
+        
+        success_count += batch_success
+        fail_count += batch_fail
+        print(f"  成功: {batch_success}, 失败: {batch_fail}")
     
-    print(f"📊 Found {len(rows)} products to update")
-    
-    updated = 0
-    for product_id, name in rows:
-        short_name = generate_short_name(name)
-        cursor.execute("UPDATE tiktok_products SET short_name = ? WHERE id = ?", (short_name, product_id))
-        updated += 1
-    
-    conn.commit()
-    conn.close()
-    
-    print(f"✅ Updated {updated} TikTok products")
-
+    # 输出统计
+    print("\n" + "=" * 60)
+    print("处理完成")
+    print("=" * 60)
+    print(f"文件总数: {total_files}")
+    print(f"记录总数: {total_records}")
+    print(f"成功更新: {success_count}")
+    print(f"更新失败: {fail_count}")
+    print("=" * 60)
 
 if __name__ == "__main__":
-    print("=" * 60)
-    print("Updating short_name fields")
-    print("=" * 60)
-    
-    update_amazon_short_names()
-    print()
-    update_tiktok_short_names()
-    
-    print("\n" + "=" * 60)
-    print("Done!")
-    print("=" * 60)
+    main()

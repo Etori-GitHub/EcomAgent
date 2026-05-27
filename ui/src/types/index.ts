@@ -70,6 +70,7 @@ export interface BackupFile {
 export type PageName = 
   | 'dashboard' 
   | 'product-master' 
+  | 'sourcing'
   | 'tracking' 
   | 'cross-platform' 
   | 'today-top' 
