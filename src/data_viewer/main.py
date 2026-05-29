@@ -1586,6 +1586,101 @@ async def delete_sourcing(ecom_code: str, offer_id: str):
         conn.close()
 
 
+# ==================== 手动触发 API ====================
+
+import subprocess
+import threading
+
+# 后台任务状态
+task_status = {
+    "amazon_fetch": {"running": False, "last_run": None, "message": ""},
+    "tiktok_fetch": {"running": False, "last_run": None, "message": ""},
+    "data_import": {"running": False, "last_run": None, "message": ""}
+}
+
+def run_script_async(script_path: str, task_name: str):
+    """异步运行脚本"""
+    global task_status
+    task_status[task_name]["running"] = True
+    task_status[task_name]["message"] = "正在执行..."
+    
+    try:
+        result = subprocess.run(
+            ["python", script_path],
+            capture_output=True,
+            text=True,
+            timeout=600,
+            cwd=str(BASE_DIR)
+        )
+        
+        if result.returncode == 0:
+            task_status[task_name]["message"] = "执行成功"
+        else:
+            task_status[task_name]["message"] = f"执行失败: {result.stderr[:200]}"
+    except subprocess.TimeoutExpired:
+        task_status[task_name]["message"] = "执行超时"
+    except Exception as e:
+        task_status[task_name]["message"] = f"执行错误: {str(e)}"
+    finally:
+        task_status[task_name]["running"] = False
+        task_status[task_name]["last_run"] = datetime.now().isoformat()
+
+
+@app.post("/api/tasks/amazon-fetch")
+async def trigger_amazon_fetch():
+    """触发 Amazon 数据抓取"""
+    global task_status
+    
+    if task_status["amazon_fetch"]["running"]:
+        return {"success": False, "message": "Amazon 抓取任务正在运行中"}
+    
+    script_path = str(BASE_DIR / "skills" / "amazon-fetcher" / "src" / "fetch_amazon_all_categories.py")
+    
+    # 启动后台线程
+    thread = threading.Thread(target=run_script_async, args=(script_path, "amazon_fetch"))
+    thread.start()
+    
+    return {"success": True, "message": "Amazon 抓取任务已启动"}
+
+
+@app.post("/api/tasks/tiktok-fetch")
+async def trigger_tiktok_fetch():
+    """触发 TikTok 数据抓取"""
+    global task_status
+    
+    if task_status["tiktok_fetch"]["running"]:
+        return {"success": False, "message": "TikTok 抓取任务正在运行中"}
+    
+    script_path = str(BASE_DIR / "skills" / "tiktok-fetcher" / "src" / "fetch_tiktok_categories.py")
+    
+    thread = threading.Thread(target=run_script_async, args=(script_path, "tiktok_fetch"))
+    thread.start()
+    
+    return {"success": True, "message": "TikTok 抓取任务已启动"}
+
+
+@app.post("/api/tasks/data-import")
+async def trigger_data_import():
+    """触发数据导入"""
+    global task_status
+    
+    if task_status["data_import"]["running"]:
+        return {"success": False, "message": "数据导入任务正在运行中"}
+    
+    script_path = str(BASE_DIR / "skills" / "db-importer" / "src" / "import_to_db.py")
+    
+    thread = threading.Thread(target=run_script_async, args=(script_path, "data_import"))
+    thread.start()
+    
+    return {"success": True, "message": "数据导入任务已启动"}
+
+
+@app.get("/api/tasks/status")
+async def get_tasks_status():
+    """获取任务状态"""
+    return task_status
+
+
 # ==================== 服务启动 ====================
 
 def run_server(host: str = "0.0.0.0", port: int = 8000):

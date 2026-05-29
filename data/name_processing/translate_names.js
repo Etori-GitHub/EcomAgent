@@ -226,13 +226,13 @@ function translateName(name) {
     'Amazon Basics': '亚马逊',
     'Amazon Essentials': '亚马逊',
     'Amazon': '亚马逊',
-    'Mighty Patch': 'Mighty',
-    'Clean Skin Club': 'CSC',
-    'Laura Geller': 'LauraGeller',
+    'Mighty Patch': '祛痘贴',
+    'Clean Skin Club': '洁面巾',
+    'Laura Geller': 'Laura',
     'MRS. MEYER\'S': 'Meyer',
     'MRS. MEYER\'S CLEAN DAY': 'Meyer',
     'grace & stella': 'G&S',
-    'Body Restore': 'BodyR',
+    'Body Restore': '香薰',
     'Paula\'s Choice': 'Paula',
     'The Ordinary': 'TO',
     'Physician\'s CHOICE': 'PC',
@@ -283,8 +283,8 @@ function translateName(name) {
     return len;
   };
   
-  // 限制在18个显示字符内（约等于15个中文字符的视觉效果）
-  while (displayLen(shortName) > 18 && shortName.length > 0) {
+  // 限制在22个显示字符内（约等于15个中文字符的视觉效果）
+  while (displayLen(shortName) > 22 && shortName.length > 0) {
     shortName = shortName.substring(0, shortName.length - 1);
   }
   shortName = shortName.trim();

@@ -28,7 +28,7 @@ def random_wait(min_ms=1000, max_ms=3000):
 
 
 def extract_categories(page):
-    """从首页提取类目列表（使用 /shop/c/ 过滤）"""
+    """从首页提取类目列表（匹配 shop.tiktok.com/us/c/ 或 /c/）"""
     
     print(f"\n[INFO] 正在提取类目列表...")
     
@@ -36,7 +36,7 @@ def extract_categories(page):
         () => {
             const categories = [];
             
-            // 策略：找到所有包含 /shop/c/ 的链接
+            // 策略：找到所有包含类目链接的 a 标签
             const allLinks = Array.from(document.querySelectorAll('a'));
             
             console.log('=== 总共找到 ' + allLinks.length + ' 个链接 ===');
@@ -46,8 +46,13 @@ def extract_categories(page):
                 const text = (link.innerText || link.textContent || '').trim();
                 const dataId = link.getAttribute('data-id');
                 
-                // 只提取包含 /shop/c/ 的链接
-                if (href && href.includes('/shop/c/') && text) {
+                // 匹配类目链接：shop.tiktok.com/*/c/ 或 /shop/c/ 或 /c/
+                const isCategoryLink = href && (
+                    href.includes('shop.tiktok.com') && href.includes('/c/') ||
+                    href.includes('/shop/c/')
+                ) && text && text.length > 0 && text.length < 50;
+                
+                if (isCategoryLink) {
                     categories.push({
                         name: text,
                         url: href,
@@ -351,9 +356,9 @@ def fetch_all_categories():
         
         page.set_viewport_size({"width": 1920, "height": 1080})
         
-        # 访问首页
+        # 访问首页 - 使用正确的域名
         print(f"[INFO] 访问 TikTok Shop 首页...")
-        page.goto("https://www.tiktok.com/shop", timeout=120000)
+        page.goto("https://shop.tiktok.com", timeout=120000)
         
         # 等待页面加载
         page.wait_for_timeout(random_wait(10000, 15000))
@@ -392,10 +397,12 @@ def fetch_all_categories():
         print(f"[OK] 类目列表已保存到：{categories_file}")
         
         # 抓取每个分类（复用同一个 page 和 browser）
-        # 测试模式：只抓第一个分类
-        for i, category in enumerate(categories[:1]):
+        # 测试模式：只抓第一个类目验证逻辑
+        test_categories = categories[:1]
+        print(f"[INFO] 测试模式：只抓取前 {len(test_categories)} 个类目")
+        for i, category in enumerate(test_categories):
             fetch_and_save_category(category, page)
-            if i < len(categories[:1]) - 1:
+            if i < len(test_categories) - 1:
                 wait_ms = random_wait(5000, 10000)
                 print(f"\n[INFO] 等待 {wait_ms}ms 后开始下一个分类...")
                 import time

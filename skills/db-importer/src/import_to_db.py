@@ -1,559 +1,229 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-EcomAgent Database Importer
-扫描 output/scraping 目录，将 JSON 数据导入 SQLite 数据库
-支持增量更新：按唯一 ID + 日期判断，每天每个商品只保留一条最新记录
-支持图片下载和变更追踪
+EcomAgent 数据导入器 v2.0
 """
 
 import json
-import os
 import re
 import sqlite3
+import sys
+import io
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Tuple
 
-# 导入商品主库模块
-import sys
+# Windows UTF-8 兼容
+if sys.platform == 'win32':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
+# 导入模块
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "scripts"))
 from create_product_master import get_or_create_product
 from extract_product_name import extract_product_name
 
-# 导入图片处理模块
-from image_processor import ImageProcessor, ImageChangeTracker
 
-
-class DatabaseImporter:
-    """数据库导入器"""
+class DataImporter:
+    """数据导入器"""
     
-    def __init__(self, base_dir: Optional[str] = None):
-        # 如果未指定 base_dir，使用脚本所在目录的父目录
+    def __init__(self, base_dir: Path = None):
         if base_dir is None:
-            script_dir = Path(__file__).resolve().parent
-            self.base_dir = script_dir.parent.parent.parent
-        else:
-            self.base_dir = Path(base_dir)
+            base_dir = Path(__file__).parent.parent.parent.parent
         
-        self.scraping_dir = self.base_dir / "output" / "scraping"
-        self.data_dir = self.base_dir / "data"
-        
-        # 初始化图片处理器
-        self.image_processor = ImageProcessor(self.base_dir)
-        self.image_tracker = ImageChangeTracker(self.data_dir / "image_changes.db")
+        self.base_dir = base_dir
+        self.scraping_dir = base_dir / "output" / "scraping"
+        self.data_dir = base_dir / "data"
     
-    def generate_short_name(self, name: str) -> str:
-        """从商品名称生成简短描述"""
-        if not name:
-            return ""
-        
-        product_types = [
-            'body wash', 'face wash', 'cleanser', 'toner', 'serum', 'cream', 'lotion',
-            'moisturizer', 'shampoo', 'conditioner', 'oil', 'mask', 'scrub', 'gel',
-            'spray', 'powder', 'soap', 'balm', 'treatment', 'essence', 'sunscreen',
-            'lip balm', 'eye cream', 'night cream', 'day cream', 'hand cream',
-            'vitamin', 'supplement', 'capsule', 'tablet', 'gummies',
-            'headphones', 'earbuds', 'speaker', 'charger', 'cable', 'adapter',
-            'phone case', 'screen protector', 'stand', 'holder', 'mount',
-            'knife', 'knife set', 'pan', 'pot', 'utensil', 'cutting board',
-            'blender', 'mixer', 'toaster', 'air fryer', 'coffee maker',
-            'dress', 'shirt', 'pants', 'shoes', 'socks', 'jacket', 'coat',
-            'bag', 'backpack', 'wallet', 'belt', 'watch', 'sunglasses'
-        ]
-        
-        name_lower = name.lower()
-        words = name.split()
-        brand = words[0] if words else ""
-        
-        found_type = None
-        for ptype in product_types:
-            if ptype in name_lower:
-                found_type = ptype.title()
-                break
-        
-        if found_type:
-            brand_short = brand if len(brand) <= 15 else brand[:12] + "..."
-            return f"{brand_short} {found_type}"
-        
-        return name[:30] + "..." if len(name) > 30 else name
-        
-    def parse_sales_count(self, sold_str: Optional[str]) -> Optional[int]:
-        """解析销售数量字符串"""
-        if not sold_str:
-            return None
-        
-        match = re.search(r'([\d.]+)\s*K', sold_str)
-        if match:
-            return int(float(match.group(1)) * 1000)
-        
-        match = re.search(r'([\d]+)\s*已售出', sold_str)
-        if match:
-            return int(match.group(1))
-        
-        return None
-    
-    def extract_date_from_filename(self, filename: str) -> str:
+    def extract_date(self, filename: str) -> str:
         """从文件名提取日期"""
         match = re.search(r'(\d{8})', filename)
         if match:
-            date_str = match.group(1)
-            return f"{date_str[0:4]}-{date_str[4:6]}-{date_str[6:8]}"
+            d = match.group(1)
+            return f"{d[0:4]}-{d[4:6]}-{d[6:8]}"
         return datetime.now().strftime("%Y-%m-%d")
     
-    def process_image(
-        self, 
-        platform: str, 
-        platform_id: str, 
-        new_image_url: str,
-        date: str
-    ) -> Optional[str]:
-        """
-        处理图片：下载、压缩、保存
-        
-        逻辑：
-        1. 查询数据库中该商品的当前图片 URL
-        2. 如果 URL 相同，返回现有路径
-        3. 如果 URL 不同，下载新图片，记录变更
-        4. 如果是新商品，直接下载保存
-        
-        Returns:
-            本地图片路径（相对路径）
-        """
-        if not new_image_url:
-            return None
-        
-        # 查询当前图片信息
-        conn = None
-        current_image_url = None
-        current_local_path = None
-        
-        try:
-            if platform == 'amazon':
-                db_path = self.data_dir / "amazon.db"
-                conn = sqlite3.connect(db_path)
-                cursor = conn.cursor()
-                cursor.execute("SELECT image_url, local_image_path FROM products WHERE asin = ?", (platform_id,))
-            else:
-                db_path = self.data_dir / "tiktok.db"
-                conn = sqlite3.connect(db_path)
-                cursor = conn.cursor()
-                cursor.execute("SELECT image_url, local_image_path FROM tiktok_products WHERE tiktokshop_id = ?", (platform_id,))
-            
-            result = cursor.fetchone()
-            if result:
-                current_image_url = result[0]
-                current_local_path = result[1]
-        except Exception as e:
-            print(f"[WARN] 查询图片信息失败: {e}")
-        finally:
-            if conn:
-                conn.close()
-        
-        # 判断图片是否变更
-        if current_image_url and current_image_url == new_image_url:
-            # URL 相同，使用现有图片
-            print(f"[INFO] 图片未变更: {platform}_{platform_id}")
-            return current_local_path
-        
-        # 下载新图片
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        new_local_path = self.image_processor.save_image(
-            platform=platform,
-            platform_id=platform_id,
-            image_url=new_image_url,
-            timestamp=timestamp
-        )
-        
-        if not new_local_path:
-            print(f"[WARN] 图片下载失败: {platform}_{platform_id}")
-            return current_local_path
-        
-        # 记录变更
-        if current_image_url and current_image_url != new_image_url:
-            self.image_tracker.record_change(
-                platform=platform,
-                platform_id=platform_id,
-                old_image_url=current_image_url,
-                new_image_url=new_image_url,
-                old_local_path=current_local_path,
-                new_local_path=new_local_path,
-                change_date=date
-            )
-            print(f"[INFO] 图片已变更: {platform}_{platform_id}")
-        
-        return new_local_path
+    def record_event(self, cursor, product_id: int, event_type: str, old_value: str = None, new_value: str = None):
+        """记录事件"""
+        cursor.execute("""
+            INSERT INTO events (product_id, event_type, old_value, new_value, created_at)
+            VALUES (?, ?, ?, ?, datetime('now'))
+        """, (product_id, event_type, old_value, new_value))
+        print(f"[EVENT] {event_type}: product_id={product_id}")
     
     def import_amazon(self, file_path: Path):
         """导入 Amazon 数据"""
         print(f"\n{'='*60}")
-        print(f"Importing Amazon data from: {file_path.name}")
+        print(f"Importing Amazon: {file_path.name}")
         print(f"{'='*60}")
         
         db_path = self.data_dir / "amazon.db"
-        if not db_path.exists():
-            print(f"❌ Database not found: {db_path}")
-            return
-        
         with open(file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
         
-        if isinstance(data, list):
-            products = data
-        elif isinstance(data, dict):
-            products = data.get('products', [])
-        else:
-            print(f"❌ Unexpected data format: {type(data)}")
-            return
+        products = data.get('products', []) if isinstance(data, dict) else data
+        date = self.extract_date(file_path.name)
         
-        date = self.extract_date_from_filename(file_path.name)
-        
-        conn = sqlite3.connect(db_path)
+        conn = sqlite3.connect(db_path, timeout=30)
         cursor = conn.cursor()
         
-        inserted_products = 0
-        inserted_sales = 0
-        updated_sales = 0
-        skipped_duplicates = 0
-        images_processed = 0
+        stats = {'new': 0, 'upd': 0, 'sales_new': 0, 'sales_upd': 0, 'events': 0}
         
-        for product in products:
-            asin = product.get('asin')
+        for p in products:
+            asin = p.get('asin')
             if not asin:
                 continue
             
-            full_title = product.get('name', '')
-            product_name = extract_product_name(full_title)
-            short_name = self.generate_short_name(product_name)
-            product_url = product.get('product_url', f"https://www.amazon.com/dp/{asin}" if asin else '')
-            image_url = product.get('image_url', '')
+            name = extract_product_name(p.get('name', ''))
+            image_url = p.get('image_url', '')
+            product_url = p.get('product_url', f"https://www.amazon.com/dp/{asin}")
             
-            # 处理图片
-            local_image_path = None
-            if image_url:
-                local_image_path = self.process_image('amazon', asin, image_url, date)
-                images_processed += 1
+            cursor.execute("SELECT id, name, image_url FROM products WHERE asin = ?", (asin,))
+            existing = cursor.fetchone()
             
-            # 关联商品主库
-            master_id = get_or_create_product(
-                platform='amazon',
-                platform_id=asin,
-                name=product_name,
-                short_name=short_name,
-                search_keyword=full_title,
-                product_url=product_url,
-                category=product.get('category')
-            )
-            
-            # 插入或更新商品
-            cursor.execute("""
-                INSERT INTO products (asin, name, short_name, search_keyword, product_url, category, subcategory, platform, master_id, image_url, local_image_path)
-                VALUES (?, ?, ?, ?, ?, ?, ?, 'amazon', ?, ?, ?)
-                ON CONFLICT(asin) DO UPDATE SET
-                    short_name = COALESCE(short_name, excluded.short_name),
-                    search_keyword = COALESCE(search_keyword, excluded.search_keyword),
-                    product_url = COALESCE(product_url, excluded.product_url),
-                    master_id = COALESCE(master_id, excluded.master_id),
-                    image_url = COALESCE(image_url, excluded.image_url),
-                    local_image_path = COALESCE(local_image_path, excluded.local_image_path)
-            """, (asin, product_name, short_name, full_title, product_url, product.get('category'), product.get('subcategory'), master_id, image_url, local_image_path))
-            
-            cursor.execute("SELECT id FROM products WHERE asin = ?", (asin,))
-            result = cursor.fetchone()
-            
-            if result:
-                product_id = result[0]
+            if existing:
+                product_id, old_name, old_image = existing
                 
-                try:
-                    price = float(product.get('price')) if product.get('price') else None
-                except (TypeError, ValueError):
-                    price = None
+                if old_name and old_name != name:
+                    self.record_event(cursor, product_id, 'name_changed', old_name, name)
+                    stats['events'] += 1
                 
-                cursor.execute("""
-                    SELECT id FROM daily_sales 
-                    WHERE product_id = ? AND date = ?
-                """, (product_id, date))
-                existing = cursor.fetchone()
+                if old_image and old_image != image_url:
+                    self.record_event(cursor, product_id, 'cover_image_changed', old_image, image_url)
+                    stats['events'] += 1
                 
-                if existing:
-                    cursor.execute("""
-                        UPDATE daily_sales SET
-                            timestamp = datetime('now'),
-                            price = ?,
-                            rank = ?,
-                            rating = ?,
-                            rating_count = ?,
-                            category = ?,
-                            subcategory = ?
-                        WHERE id = ?
-                    """, (
-                        price,
-                        product.get('rank'),
-                        product.get('rating'),
-                        product.get('rating_count'),
-                        product.get('category'),
-                        product.get('subcategory'),
-                        existing[0]
-                    ))
-                    updated_sales += 1
-                else:
-                    cursor.execute("""
-                        INSERT INTO daily_sales 
-                        (product_id, date, timestamp, price, rank, rating, rating_count, category, subcategory)
-                        VALUES (?, ?, datetime('now'), ?, ?, ?, ?, ?, ?)
-                    """, (
-                        product_id, date, price,
-                        product.get('rank'),
-                        product.get('rating'),
-                        product.get('rating_count'),
-                        product.get('category'),
-                        product.get('subcategory')
-                    ))
-                    inserted_sales += 1
+                cursor.execute("UPDATE products SET name=?, image_url=?, updated_at=datetime('now') WHERE asin=?", (name, image_url, asin))
+                stats['upd'] += 1
             else:
-                skipped_duplicates += 1
+                master_id = get_or_create_product('amazon', asin, name, product_url=product_url, category=p.get('category'))
+                cursor.execute("INSERT INTO products (asin, name, image_url, master_id) VALUES (?, ?, ?, ?)", (asin, name, image_url, master_id))
+                product_id = cursor.lastrowid
+                stats['new'] += 1
+            
+            # 销售数据
+            cursor.execute("SELECT id FROM daily_sales WHERE product_id=? AND date=?", (product_id, date))
+            if cursor.fetchone():
+                cursor.execute("UPDATE daily_sales SET price=?, rating=?, rating_count=?, rank=? WHERE product_id=? AND date=?", 
+                    (p.get('price'), p.get('rating'), p.get('rating_count'), p.get('rank'), product_id, date))
+                stats['sales_upd'] += 1
+            else:
+                cursor.execute("INSERT INTO daily_sales (product_id, date, price, rating, rating_count, rank, category) VALUES (?,?,?,?,?,?,?)",
+                    (product_id, date, p.get('price'), p.get('rating'), p.get('rating_count'), p.get('rank'), p.get('category')))
+                stats['sales_new'] += 1
         
         conn.commit()
-        
-        cursor.execute("SELECT COUNT(*) FROM products")
-        total_products = cursor.fetchone()[0]
-        cursor.execute("SELECT COUNT(*) FROM daily_sales")
-        total_sales = cursor.fetchone()[0]
-        
-        print(f"✅ Amazon import complete!")
-        print(f"   Total products in DB: {total_products}")
-        print(f"   Total sales records: {total_sales}")
-        print(f"   New sales inserted: {inserted_sales}")
-        print(f"   Sales updated: {updated_sales}")
-        print(f"   Images processed: {images_processed}")
-        print(f"   Skipped (duplicates): {skipped_duplicates}")
-        
         conn.close()
+        print(f"[OK] Amazon: {stats['new']} new, {stats['upd']} upd, {stats['sales_new']}+{stats['sales_upd']} sales, {stats['events']} events")
     
     def import_tiktok(self, file_path: Path):
         """导入 TikTok 数据"""
         print(f"\n{'='*60}")
-        print(f"Importing TikTok data from: {file_path.name}")
+        print(f"Importing TikTok: {file_path.name}")
         print(f"{'='*60}")
         
         db_path = self.data_dir / "tiktok.db"
-        if not db_path.exists():
-            print(f"❌ Database not found: {db_path}")
-            return
-        
         with open(file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
         
-        if isinstance(data, dict):
-            metadata = data.get('metadata', {})
-            products = data.get('products', [])
-        elif isinstance(data, list):
-            metadata = {}
-            products = data
-        else:
-            print(f"❌ Unexpected data format: {type(data)}")
-            return
+        products = data.get('products', []) if isinstance(data, dict) else data
+        date = self.extract_date(file_path.name)
         
-        category = metadata.get('category', 'Unknown')
-        date = self.extract_date_from_filename(file_path.name)
-        
-        conn = sqlite3.connect(db_path)
+        conn = sqlite3.connect(db_path, timeout=30)
         cursor = conn.cursor()
         
-        inserted_products = 0
-        inserted_sales = 0
-        updated_sales = 0
-        skipped_duplicates = 0
-        images_processed = 0
+        stats = {'new': 0, 'upd': 0, 'sales_new': 0, 'sales_upd': 0, 'events': 0}
         
-        seen_tiktokshop_ids = set()
-        seen_names = set()
-        
-        for product in products:
-            tiktokshop_id = product.get('tiktokshop_id')
-            name = product.get('name')
-            
-            if not tiktokshop_id and not name:
+        for p in products:
+            tid = p.get('tiktokshop_id')
+            if not tid:
                 continue
             
-            if tiktokshop_id and tiktokshop_id in seen_tiktokshop_ids:
-                continue
-            if name and name in seen_names:
-                continue
+            name = extract_product_name(p.get('name', ''))
+            image_url = p.get('image_url', '')
+            product_url = p.get('product_url', '')
+            sold = p.get('sold', '')
             
-            if tiktokshop_id:
-                seen_tiktokshop_ids.add(tiktokshop_id)
-            if name:
-                seen_names.add(name)
-            
-            full_title = product.get('name', '')
-            product_name = extract_product_name(full_title)
-            short_name = self.generate_short_name(product_name)
-            product_url = product.get('product_url', '')
-            tiktokshop_id = product.get('tiktokshop_id')
-            image_url = product.get('image_url', '')
-            
-            # 处理图片
-            local_image_path = None
-            if image_url and tiktokshop_id:
-                local_image_path = self.process_image('tiktok', tiktokshop_id, image_url, date)
-                images_processed += 1
-            
-            master_id = None
-            if tiktokshop_id:
-                master_id = get_or_create_product(
-                    platform='tiktok',
-                    platform_id=tiktokshop_id,
-                    name=product_name,
-                    short_name=short_name,
-                    search_keyword=full_title,
-                    product_url=product_url,
-                    category=category
-                )
-            
-            if tiktokshop_id:
-                cursor.execute("""
-                    INSERT INTO tiktok_products (name, short_name, search_keyword, product_url, category, platform, tiktokshop_id, master_id, rank, image_url, local_image_path)
-                    VALUES (?, ?, ?, ?, ?, 'tiktok', ?, ?, ?, ?, ?)
-                    ON CONFLICT(tiktokshop_id) DO UPDATE SET
-                        short_name = COALESCE(short_name, excluded.short_name),
-                        search_keyword = COALESCE(search_keyword, excluded.search_keyword),
-                        product_url = COALESCE(product_url, excluded.product_url),
-                        master_id = COALESCE(master_id, excluded.master_id),
-                        rank = COALESCE(rank, excluded.rank),
-                        image_url = COALESCE(image_url, excluded.image_url),
-                        local_image_path = COALESCE(local_image_path, excluded.local_image_path)
-                """, (product_name, short_name, full_title, product_url, category, tiktokshop_id, master_id, product.get('rank'), image_url, local_image_path))
-                
-                cursor.execute("SELECT id FROM tiktok_products WHERE tiktokshop_id = ?", (tiktokshop_id,))
-            else:
-                cursor.execute("""
-                    INSERT INTO tiktok_products (name, short_name, search_keyword, product_url, category, platform)
-                    VALUES (?, ?, ?, ?, 'tiktok')
-                """, (product_name, short_name, full_title, product_url, category))
-                
-                cursor.execute("SELECT id FROM tiktok_products WHERE name = ?", (product_name,))
-            
-            result = cursor.fetchone()
-            
-            if result:
-                product_id = result[0]
-                
-                try:
-                    price = float(product.get('price')) if product.get('price') else None
-                except (TypeError, ValueError):
-                    price = None
-                
-                try:
-                    original_price = float(product.get('original_price')) if product.get('original_price') else None
-                except (TypeError, ValueError):
-                    original_price = None
-                
-                sales_count = self.parse_sales_count(product.get('sold'))
-                
-                cursor.execute("""
-                    SELECT id FROM tiktok_daily_sales 
-                    WHERE product_id = ? AND date = ?
-                """, (product_id, date))
-                existing = cursor.fetchone()
-                
-                if existing:
-                    cursor.execute("""
-                        UPDATE tiktok_daily_sales SET
-                            timestamp = datetime('now'),
-                            price = ?,
-                            original_price = ?,
-                            rating = ?,
-                            sales_count = ?,
-                            category = ?
-                        WHERE id = ?
-                    """, (
-                        price, original_price,
-                        product.get('rating'),
-                        sales_count,
-                        category,
-                        existing[0]
-                    ))
-                    updated_sales += 1
+            # 解析销量
+            sales_count = None
+            if sold:
+                km = re.search(r'([\d.]+)\s*K', sold)
+                if km:
+                    sales_count = int(float(km.group(1)) * 1000)
                 else:
-                    cursor.execute("""
-                        INSERT INTO tiktok_daily_sales 
-                        (product_id, date, timestamp, price, original_price, rating, sales_count, category)
-                        VALUES (?, ?, datetime('now'), ?, ?, ?, ?, ?)
-                    """, (
-                        product_id, date, price, original_price,
-                        product.get('rating'),
-                        sales_count,
-                        category
-                    ))
-                    inserted_sales += 1
+                    nm = re.search(r'(\d+)', sold)
+                    if nm:
+                        sales_count = int(nm.group(1))
+            
+            cursor.execute("SELECT id, name, image_url FROM tiktok_products WHERE tiktokshop_id = ?", (tid,))
+            existing = cursor.fetchone()
+            
+            if existing:
+                product_id, old_name, old_image = existing
+                
+                if old_name and old_name != name:
+                    self.record_event(cursor, product_id, 'name_changed', old_name, name)
+                    stats['events'] += 1
+                
+                if old_image and old_image != image_url:
+                    self.record_event(cursor, product_id, 'cover_image_changed', old_image, image_url)
+                    stats['events'] += 1
+                
+                cursor.execute("UPDATE tiktok_products SET name=?, image_url=?, updated_at=datetime('now') WHERE tiktokshop_id=?", (name, image_url, tid))
+                stats['upd'] += 1
             else:
-                skipped_duplicates += 1
+                master_id = get_or_create_product('tiktok', tid, name, product_url=product_url)
+                cursor.execute("INSERT INTO tiktok_products (tiktokshop_id, name, image_url, master_id) VALUES (?, ?, ?, ?)", (tid, name, image_url, master_id))
+                product_id = cursor.lastrowid
+                stats['new'] += 1
+            
+            # 销售数据
+            cursor.execute("SELECT id FROM tiktok_daily_sales WHERE product_id=? AND date=?", (product_id, date))
+            if cursor.fetchone():
+                cursor.execute("UPDATE tiktok_daily_sales SET price=?, rating=?, sales_count=? WHERE product_id=? AND date=?", 
+                    (p.get('price'), p.get('rating'), sales_count, product_id, date))
+                stats['sales_upd'] += 1
+            else:
+                cursor.execute("INSERT INTO tiktok_daily_sales (product_id, date, price, rating, sales_count) VALUES (?,?,?,?,?)",
+                    (product_id, date, p.get('price'), p.get('rating'), sales_count))
+                stats['sales_new'] += 1
         
         conn.commit()
-        
-        cursor.execute("SELECT COUNT(*) FROM tiktok_products")
-        total_products = cursor.fetchone()[0]
-        cursor.execute("SELECT COUNT(*) FROM tiktok_daily_sales")
-        total_sales = cursor.fetchone()[0]
-        
-        print(f"✅ TikTok import complete!")
-        print(f"   Total products in DB: {total_products}")
-        print(f"   Total sales records: {total_sales}")
-        print(f"   New sales inserted: {inserted_sales}")
-        print(f"   Sales updated: {updated_sales}")
-        print(f"   Images processed: {images_processed}")
-        print(f"   Skipped (duplicates): {skipped_duplicates}")
-        
         conn.close()
+        print(f"[OK] TikTok: {stats['new']} new, {stats['upd']} upd, {stats['sales_new']}+{stats['sales_upd']} sales, {stats['events']} events")
     
     def scan_and_import(self):
-        """扫描目录并导入所有 JSON 文件"""
+        """扫描并导入"""
         print(f"\n{'#'*60}")
-        print(f"# EcomAgent Database Importer")
-        print(f"# Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        print(f"# Incremental update enabled (by unique ID + date)")
-        print(f"# Image processing enabled")
+        print(f"# EcomAgent Data Importer v2.0")
+        print(f"# {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"{'#'*60}")
         
         if not self.scraping_dir.exists():
-            print(f"❌ Scraping directory not found: {self.scraping_dir}")
+            print(f"[ERROR] Dir not found: {self.scraping_dir}")
             return
         
-        json_files = list(self.scraping_dir.glob("*.json"))
-        print(f"\nFound {len(json_files)} JSON files to process\n")
+        files = list(self.scraping_dir.glob("*.json"))
+        amazon = sorted([f for f in files if f.name.startswith("amazon_")])
+        tiktok = sorted([f for f in files if f.name.startswith("tiktok_")])
         
-        if not json_files:
-            print("✅ No JSON files found. Nothing to import.")
-            return
+        print(f"Amazon: {len(amazon)}, TikTok: {len(tiktok)}")
         
-        amazon_files = [f for f in json_files if f.name.startswith("amazon_")]
-        tiktok_files = [f for f in json_files if f.name.startswith("tiktok_")]
-        
-        print(f"Amazon files: {len(amazon_files)}")
-        print(f"TikTok files: {len(tiktok_files)}")
-        
-        for file_path in amazon_files:
+        for f in amazon:
             try:
-                self.import_amazon(file_path)
+                self.import_amazon(f)
             except Exception as e:
-                print(f"❌ Error importing {file_path.name}: {e}")
+                print(f"[ERROR] {f.name}: {e}")
         
-        for file_path in tiktok_files:
+        for f in tiktok:
             try:
-                self.import_tiktok(file_path)
+                self.import_tiktok(f)
             except Exception as e:
-                print(f"❌ Error importing {file_path.name}: {e}")
+                print(f"[ERROR] {f.name}: {e}")
         
         print(f"\n{'#'*60}")
-        print(f"# Import complete at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        print(f"{'#'*60}\n")
-
-
-def main():
-    """主函数"""
-    importer = DatabaseImporter()
-    importer.scan_and_import()
+        print(f"# Done: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"{'#'*60}")
 
 
 if __name__ == "__main__":
-    main()
+    DataImporter().scan_and_import()

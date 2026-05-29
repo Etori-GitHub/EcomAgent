@@ -70,11 +70,15 @@ export class EaDashboard extends LitElement {
   private async _updatePlatform(platform: 'amazon' | 'tiktok') {
     this.updating = platform;
     try {
-      // TODO: 调用实际的抓取 API
-      console.log(`开始抓取 ${platform} 数据...`);
-      await new Promise(resolve => setTimeout(resolve, 2000)); // 模拟
-      alert(`${platform} 数据抓取完成`);
-      await this.loadStats();
+      const endpoint = platform === 'amazon' ? '/api/tasks/amazon-fetch' : '/api/tasks/tiktok-fetch';
+      const response = await fetch(endpoint, { method: 'POST' });
+      const data = await response.json();
+      
+      if (data.success) {
+        alert(`${platform} 抓取任务已启动，请稍后刷新查看结果`);
+      } else {
+        alert(data.message || '启动失败');
+      }
     } catch (e) {
       alert(`抓取失败: ${e}`);
     } finally {

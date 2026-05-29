@@ -430,9 +430,23 @@ export class EaProductMaster extends LitElement {
 
   private async _open1688(name: string | undefined, ecomCode: string) {
     if (!name) return;
-    // 带 ecom_code 参数跳转，让插件能识别来源
-    const url = `https://s.1688.com/selloffer/offer_search.htm?keywords=${encodeURIComponent(name)}&ecom_code=${encodeURIComponent(ecomCode)}`;
+    // 优先使用英文原名搜索（更准确的 1688 搜索结果）
+    // 如果是中文简称，尝试提取品牌名或关键词
+    const searchName = this._extractSearchKeyword(name);
+    const url = `https://s.1688.com/selloffer/offer_search.htm?keywords=${encodeURIComponent(searchName)}&ecom_code=${encodeURIComponent(ecomCode)}`;
     window.open(url, '_blank');
+  }
+
+  private _extractSearchKeyword(name: string): string {
+    // 如果包含中文，提取品牌名（第一个英文单词）
+    const englishWords = name.match(/[a-zA-Z]+/g);
+    if (englishWords && englishWords.length > 0) {
+      // 返回品牌名 + 产品类型关键词
+      const brand = englishWords[0];
+      return brand;
+    }
+    // 纯中文，直接返回
+    return name;
   }
 
   private _showImgPreview(e: MouseEvent, src: string) {
