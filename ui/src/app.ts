@@ -85,17 +85,6 @@ export class EcomagentApp extends LitElement {
   }
 
   private _renderPage() {
-    // 趋势页面独立渲染（不在布局内）
-    if (this._page === 'product-trend') {
-      return html`<ea-product-trend-page ecomCode=${this._trendCode}></ea-product-trend-page>`;
-    }
-
-    // 货源页面
-    if (this._page === 'sourcing') {
-      return html`<ea-sourcing ecomCode=${this._sourcingCode}></ea-sourcing>`;
-    }
-
-    // 其他页面在布局内
     switch (this._page) {
       case 'dashboard': return html`<ea-dashboard></ea-dashboard>`;
       case 'settings': return html`<ea-settings></ea-settings>`;
@@ -105,12 +94,14 @@ export class EcomagentApp extends LitElement {
       case 'today-top': return html`<ea-today-top></ea-today-top>`;
       case 'raw-data': return html`<ea-raw-data></ea-raw-data>`;
       case 'export': return html`<ea-export></ea-export>`;
+      case 'product-trend': return html`<ea-product-trend-page ecomCode=${this._trendCode}></ea-product-trend-page>`;
+      case 'sourcing': return html`<ea-sourcing ecomCode=${this._sourcingCode}></ea-sourcing>`;
       default: return html`<div style="padding:24px;color:var(--muted)">未知页面</div>`;
     }
   }
 
   render() {
-    // 趋势页面在布局内渲染
+    // 趋势页面和货源页面需要特殊处理
     if (this._page === 'product-trend') {
       return html`
         <ea-layout currentPage=${this._page}>
@@ -119,7 +110,7 @@ export class EcomagentApp extends LitElement {
       `;
     }
 
-    // 其他页面在布局内
+    // 所有其他页面在布局内
     return html`
       <ea-layout currentPage=${this._page}>
         ${this._renderPage()}

@@ -1,280 +1,312 @@
-// 商品名称翻译脚本
 const fs = require('fs');
 const path = require('path');
 
-const INPUT_FILE = path.join(__dirname, 'all_items.json');
-const OUTPUT_FILE = path.join(__dirname, 'processed_names.json');
+// 读取输入文件
+const inputFile = path.join(__dirname, 'all_items.json');
+const outputFile = path.join(__dirname, 'processed_names.json');
 
-// 翻译规则
-function translateProductName(name) {
-    if (!name || name.trim() === '') return '';
+const data = JSON.parse(fs.readFileSync(inputFile, 'utf-8'));
+
+// 翻译函数
+function translateName(name) {
+  if (!name || name.trim() === '') return '未知商品';
+  
+  name = name.trim();
+  
+  // 特殊处理
+  const specialCases = {
+    'essence': 'essence精华',
+    'Hibiclens': 'Hibiclens消毒液',
+    'Grad Cap Remix': '毕业帽装饰',
+    'blink plus plan with monthly auto-renewal': 'Blink Plus月度订阅',
+    'blink plus ai plan with monthly auto-renewal': 'Blink AI月度订阅',
+    'Alexa Emergency Assist Monthly (auto-renewal)': 'Alexa紧急协助订阅',
+  };
+  
+  if (specialCases[name]) return specialCases[name];
+  
+  // 知名品牌（保留英文）
+  const brands = [
+    'Apple', 'Samsung', 'Amazon Basics', 'Amazon Essentials', 'Amazon', 'Google', 'Microsoft', 'Sony', 'Nike', 
+    'Adidas', 'Crocs', 'medicube', 'BIODANCE', 'eos', 'Neutrogena', 'Maybelline', 'CeraVe', 'The Ordinary', 
+    'PanOxyl', 'EltaMD', 'Paula\'s Choice', 'Aquaphor', 'Vanicream', 'Illiyoon', 'Tree Hut', 'Mighty Patch', 
+    'Nizoral', 'Dove', 'Hanes', 'Gildan', 'Carhartt', 'Comfort Colors', 'Dickies', 'New Balance', 'Skechers', 
+    'Fruit of the Loom', 'Blink', 'Ring', 'Anker', 'Soundcore', 'JBL', 'Beats', 'SHOKZ', 'JLab', 'TAGRY', 
+    'Oura', 'Roku', 'Bounty', 'Scott', 'Charmin', 'Angel Soft', 'Quilted Northern', 'Cottonelle', 'Dawn', 
+    'Tide', 'Clorox', 'Lysol', 'Duracell', 'Energizer', 'Band-Aid', 'Ninja', 'KitchenAid', 'Lodge', 'Cosori', 
+    'Rubbermaid', 'STANLEY', 'Owala', 'YETI', 'HydroJug', 'Etekcity', 'Quest', 'Optimum Nutrition', 
+    'Vital Proteins', 'LMNT', 'Liquid I.V.', 'Nordic Naturals', 'Pure Encapsulations', 'GE', 'Gorilla', 
+    'Loctite', 'Velcro', 'O-Cedar', 'Puracy', 'Hibiclens', 'Affresh', 'Kodak', 'Playstation', 'BrüMate', 
+    'REDUCE', 'Sok It', 'Lifewit', 'HOTOR', 'SENSARTE', 'SUNLU', 'MedPride', 'Schneider', 'Supmedic', 'DIYMAG', 
+    'Life360', 'Tile', 'Sylvania', 'Nutrafol', 'Revlon', 'Laura Geller', 'e.l.f.', 'Dr.Melaxin', 'Dr.Althea', 
+    'Salt & Stone', 'Naturium', 'EQQUALBERRY', 'VALITIC', 'Clean Skin Club', 'Julep', 'grace & stella', 
+    'Body Restore', 'Nippies', 'EverFoams', 'KuaiLu', 'ANRABESS', 'SHAPERMINT', 'Wrangler', 'Rustler', 
+    'J.VER', 'COOFANDY', 'OEAK', 'LetsJoli', 'OFEEFAN', 'COCOMARTS', 'Vertvie', 'YEOREO', 'G4Free', 
+    'FITRELL', 'REPEL', 'wernies', 'Chantomoo', 'GIURKUU', 'Hstyle', 'Socomi', 'AceThrills', 'OEAGO', 
+    'ukeetap', 'SURETIVIAN', 'Zeawec', 'DOQAUS', 'TempPro', 'Alpha Grillers', 'Fullstar', 'Mueller', 
+    'bmani', 'TESSAN', 'Alex Tech', 'JohnBee', 'JOYMOOP', 'Molly\'s Suds', 'LIFARA', 'Art3d', 'Litepak', 
+    'Swihauk', 'Borje', 'NNPCBT', 'travel inspira', 'Dash', 'bella', 'TrendPlain', 'Homaxy', 'S&T INC.', 
+    'Inspire', 'Pure Protein', 'Ultima Replenisher', 'Physician\'s CHOICE', 'Depend', 'LUMIFY', 'O Positiv', 
+    'Cozy Essential', 'Miss Mouth\'s', 'Grandma\'s Secret', '30 SECONDS', 'Unboxme', 'Sampeel', 'Zeagoo', 
+    'CHICME', 'Trendy Queen', 'IECCP', 'DUDE Wipes', 'MRS. MEYER\'S', 'La Roche-Posay', 'FUJIFILM', 'Instax',
+  ];
+  
+  // 产品类型映射（优先级从高到低）
+  const productTypes = [
+    // 护肤美妆（精确匹配）
+    ['Toner Pads', '爽肤水棉片'], ['Zero Pore Pad', '零毛孔棉片'], ['Bio-Collagen Real Deep Mask', '生物胶原面膜'],
+    ['Collagen Overnight Peel Off', '胶原过夜面膜'], ['PDRN Pink Peptide Serum', 'PDRN精华'],
+    ['Exosome Shot', '外泌体精华'], ['Glycolic Acid 7%', '甘醇酸7%'], ['Niacinamide 10%', '烟酰胺10%'],
+    ['Hyaluronic Acid 2%', '透明质酸2%'], ['SKIN PERFECTING 2% BHA', 'BHA爽肤水'],
+    ['Body Lotion', '身体乳'], ['Cotton Swabs', '棉签'], ['Sunscreen Lotion', '防晒乳'],
+    ['Sunscreen', '防晒霜'], ['Makeup Remover Wipes', '卸妆湿巾'], ['Wrapping Mask', '包裹面膜'],
+    ['Jelly Cream', '果冻霜'], ['Mascara', '睫毛膏'], ['Clean Towels', '洁面巾'],
+    ['Hand Soap Refill', '洗手液补充装'], ['Hand Soap', '洗手液'], ['Exfoliating Toner', '去角质爽肤水'],
+    ['Body Wash', '沐浴露'], ['Under Eye Mask', '眼膜'], ['Acne Foaming Wash', '祛痘洁面乳'],
+    ['Shower Steamers', '淋浴香薰'], ['Anti-Dandruff Shampoo', '去屑洗发水'], ['Shampoo', '洗发水'],
+    ['Cotton Rounds', '化妆棉'], ['Sugar Scrub', '糖磨砂'], ['Face Sunscreen', '面部防晒'],
+    ['Illuminating Serum', '提亮精华'], ['Serum', '精华'], ['Healing Ointment', '修复膏'],
+    ['Face Moisturizer', '面部保湿霜'], ['Moisturizing Cream', '保湿霜'], ['Moisturizing Lotion', '保湿乳'],
+    ['Moisturizer', '保湿霜'], ['Eyeliner', '眼线笔'], ['Facial Cleanser', '洁面乳'],
+    ['Cleansing Foam', '洁面泡沫'], ['Eyeshadow', '眼影'], ['Shadow Stick', '眼影棒'],
+    ['Balm Stick', '膏棒'], ['Deodorant', '除臭剂'], ['Brow Pencil', '眉笔'],
+    ['Hair Growth Supplements', '生发补充剂'], ['Soap Bars', '肥皂'], ['Capsule Cream', '胶囊霜'],
+    ['Relief Cream', '舒缓霜'], ['Dark Spot Remover', '祛斑'], ['Ceramide Ato Concentrate Cream', '神经酰胺霜'],
+    ['Double Repair', '双重修复'], ['Ultra Sheer Dry-Touch', '干爽触感'], ['Micellar', '微胶束'],
+    ['Collagen Jelly Cream', '胶原果冻霜'], ['Zero Pore Capsule', '零毛孔胶囊'],
     
-    name = name.trim();
-    const lower = name.toLowerCase();
+    // 电子产品（精确匹配）
+    ['EarPods Headphones', 'EarPods耳机'], ['AirTag', 'AirTag追踪器'], ['Wireless Earbuds', '无线耳机'],
+    ['Echo Dot Max', 'Echo Dot Max'], ['Echo Dot Kids', 'Echo Dot儿童版'], ['Echo Dot', 'Echo Dot'],
+    ['Kindle Paperwhite Signature Edition', 'Kindle签名版'], ['Kindle Paperwhite', 'Kindle Paperwhite'],
+    ['Kindle Colorsoft', 'Kindle Colorsoft'], ['Kindle', 'Kindle'], ['Streaming Stick 4K', '4K流媒体棒'],
+    ['Streaming Stick HD', '高清流媒体棒'], ['Apple Watch Series', 'Apple Watch'], ['Apple Watch', 'Apple Watch'],
+    ['Wall Charger', '充电器'], ['Surge Protector Power Strip', '浪涌保护排插'], ['Surge Protector', '浪涌保护器'],
+    ['Power Strip', '排插'], ['Extension Cord', '延长线'], ['Remote Control', '遥控器'],
+    ['Instant Film', '胶片'], ['Sizing Kit', '尺寸套装'], ['Zip Ties', '扎带'],
+    ['Fire TV Stick 4K Max', 'Fire TV 4K Max'], ['Fire TV Stick 4K Plus', 'Fire TV 4K Plus'],
+    ['Fire TV Stick 4K Select', 'Fire TV 4K'], ['Fire TV Stick 4K', 'Fire TV 4K'], 
+    ['Fire TV Stick HD', 'Fire TV HD'], ['Echo Show 15', 'Echo Show 15'], ['Echo Show 11', 'Echo Show 11'],
+    ['Echo Show 5', 'Echo Show 5'], ['Echo Show', 'Echo Show'], ['Echo Spot', 'Echo Spot'],
+    ['Noise Cancelling Earbuds', '降噪耳机'], ['Portable Bluetooth Speaker', '便携蓝牙音箱'],
+    ['Bluetooth Speaker', '蓝牙音箱'], ['Bone Conduction Headphones', '骨传导耳机'],
+    ['Video Doorbell Wired', '有线视频门铃'], ['Video Doorbell', '视频门铃'], ['Doorbell', '门铃'],
+    ['Indoor Cam Plus', '室内摄像头Plus'], ['Indoor Cam', '室内摄像头'], ['Outdoor Cam Plus', '户外摄像头Plus'],
+    ['Outdoor Cam', '户外摄像头'], ['Stick Up Cam', '摄像头'], ['Chime Pro', '门铃提示器Pro'],
+    ['Chime', '门铃提示器'], ['mesh wifi add-on extender', 'Mesh WiFi扩展器'], ['Battery Pack', '电池组'],
+    ['Solar Panel', '太阳能板'], ['Floodlight Cam Wired Pro', '泛光灯Pro'], ['Floodlight Cam Wired Plus', '泛光灯Plus'],
+    ['Floodlight Cam', '泛光灯摄像头'], ['Spotlight Cam Plus', '聚光灯摄像头'], ['Pan-Tilt Indoor Cam', '云台室内摄像头'],
+    ['Smart Plug', '智能插座'], ['Adjustable Stand', '可调节支架'], ['Emergency Assist', '紧急协助'],
+    ['DualSense Wireless Controller', 'DualSense手柄'], ['Light Bulb', '灯泡'], ['LED 4K UHD', 'LED 4K超高清'],
+    ['Smart Fire TV', '智能Fire TV'], ['eero 6', 'eero 6'], ['Plant-Based Leather Case', '植物皮革保护套'],
+    ['AirPods Pro', 'AirPods Pro'], ['AirPods', 'AirPods'], ['iPad', 'iPad'], ['iPhone', 'iPhone'],
+    ['MacBook', 'MacBook'], ['Laptop', '笔记本'], ['Digital Camera', '数码相机'],
     
-    // Apple 产品
-    if (lower.match(/apple iphone (\d+)(?:\s+pro(?:\s+max)?)?/)) {
-        const match = lower.match(/iphone (\d+)/);
-        const model = match ? match[1] : '';
-        if (lower.includes('pro max')) return `苹果iPhone ${model} Pro Max`;
-        if (lower.includes('pro')) return `苹果iPhone ${model} Pro`;
-        if (lower.includes('plus')) return `苹果iPhone ${model} Plus`;
-        if (lower.includes('mini')) return `苹果iPhone ${model} Mini`;
-        return `苹果iPhone ${model}`;
+    // 服装（精确匹配）
+    ['Boxer Briefs', '平角内裤'], ['Wide Leg Pants', '阔腿裤'], ['Flowy Palazzo', '飘逸阔腿裤'],
+    ['Wireless Bra', '无钢圈文胸'], ['Jelly Bra', '果冻文胸'], ['Strapless Bra', '无肩带文胸'],
+    ['Dress Shirts', '正装衬衫'], ['Linen Shirts', '亚麻衬衫'], ['Pocket T-Shirt', '口袋T恤'],
+    ['Heavyweight Short Sleeve Tee', '重磅短袖T恤'], ['Beefy-t T-Shirt', '重磅T恤'], ['Ultra Cotton T-Shirt', '精梳棉T恤'],
+    ['Crew T-Shirts', '圆领T恤'], ['Sleeveless Tag Free', '无袖无标'], ['Crew Tee Undershirts', '圆领汗衫'],
+    ['Nipple Covers', '乳贴'], ['Memory Foam House Slippers', '记忆棉拖鞋'], ['Open-toe Slippers', '露趾拖鞋'],
+    ['Fuzzy Slippers', '毛绒拖鞋'], ['Classic Clog', '经典洞洞鞋'], ['Flip Flops', '人字拖'],
+    ['Arch Support', '足弓支撑'], ['Henley Tops', '亨利领上衣'], ['Cotton Bikini', '棉质比基尼'],
+    ['No Underwire', '无钢圈'], ['Plus Size Minimizer', '大码缩胸文胸'], ['Plus Size', '大码'],
+    ['Cargo Stretch Short', '工装短裤'], ['Tank Tops', '背心'], ['Built-in Bra Tank Tops', '内置文胸背心'],
+    ['V Neck Ribbed Knit', 'V领罗纹'], ['No Show Socks', '隐形袜'], ['Low Socks', '低帮袜'],
+    ['Ruffle Socks', '荷叶边袜'], ['Crew Socks', '中筒袜'], ['Compression Socks', '压缩袜'],
+    ['Graduation Cap Headband', '毕业帽发箍'], ['Yoga Pants', '瑜伽裤'], ['Workout Leggings', '运动打底裤'],
+    ['Leggings', '打底裤'], ['No Front Seam', '无前缝'], ['Water Shoes', '涉水鞋'],
+    ['Quick-Dry Aqua Socks', '速干水鞋'], ['Sock Shoes', '袜鞋'], ['Toddler Walking Shoes', '学步鞋'],
+    ['Golf Pants', '高尔夫裤'], ['Stretch Work Dress Pants', '弹力正装裤'], ['Cross Trainer', '综合训练鞋'],
+    ['Go Walk Flex', 'Go Walk Flex'], ['Shapewear', '塑身衣'], ['Kimono Cardigan', '和服开衫'],
+    ['Floral Print Puff Sleeve', '花卉泡泡袖'], ['3/4 Length Sleeve', '七分袖'],
+    ['Short Sleeve Tops', '短袖上衣'], ['Short Sleeve Shirts', '短袖衬衫'], ['Short Sleeve', '短袖'],
+    ['Long Sleeve', '长袖'], ['Sleeveless', '无袖'], ['Classic Relaxed Fit', '经典宽松版'],
+    ['Relaxed Fit', '宽松版'], ['Regular-Fit', '常规版'], ['Classic Cargo', '经典工装'],
+    
+    // 日用品（精确匹配）
+    ['Quick Size Paper Towels', '快速抽取纸巾'], ['Pick-A-Size Paper Towels', '自选尺寸纸巾'],
+    ['Select-A-Size Paper Towels', '自选尺寸纸巾'], ['Tear-A-Square Paper Towels', '可撕方块纸巾'],
+    ['Flex-Sheets Paper Towels', '弹性纸巾'], ['Paper Towels', '纸巾'], ['Ultra Soft Toilet Paper', '超柔卫生纸'],
+    ['Ultra Strong Toilet Paper', '超韧卫生纸'], ['Ultra Plush Toilet Paper', '超蓬松卫生纸'],
+    ['Ultra Clean Toilet Paper', '超洁净卫生纸'], ['Ultra Comfort Toilet Paper', '超舒适卫生纸'],
+    ['2-Ply Soft Toilet Paper', '双层柔卫生纸'], ['2-Ply Toilet Paper', '双层卫生纸'],
+    ['3-Ply Paper Towels', '三层纸巾'], ['Toilet Paper', '卫生纸'], ['Flushable Wipes', '可冲湿巾'],
+    ['Wet Wipes', '湿巾'], ['AA Alkaline Batteries', 'AA碱性电池'], ['AAA Batteries', 'AAA电池'],
+    ['Alkaline Batteries', '碱性电池'], ['Lithium Battery', '锂电池'], ['Disposable Paper Plates', '一次性纸盘'],
+    ['Paper Plates', '纸盘'], ['Electrolytes', '电解质'], ['Electrolyte Powder', '电解质粉'],
+    ['Zero Sugar Electrolytes', '零糖电解质'], ['Hydration Multiplier', '补水倍增剂'], ['Sugar-Free', '无糖'],
+    ['Creatine Monohydrate Powder', '一水肌酸粉'], ['Whey Protein Powder', '乳清蛋白粉'], ['Protein Powder', '蛋白粉'],
+    ['Protein Bars', '蛋白棒'], ['Collagen Peptides Powder', '胶原蛋白粉'], ['Dish Soap Refill', '洗洁精补充装'],
+    ['Dish Soap', '洗洁精'], ['Kitchen Drawstring Trash Bags', '厨房垃圾袋'], ['Drawstring Trash Bags', '抽绳垃圾袋'],
+    ['Trash Bags', '垃圾袋'], ['Sterile Alcohol Prep Pads', '无菌酒精棉片'], ['Alcohol Prep Pads', '酒精棉片'],
+    ['Probiotics', '益生菌'], ['Adhesive Bandages', '创可贴'], ['Adult Diapers', '成人纸尿裤'],
+    ['Eye Drops', '眼药水'], ['Disinfecting Wipes', '消毒湿巾'], ['Toilet Bowl Cleaner', '马桶清洁剂'],
+    ['Laundry Detergent', '洗衣液'], ['PODS', '洗衣凝珠'], ['Nitrile Exam Gloves', '丁腈检查手套'],
+    ['Nitrile Disposable Gloves', '丁腈手套'], ['Disposable Gloves', '一次性手套'], ['Disposable Face Mask', '一次性口罩'],
+    ['Face Mask', '口罩'], ['Vacuum Storage Bags', '真空收纳袋'], ['Super Glue Gel', '强力胶凝胶'],
+    ['Super Glue', '强力胶'], ['Dishwasher Pods', '洗碗机凝珠'], ['3D Printer Filament', '3D打印耗材'],
+    ['Magnetic Hooks', '磁性挂钩'], ['Lint Rollers', '粘毛滚筒'], ['Spin Mop', '旋转拖把'],
+    ['Hydrocolloid Roll', '水胶体卷'], ['Silicone Caulk', '硅胶填缝剂'], ['Isopropyl Alcohol', '异丙醇酒精'],
+    ['Hand Towel', '擦手纸'], ['Stain Remover', '去渍剂'], ['Mold Remover', '霉菌去除剂'],
+    ['Magnesium', '镁补充剂'], ['Fluoride Free Toothpaste', '无氟牙膏'], ['Toothpaste', '牙膏'],
+    ['Hook and Loop Tape', '魔术贴'], ['Coffee Syrup Pump', '咖啡糖浆泵'],
+    
+    // 厨房用品（精确匹配）
+    ['Insulated Stainless Steel Water', '保温水杯'], ['Insulated Stainless Steel', '保温杯'],
+    ['Tumbler with Handle and Straw', '带手柄吸管杯'], ['Tumbler', '随行杯'], ['Water Bottle', '水杯'],
+    ['Traveler', '旅行杯'], ['Rambler', '随行杯'], ['Quencher', 'Quencher杯'], ['FreeSip', 'FreeSip杯'],
+    ['SmoothSip', 'SmoothSip杯'], ['JavaSok', 'JavaSok杯'], ['Era', 'Era杯'], ['Sway', 'Sway杯'],
+    ['Saltini', 'Saltini杯'], ['Digital Kitchen Scale', '电子厨房秤'], ['Food Kitchen Scale', '厨房秤'],
+    ['Instant Read Meat Thermometer', '即时读数温度计'], ['Meat Thermometer', '肉类温度计'],
+    ['All Purpose Kitchen Shears', '多用途厨房剪刀'], ['Kitchen Shears', '厨房剪刀'],
+    ['Multifunction Can Opener', '多功能开罐器'], ['Can Opener', '开罐器'],
+    ['Cotton Waffle Weave Kitchen Dish Cloths', '棉质洗碗布'], ['Dish Cloths', '洗碗布'],
+    ['Air Fryer Paper Liners', '炸锅纸'], ['Parchment Paper', '羊皮纸'], ['Sponge Holder', '海绵架'],
+    ['Compact Personal Blender', '个人搅拌机'], ['Professional Plus Blender', '专业搅拌机'], ['Blender', '搅拌机'],
+    ['Vegetable Chopper', '切菜器'], ['Pro Chopper', '专业切菜器'], ['Mandoline', '切片器'],
+    ['Dish Drying Mat', '晾干垫'], ['Insulated Lunch Box', '保温饭盒'], ['Lunch Bag', '午餐包'], ['Lunch Box', '饭盒'],
+    ['Rapid Egg Cooker', '快速煮蛋器'], ['Expandable Silverware Organizer', '可扩展餐具收纳盒'],
+    ['Silverware Organizer', '餐具收纳盒'], ['Seasoned Cast Iron Skillet', '铸铁平底锅'], ['Cast Iron Skillet', '铸铁锅'],
+    ['Ice Cube Tray with Lid and Bin', '冰格套装'], ['Ice Cube Tray', '冰格'],
+    ['Electric Salt and Pepper Grinder Set', '电动盐胡椒研磨器'], ['Salt and Pepper Grinder', '盐胡椒研磨器'],
+    ['TurboBlaze Air Fryer', 'TurboBlaze炸锅'], ['Air Fryer', '空气炸锅'], ['Chicken Shredder', '鸡肉撕碎器'],
+    ['Glass Food Storage Containers', '玻璃食品盒'], ['Plastic Food Storage', '塑料食品盒'],
+    ['Food Storage Containers', '食品储存盒'], ['Bamboo Cutting Board', '竹砧板'], ['Cutting Board', '砧板'],
+    ['Nonstick Frying Pan', '不粘煎锅'], ['Frying Pan', '煎锅'], ['Skillet', '平底锅'],
+    ['Meat Chopper', '碎肉器'], ['Tongs For Cooking', '烹饪夹'], ['Tongs', '夹子'],
+    ['2 Slice Slim Toaster', '两片超薄烤面包机'],
+    
+    // 其他
+    ['Mothers Day Gifts', '母亲节礼物'], ['Gifts for Mom', '妈妈礼物'], ['Gifts for Grandma', '奶奶礼物'],
+    ['Mothers Day', '母亲节'], ['Valentines', '情人节'], ['Luggage Scale', '行李秤'],
+    ['Windproof Travel Umbrella', '防风旅行伞'], ['Umbrella', '雨伞'], ['Grad Cap', '毕业帽'],
+  ];
+  
+  // 提取品牌
+  let brand = '';
+  let remaining = name;
+  
+  for (const b of brands) {
+    if (name.toLowerCase().startsWith(b.toLowerCase())) {
+      brand = b;
+      remaining = name.substring(b.length).trim();
+      break;
     }
-    if (lower.includes('apple iphone se')) return '苹果iPhone SE';
-    if (lower.includes('apple ipad')) return '苹果iPad';
-    if (lower.includes('apple watch series')) {
-        const match = lower.match(/series (\d+)/);
-        return match ? `苹果Watch Series ${match[1]}` : '苹果Watch';
+  }
+  
+  // 提取产品类型
+  let productType = '';
+  for (const [pattern, translation] of productTypes) {
+    if (remaining.toLowerCase().includes(pattern.toLowerCase())) {
+      productType = translation;
+      break;
     }
-    if (lower.includes('apple airpods pro')) {
-        if (lower.includes('2nd')) return '苹果AirPods Pro 2代';
-        return '苹果AirPods Pro';
+  }
+  
+  // 如果没有匹配到产品类型，尝试从整个名称匹配
+  if (!productType) {
+    for (const [pattern, translation] of productTypes) {
+      if (name.toLowerCase().includes(pattern.toLowerCase())) {
+        productType = translation;
+        break;
+      }
     }
-    if (lower.match(/apple airpods (\d)/)) {
-        const match = lower.match(/airpods (\d)/);
-        return match ? `苹果AirPods ${match[1]}` : '苹果AirPods';
+  }
+  
+  // 如果还是没有，提取关键词
+  if (!productType) {
+    const keywords = remaining.split(/\s+/).filter(w => w.length > 2).slice(0, 2);
+    productType = keywords.join(' ') || remaining.split(/\s+/)[0] || '';
+  }
+  
+  // 品牌缩写映射（长品牌名缩短）
+  const brandShortcuts = {
+    'Amazon Basics': '亚马逊',
+    'Amazon Essentials': '亚马逊',
+    'Amazon': '亚马逊',
+    'Mighty Patch': 'Mighty',
+    'Clean Skin Club': 'CSC',
+    'Laura Geller': 'LauraGeller',
+    'MRS. MEYER\'S': 'Meyer',
+    'MRS. MEYER\'S CLEAN DAY': 'Meyer',
+    'grace & stella': 'G&S',
+    'Body Restore': 'BodyR',
+    'Paula\'s Choice': 'Paula',
+    'The Ordinary': 'TO',
+    'Physician\'s CHOICE': 'PC',
+    'Grandma\'s Secret': 'Grandma',
+    'Miss Mouth\'s': 'MissM',
+    'Fruit of the Loom': 'FOTL',
+    'Optimum Nutrition': 'ON',
+    'Pure Encapsulations': 'PE',
+    'Nordic Naturals': 'NN',
+    'Liquid I.V.': 'LIV',
+    'Vital Proteins': 'VP',
+    'Quilted Northern': 'QN',
+    'Angel Soft': 'AS',
+    'Cottonelle': 'Cott',
+  };
+  
+  // 缩短品牌名
+  const displayBrand = brandShortcuts[brand] || brand;
+  
+  // 构建短名称
+  let shortName = (displayBrand ? displayBrand + ' ' : '') + productType;
+  
+  // 提取型号/版本
+  const versionPatterns = [
+    /(\d+)(?:st|nd|rd|th)?\s*(?:Gen|Generation)/i,
+    /Series\s*(\d+)/i,
+    /(\d+)(?:th)?\s*Gen/i,
+    /(\d+\.\d+)/,  // 版本号如 2.0
+  ];
+  
+  for (const vp of versionPatterns) {
+    const match = name.match(vp);
+    if (match) {
+      shortName += ' ' + match[1] + '代';
+      break;
     }
-    if (lower.includes('apple airpods')) return '苹果AirPods';
-    if (lower.includes('apple pencil')) return '苹果Pencil';
-    
-    // medicube 产品
-    if (lower.includes('medicube')) {
-        if (lower.includes('toner pads') || lower.includes('zero pore')) return 'Medicube零毛孔爽肤棉片';
-        if (lower.includes('wrapping mask')) return 'Medicube胶原蛋白面膜';
-        if (lower.includes('collagen jelly cream')) return 'Medicube胶原蛋白果冻霜';
-        if (lower.includes('facial cleanser')) return 'Medicube洁面泡沫';
-        if (lower.includes('pdrn')) return 'Medicube PDRN精华';
-        return 'Medicube护肤产品';
+  }
+  
+  // 清理并限制长度（中文按1.5字符计算，英文算1）
+  shortName = shortName.trim();
+  
+  // 计算显示长度（中文算1.5，英文算1）
+  const displayLen = (str) => {
+    let len = 0;
+    for (const c of str) {
+      len += c.charCodeAt(0) > 127 ? 1.5 : 1;
     }
-    
-    // CeraVe 产品
-    if (lower.includes('cerave')) {
-        if (lower.includes('moisturizing cream')) return 'CeraVe保湿霜';
-        if (lower.includes('hydrating facial cleanser')) return 'CeraVe洁面乳';
-        if (lower.includes('cleanser')) return 'CeraVe洁面';
-        return 'CeraVe护肤产品';
-    }
-    
-    // Neutrogena 产品
-    if (lower.includes('neutrogena')) {
-        if (lower.includes('ultra sheer') || lower.includes('spf')) return '露得清防晒霜';
-        if (lower.includes('makeup remover')) return '露得清卸妆湿巾';
-        return '露得清护肤产品';
-    }
-    
-    // The Ordinary 产品
-    if (lower.includes('the ordinary')) {
-        if (lower.includes('glycolic acid')) return 'The Ordinary甘醇酸爽肤水';
-        if (lower.includes('hyaluronic acid')) return 'The Ordinary透明质酸精华';
-        if (lower.includes('niacinamide')) return 'The Ordinary烟酰胺精华';
-        return 'The Ordinary护肤产品';
-    }
-    
-    // Amazon 设备
-    if (lower.includes('amazon echo show')) {
-        const match = lower.match(/echo show (\d+)/);
-        return match ? `Amazon Echo Show ${match[1]}` : 'Amazon Echo Show';
-    }
-    if (lower.includes('amazon echo dot')) return 'Amazon Echo Dot';
-    if (lower.includes('amazon echo spot')) return 'Amazon Echo Spot';
-    if (lower.includes('amazon fire tv stick')) return 'Amazon Fire TV Stick';
-    if (lower.includes('amazon fire hd')) return 'Amazon Fire HD平板';
-    if (lower.includes('amazon kindle colorsoft')) return 'Kindle Colorsoft';
-    if (lower.includes('amazon kindle paperwhite')) return 'Kindle Paperwhite';
-    if (lower.includes('amazon basics')) {
-        if (lower.includes('cotton swabs')) return 'Amazon Basics棉签';
-        if (lower.includes('disinfecting wipes')) return 'Amazon Basics消毒湿巾';
-        if (lower.includes('kitchen scale')) return 'Amazon Basics厨房秤';
-        return 'Amazon Basics产品';
-    }
-    
-    // Ring 设备
-    if (lower.includes('ring')) {
-        if (lower.includes('battery doorbell plus')) return 'Ring电池门铃Plus';
-        if (lower.includes('battery doorbell')) return 'Ring电池门铃';
-        if (lower.includes('wired doorbell pro')) return 'Ring有线门铃Pro';
-        if (lower.includes('wired doorbell')) return 'Ring有线门铃';
-        if (lower.includes('video doorbell')) return 'Ring可视门铃';
-        if (lower.includes('indoor cam plus')) return 'Ring室内摄像头Plus';
-        if (lower.includes('indoor cam')) return 'Ring室内摄像头';
-        if (lower.includes('outdoor cam plus')) return 'Ring室外摄像头Plus';
-        if (lower.includes('outdoor cam') || lower.includes('stick up cam')) return 'Ring室外摄像头';
-        if (lower.includes('spotlight cam')) return 'Ring聚光摄像头';
-        if (lower.includes('floodlight cam')) return 'Ring泛光摄像头';
-        if (lower.includes('chime pro')) return 'Ring门铃提示器Pro';
-        if (lower.includes('chime')) return 'Ring门铃提示器';
-        if (lower.includes('solar panel')) return 'Ring太阳能板';
-        if (lower.includes('battery pack')) return 'Ring电池包';
-        return 'Ring智能家居产品';
-    }
-    
-    // Blink 设备
-    if (lower.includes('blink')) {
-        if (lower.includes('outdoor 2k')) return 'Blink室外摄像头2K';
-        if (lower.includes('outdoor') && lower.includes('floodlight')) return 'Blink泛光摄像头';
-        if (lower.includes('outdoor')) return 'Blink室外摄像头';
-        if (lower.includes('mini 2k')) return 'Blink Mini 2K';
-        if (lower.includes('mini')) return 'Blink Mini';
-        return 'Blink智能家居产品';
-    }
-    
-    // 制冰机
-    if (lower.includes('ice maker')) {
-        if (lower.includes('nugget')) return '颗粒冰制冰机';
-        if (lower.includes('countertop')) return '台式制冰机';
-        return '制冰机';
-    }
-    
-    // iPhone (非Apple前缀)
-    if (lower.match(/iphone (\d+)(?:\s+pro(?:\s+max)?)?/)) {
-        const match = lower.match(/iphone (\d+)/);
-        const model = match ? match[1] : '';
-        if (lower.includes('pro max')) return `iPhone ${model} Pro Max`;
-        if (lower.includes('pro')) return `iPhone ${model} Pro`;
-        if (lower.includes('plus')) return `iPhone ${model} Plus`;
-        if (lower.includes('mini')) return `iPhone ${model} Mini`;
-        return `iPhone ${model}`;
-    }
-    
-    // AirPods
-    if (lower.includes('airpods pro') && lower.includes('2nd')) return '苹果AirPods Pro 2代';
-    if (lower.includes('airpods pro')) return '苹果AirPods Pro';
-    if (lower.match(/airpods (\d)/)) {
-        const match = lower.match(/airpods (\d)/);
-        return match ? `苹果AirPods ${match[1]}` : '苹果AirPods';
-    }
-    
-    // PlayStation
-    if (lower.includes('playstation') || lower.includes('dualsense')) return 'PS5手柄';
-    
-    // Nintendo
-    if (lower.includes('nintendo switch')) return '任天堂Switch';
-    
-    // Beats
-    if (lower.includes('beats studio pro')) return 'Beats Studio Pro';
-    if (lower.includes('beats solo')) return 'Beats Solo';
-    
-    // 知名品牌
-    if (lower.includes('biodance')) return 'BIODANCE胶原蛋白面膜';
-    if (lower.includes('eos') && lower.includes('body lotion')) return 'eos身体乳';
-    if (lower.includes('mighty patch')) return 'Mighty Patch痘痘贴';
-    if (lower.includes('panoxyl')) return 'PanOxyl祛痘洗面奶';
-    if (lower.includes('nizoral')) return 'Nizoral去屑洗发水';
-    if (lower.includes('aquaphor')) return 'Aquaphor修护膏';
-    if (lower.includes('lodge') && lower.includes('cast iron')) return 'Lodge铸铁锅';
-    if (lower.includes('crocs')) return 'Crocs洞洞鞋';
-    if (lower.includes('duracell') && lower.includes('2032')) return '金霸王2032电池';
-    if (lower.includes('ninja') && lower.includes('blender')) return 'Ninja搅拌机';
-    if (lower.includes('ninja') && lower.includes('air fryer')) return 'Ninja空气炸锅';
-    if (lower.includes('cosori') && lower.includes('air fryer')) return 'Cosori空气炸锅';
-    if (lower.includes('kitchenaid')) return 'KitchenAid厨房工具';
-    if (lower.includes('owala') && lower.includes('freesip')) return 'Owala FreeSip水杯';
-    if (lower.includes('stanley') && lower.includes('quencher')) return 'STANLEY保温杯';
-    if (lower.includes('yeti') && lower.includes('rambler')) return 'YETI保温杯';
-    if (lower.includes('gorilla') && lower.includes('super glue')) return 'Gorilla强力胶';
-    if (lower.includes('velcro')) return 'VELCRO魔术贴';
-    if (lower.includes('tide') && lower.includes('detergent')) return '汰渍洗衣液';
-    if (lower.includes('clorox') && lower.includes('wipes')) return '高乐氏消毒湿巾';
-    if (lower.includes('lysol') && lower.includes('toilet')) return '来苏尔马桶清洁剂';
-    if (lower.includes('band-aid')) return '邦迪创可贴';
-    if (lower.includes('dove') && lower.includes('body wash')) return '多芬沐浴露';
-    if (lower.includes('tree hut') && lower.includes('scrub')) return 'Tree Hut磨砂膏';
-    if (lower.includes('silonn') && lower.includes('ice maker')) return 'Silonn制冰机';
-    if (lower.includes('euhomy') && lower.includes('ice maker')) return 'EUHOMY制冰机';
-    if (lower.includes('black+decker')) return 'Black+Decker电器';
-    if (lower.includes('rubbermaid') && lower.includes('food storage')) return 'Rubbermaid食品收纳盒';
-    if (lower.includes('hotor') && lower.includes('lunch')) return 'HOTOR保温饭盒';
-    if (lower.includes('lifewit') && lower.includes('lunch')) return 'Lifewit午餐包';
-    if (lower.includes('sensarte') && lower.includes('frying pan')) return 'SENSARTE不粘锅';
-    if (lower.includes('reynolds') && lower.includes('parchment')) return 'Reynolds烘焙纸';
-    
-    // 通用产品类型识别
-    if (lower.includes('sunscreen') || lower.includes('spf')) return '防晒产品';
-    if (lower.includes('moisturizer') || lower.includes('lotion')) return '保湿产品';
-    if (lower.includes('cleanser') || lower.includes('face wash')) return '洁面产品';
-    if (lower.includes('serum')) return '精华产品';
-    if (lower.includes('mask') && !lower.includes('oxygen')) return '面膜产品';
-    if (lower.includes('shampoo')) return '洗发产品';
-    if (lower.includes('conditioner')) return '护发产品';
-    if (lower.includes('mascara')) return '睫毛膏';
-    if (lower.includes('vitamin') || lower.includes('supplement')) return '保健品';
-    if (lower.includes('protein')) return '蛋白产品';
-    if (lower.includes('gloves')) return '手套';
-    if (lower.includes('wipes')) return '湿巾';
-    if (lower.includes('towel')) return '毛巾';
-    if (lower.includes('blanket')) return '毯子';
-    if (lower.includes('pillow')) return '枕头';
-    if (lower.includes('chair')) return '椅子';
-    if (lower.includes('table')) return '桌子';
-    if (lower.includes('lamp') || lower.includes('light')) return '灯具';
-    if (lower.includes('fan')) return '风扇';
-    if (lower.includes('heater')) return '加热器';
-    if (lower.includes('humidifier')) return '加湿器';
-    if (lower.includes('air purifier')) return '空气净化器';
-    if (lower.includes('vacuum')) return '吸尘器';
-    if (lower.includes('mop')) return '拖把';
-    if (lower.includes('scale')) return '秤';
-    if (lower.includes('battery')) return '电池';
-    if (lower.includes('cable') || lower.includes('cord')) return '数据线';
-    if (lower.includes('charger')) return '充电器';
-    if (lower.includes('case') && !lower.includes('pillow')) return '保护壳';
-    if (lower.includes('screen protector')) return '屏幕保护膜';
-    if (lower.includes('headphones') || lower.includes('earbuds') || lower.includes('earphones')) return '耳机';
-    if (lower.includes('speaker')) return '音箱';
-    if (lower.includes('camera')) return '相机';
-    if (lower.includes('remote')) return '遥控器';
-    if (lower.includes('controller')) return '游戏手柄';
-    if (lower.includes('dog') || lower.includes('cat') || lower.includes('pet')) return '宠物用品';
-    if (lower.includes('toy')) return '玩具';
-    if (lower.includes('game')) return '游戏';
-    if (lower.includes('book')) return '书籍';
-    if (lower.includes('shoes') || lower.includes('sandals') || lower.includes('boots')) return '鞋类';
-    if (lower.includes('shirt') || lower.includes('tee') || lower.includes('top')) return '上衣';
-    if (lower.includes('pants') || lower.includes('jeans') || lower.includes('shorts')) return '裤子';
-    if (lower.includes('dress') || lower.includes('skirt')) return '裙装';
-    if (lower.includes('jacket') || lower.includes('coat')) return '外套';
-    if (lower.includes('underwear') || lower.includes('bra')) return '内衣';
-    if (lower.includes('bag') || lower.includes('backpack')) return '包袋';
-    if (lower.includes('wallet')) return '钱包';
-    if (lower.includes('watch') && !lower.includes('apple')) return '手表';
-    if (lower.includes('sunglasses') || lower.includes('glasses')) return '眼镜';
-    if (lower.includes('hat') || lower.includes('cap')) return '帽子';
-    
-    // 截断过长的名称
-    if (name.length > 15) return name.substring(0, 15) + '...';
-    return name;
+    return len;
+  };
+  
+  // 限制在18个显示字符内（约等于15个中文字符的视觉效果）
+  while (displayLen(shortName) > 18 && shortName.length > 0) {
+    shortName = shortName.substring(0, shortName.length - 1);
+  }
+  shortName = shortName.trim();
+  
+  // 确保有效
+  if (shortName.length < 2) {
+    shortName = name.split(/\s+/).slice(0, 2).join(' ').substring(0, 15);
+  }
+  
+  return shortName || '未知商品';
 }
 
-// 主处理逻辑
-console.log('读取商品数据...');
-const items = JSON.parse(fs.readFileSync(INPUT_FILE, 'utf8'));
-console.log(`共 ${items.length} 个商品`);
-
-const results = [];
-let count = 0;
-
-for (const item of items) {
-    count++;
-    const shortName = translateProductName(item.name);
-    
-    results.push({
-        id: item.id,
-        short_name: shortName
-    });
-    
-    if (count % 500 === 0) {
-        console.log(`已处理: ${count} / ${items.length}`);
-    }
-}
-
-// 输出结果
-const output = {
-    batch_id: `translate_${new Date().toISOString().replace(/[-:T]/g, '').substring(0, 15)}`,
-    items: results
+// 处理所有商品
+const result = {
+  batch_id: "ecomagent-translate-names-20260528",
+  items: data.map(item => ({
+    id: item.id,
+    short_name: translateName(item.name)
+  }))
 };
 
-console.log('保存结果...');
-fs.writeFileSync(OUTPUT_FILE, JSON.stringify(output, null, 2), 'utf8');
-console.log(`完成！结果已保存到: ${OUTPUT_FILE}`);
+// 写入输出文件
+fs.writeFileSync(outputFile, JSON.stringify(result, null, 2), 'utf-8');
+
+console.log(`处理完成: ${result.items.length} 条数据已保存到 ${outputFile}`);
