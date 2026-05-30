@@ -1555,9 +1555,9 @@ async def list_sourcing(
         params = []
         
         if search:
-            base_query += " AND (title LIKE ? OR shop_name LIKE ? OR offer_id LIKE ?)"
-            count_query += " AND (title LIKE ? OR shop_name LIKE ? OR offer_id LIKE ?)"
-            params.extend([f"%{search}%", f"%{search}%", f"%{search}%"])
+            base_query += " AND (title LIKE ? OR shop_name LIKE ? OR offer_id LIKE ? OR ecom_code LIKE ?)"
+            count_query += " AND (title LIKE ? OR shop_name LIKE ? OR offer_id LIKE ? OR ecom_code LIKE ?)"
+            params.extend([f"%{search}%", f"%{search}%", f"%{search}%", f"%{search}%"])
         
         if ecom_code:
             base_query += " AND ecom_code = ?"

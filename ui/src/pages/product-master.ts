@@ -429,17 +429,14 @@ export class EaProductMaster extends LitElement {
   }
 
   private async _open1688(name: string | undefined, ecomCode: string) {
-    console.log('_open1688 called with:', { name, ecomCode });
     if (!name) return;
     // 调用后端 API 生成 GBK 编码的 1688 搜索 URL
     try {
       const response = await fetch(`/api/1688-search-url?keyword=${encodeURIComponent(name)}`);
       const data = await response.json();
-      console.log('1688 API response:', data);
       const url = `${data.url}&ecom_code=${ecomCode}`;
       window.open(url, '_blank');
     } catch (e) {
-      console.error('1688 API error:', e);
       // 失败时降级为 UTF-8 编码
       const url = `https://s.1688.com/selloffer/offer_search.htm?keywords=${encodeURIComponent(name)}&ecom_code=${ecomCode}`;
       window.open(url, '_blank');

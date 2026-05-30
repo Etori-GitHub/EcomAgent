@@ -166,41 +166,73 @@ export class EcomAgentSourcing extends LitElement {
     
     /* 工具栏 */
     .toolbar {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      margin-bottom: 24px;
       display: flex;
       gap: 12px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      align-items: center;
+      align-items: flex-end;
     }
     
-    .search-box {
-      flex: 1;
-      min-width: 200px;
-      max-width: 400px;
-      position: relative;
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .field-label {
+      font-size: 11px; font-weight: 600; color: var(--muted);
     }
     
     .search-input {
-      width: 100%;
-      padding: 10px 16px 10px 40px;
+      padding: 6px 10px;
       border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      background: var(--bg);
-      color: var(--text);
-      font-size: 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px; background: var(--bg-elevated);
+      color: var(--text); transition: var(--duration-fast) ease;
+      width: 240px;
     }
     
     .search-input:focus {
-      outline: none;
-      border-color: var(--primary);
+      outline: none; border-color: var(--accent);
     }
     
-    .search-icon {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--muted);
+    .search-btn {
+      padding: 6px 16px; border-radius: var(--radius-sm);
+      font-size: 13px; font-weight: 500; border: none;
+      cursor: pointer; transition: var(--duration-fast) ease;
+      background: var(--accent); color: var(--accent-foreground);
+    }
+    
+    .search-btn:hover { background: var(--accent-hover); }
+    
+    /* 筛选标签 */
+    .filter-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: var(--accent);
+      color: white;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+    }
+    
+    .filter-clear {
+      background: transparent;
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: 0;
+      font-size: 14px;
+      line-height: 1;
+      opacity: 0.8;
+    }
+    
+    .filter-clear:hover {
+      opacity: 1;
     }
     
     /* 货源列表 */
@@ -608,25 +640,23 @@ export class EcomAgentSourcing extends LitElement {
       
       <!-- 搜索栏 -->
       <div class="toolbar">
-        <div class="search-box">
-          <span class="search-icon">🔍</span>
-          <input 
-            type="text" 
-            class="search-input" 
-            placeholder="搜索商品名称、店铺、offer ID..."
+        <div class="field-group">
+          <label class="field-label">搜索</label>
+          <input type="text" class="search-input" placeholder="商品名称、店铺、offer ID..."
             .value=${this.search}
             @keydown=${this._onSearch}
             @change=${(e: Event) => this.search = (e.target as HTMLInputElement).value}
           >
         </div>
+        <button class="search-btn" @click=${() => { this.page = 1; this.loadSourcing(); }}>🔍 搜索</button>
         ${this.ecomCode ? html`
-          <span style="color: var(--primary); font-size: 13px;">
-            筛选商品: ${this.ecomCode}
-            <button 
-              style="margin-left: 8px; padding: 4px 8px; border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer;"
-              @click=${() => { this.ecomCode = ''; this.page = 1; this.loadSourcing(); }}
-            >清除</button>
-          </span>
+          <div class="field-group">
+            <label class="field-label">筛选</label>
+            <div class="filter-tag">
+              <span>${this.ecomCode}</span>
+              <button class="filter-clear" @click=${() => { this.ecomCode = ''; this.page = 1; this.loadSourcing(); }}>✕</button>
+            </div>
+          </div>
         ` : ''}
       </div>
       

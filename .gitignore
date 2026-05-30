@@ -24,10 +24,8 @@ output/*/
 !output/.gitkeep
 output/scraping/*.json
 
-# Test output
-test/test_output/*
-!test/test_output/.gitkeep
-test/index.html
+# Test
+test/
 
 # Skills old files
 skills/*/src/old/

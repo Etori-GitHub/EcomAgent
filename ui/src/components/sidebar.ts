@@ -92,6 +92,11 @@ export class EaSidebar extends LitElement {
   }
 
   private _onNavClick(page: PageName) {
+    // 货源库直接导航时清除筛选
+    if (page === 'sourcing' && window.ecomagentNavigateDirectToSourcing) {
+      window.ecomagentNavigateDirectToSourcing();
+      return;
+    }
     if (window.ecomagentNavigate) {
       window.ecomagentNavigate(page);
     }

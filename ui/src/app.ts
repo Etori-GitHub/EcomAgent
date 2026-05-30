@@ -56,6 +56,13 @@ window.ecomagentNavigateToSourcing = (ecomCode?: string) => {
   _listeners.forEach(fn => fn('sourcing' as PageName));
 };
 
+// 直接导航到货源库（清除筛选）
+window.ecomagentNavigateDirectToSourcing = () => {
+  sessionStorage.removeItem('sourcing-ecom-code');
+  _currentPage = 'sourcing' as PageName;
+  _listeners.forEach(fn => fn('sourcing' as PageName));
+};
+
 @customElement('ecomagent-app')
 export class EcomagentApp extends LitElement {
   static styles = css`:host { display: block; min-height: 100vh; }`;
@@ -127,5 +134,6 @@ declare global {
     ecomagentOnPageChange: (callback: (page: PageName) => void) => void;
     ecomagentOpenTrend: (ecomCode: string, fromPage?: string) => void;
     ecomagentNavigateToSourcing: (ecomCode?: string) => void;
+    ecomagentNavigateDirectToSourcing: () => void;
   }
 }
