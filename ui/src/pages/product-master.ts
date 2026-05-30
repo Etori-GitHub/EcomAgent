@@ -429,24 +429,21 @@ export class EaProductMaster extends LitElement {
   }
 
   private async _open1688(name: string | undefined, ecomCode: string) {
+    console.log('_open1688 called with:', { name, ecomCode });
     if (!name) return;
-    // 优先使用英文原名搜索（更准确的 1688 搜索结果）
-    // 如果是中文简称，尝试提取品牌名或关键词
-    const searchName = this._extractSearchKeyword(name);
-    const url = `https://s.1688.com/selloffer/offer_search.htm?keywords=${encodeURIComponent(searchName)}&ecom_code=${encodeURIComponent(ecomCode)}`;
-    window.open(url, '_blank');
-  }
-
-  private _extractSearchKeyword(name: string): string {
-    // 如果包含中文，提取品牌名（第一个英文单词）
-    const englishWords = name.match(/[a-zA-Z]+/g);
-    if (englishWords && englishWords.length > 0) {
-      // 返回品牌名 + 产品类型关键词
-      const brand = englishWords[0];
-      return brand;
+    // 调用后端 API 生成 GBK 编码的 1688 搜索 URL
+    try {
+      const response = await fetch(`/api/1688-search-url?keyword=${encodeURIComponent(name)}`);
+      const data = await response.json();
+      console.log('1688 API response:', data);
+      const url = `${data.url}&ecom_code=${ecomCode}`;
+      window.open(url, '_blank');
+    } catch (e) {
+      console.error('1688 API error:', e);
+      // 失败时降级为 UTF-8 编码
+      const url = `https://s.1688.com/selloffer/offer_search.htm?keywords=${encodeURIComponent(name)}&ecom_code=${ecomCode}`;
+      window.open(url, '_blank');
     }
-    // 纯中文，直接返回
-    return name;
   }
 
   private _showImgPreview(e: MouseEvent, src: string) {

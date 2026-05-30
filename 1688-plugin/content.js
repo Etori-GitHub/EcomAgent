@@ -111,9 +111,20 @@
       if (!current || current === document.body) break;
       
       // 检查是否有商品ID相关属性
-      const offerId = current.getAttribute('data-offer-id') ||
-                     current.getAttribute('data-id') ||
-                     current.getAttribute('data-object-id');
+      let offerId = current.getAttribute('data-offer-id') ||
+                   current.getAttribute('data-id') ||
+                   current.getAttribute('data-object-id');
+      
+      // 新增：检查 data-extra 属性里的 offerId
+      if (!offerId) {
+        const dataExtra = current.getAttribute('data-extra');
+        if (dataExtra) {
+          try {
+            const extra = JSON.parse(dataExtra.replace(/&quot;/g, '"'));
+            offerId = extra.offerId;
+          } catch (e) {}
+        }
+      }
       
       if (offerId) {
         console.log('[EcomAgent] 找到商品卡片:', current.className, 'offerId:', offerId);
@@ -216,7 +227,7 @@
       console.log('[EcomAgent] 卡片HTML前100字符:', card.outerHTML.slice(0, 100));
       
       // 方法1：从 data 属性提取
-      const offerId = 
+      let offerId = 
         card.getAttribute('data-offer-id') ||
         card.querySelector('[data-offer-id]')?.getAttribute('data-offer-id') ||
         card.getAttribute('data-id') ||
@@ -224,6 +235,51 @@
         card.getAttribute('data-object-id') ||
         card.querySelector('[data-object-id]')?.getAttribute('data-object-id') ||
         null;
+
+      // 方法1.5：从 data-extra 属性提取（1688 新格式）
+      if (!offerId) {
+        const dataExtra = card.getAttribute('data-extra') ||
+                         card.querySelector('[data-extra]')?.getAttribute('data-extra');
+        if (dataExtra) {
+          try {
+            const extra = JSON.parse(dataExtra.replace(/&quot;/g, '"'));
+            offerId = extra.offerId;
+            console.log('[EcomAgent] 从 data-extra 提取到 offerId:', offerId);
+          } catch (e) {
+            // 尝试正则匹配
+            const match = dataExtra.match(/"offerId"\s*:\s*"(\d+)"/);
+            if (match) {
+              offerId = match[1];
+              console.log('[EcomAgent] 从 data-extra 正则匹配到 offerId:', offerId);
+            }
+          }
+        }
+      }
+      
+      // 方法1.6：从 data-key-value 提取（广告商品）
+      if (!offerId) {
+        const dataKeyValue = card.getAttribute('data-key-value') ||
+                            card.querySelector('[data-key-value]')?.getAttribute('data-key-value');
+        if (dataKeyValue) {
+          const match = dataKeyValue.match(/offer_(\d+)/);
+          if (match) {
+            offerId = match[1];
+            console.log('[EcomAgent] 从 data-key-value 提取到 offerId:', offerId);
+          }
+        }
+      }
+      
+      // 方法1.7：从 data-aplus-report 提取（广告商品）
+      if (!offerId) {
+        const aplusReport = card.getAttribute('data-aplus-report');
+        if (aplusReport) {
+          const match = aplusReport.match(/object_id@(\d+)/);
+          if (match) {
+            offerId = match[1];
+            console.log('[EcomAgent] 从 data-aplus-report 提取到 offerId:', offerId);
+          }
+        }
+      }
 
       console.log('[EcomAgent] 方法1提取的 offerId:', offerId);
       
@@ -283,11 +339,17 @@
         '';
       const price = extractPrice(priceText);
 
-      // 图片
-      const image = 
-        card.querySelector('img')?.src ||
-        card.querySelector('img')?.getAttribute('data-src') ||
-        '';
+      // 图片 - 优先从 main-img 类获取
+      let image = '';
+      const mainImg = card.querySelector('img.main-img');
+      if (mainImg) {
+        image = mainImg.src || mainImg.getAttribute('data-src') || mainImg.getAttribute('data-lazy-src') || '';
+      }
+      if (!image) {
+        const anyImg = card.querySelector('img');
+        image = anyImg?.src || anyImg?.getAttribute('data-src') || '';
+      }
+      console.log('[EcomAgent] 提取的图片URL:', image?.slice(0, 80));
 
       // 店铺
       const shopElement = card.querySelector('[class*="shop"], [class*="company"]');

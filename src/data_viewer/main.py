@@ -2,12 +2,14 @@
 EcomAgent Data Viewer - FastAPI 服务
 """
 
+# -*- coding: utf-8 -*-
 import sqlite3
+import json
 from pathlib import Path
 from datetime import datetime
 from fastapi import FastAPI, Query, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
@@ -32,6 +34,25 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# 自定义 JSON 响应，确保 UTF-8
+class UnicodeJSONResponse(JSONResponse):
+    def render(self, content: Any) -> bytes:
+        return json.dumps(
+            content,
+            ensure_ascii=False,
+            allow_nan=False,
+            indent=None,
+            separators=(",", ":"),
+        ).encode("utf-8")
+
+
+# 创建 FastAPI 应用（使用自定义响应类）
+app.default_response_class = UnicodeJSONResponse
+
+
+app.default_response_class = UnicodeJSONResponse
 
 
 # ==================== 数据模型 ====================
@@ -1406,6 +1427,35 @@ async def backup_all_configs():
 # ==================== 货源采集 API ====================
 
 SOURCING_DB_PATH = DATA_DIR / "sourcing.db"
+SOURCING_IMAGE_DIR = DATA_DIR / "images" / "sourcing"
+
+def download_sourcing_image(image_url: str, offer_id: str) -> str:
+    """下载货源图片到本地"""
+    import urllib.request
+    import os
+    
+    # 确保目录存在
+    SOURCING_IMAGE_DIR.mkdir(parents=True, exist_ok=True)
+    
+    # 生成文件名
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"1688_{offer_id}_{timestamp}.jpg"
+    filepath = SOURCING_IMAGE_DIR / filename
+    
+    # 下载图片
+    request = urllib.request.Request(
+        image_url,
+        headers={
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Referer': 'https://s.1688.com/'
+        }
+    )
+    with urllib.request.urlopen(request, timeout=10) as response:
+        with open(filepath, 'wb') as f:
+            f.write(response.read())
+    
+    # 返回相对路径
+    return f"sourcing/{filename}"
 
 def get_sourcing_db():
     """获取货源数据库连接"""
@@ -1425,10 +1475,18 @@ def get_sourcing_db():
             shop_url TEXT,
             product_url TEXT,
             image_url TEXT,
+            local_image_path TEXT,
             collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             UNIQUE(ecom_code, offer_id)
         )
     ''')
+    
+    # 迁移：添加 local_image_path 字段（如果不存在）
+    try:
+        conn.execute('ALTER TABLE sourcing_1688 ADD COLUMN local_image_path TEXT')
+    except:
+        pass  # 字段已存在
+    
     conn.commit()
     return conn
 
@@ -1444,12 +1502,21 @@ async def add_sourcing(request: Request):
     if not ecom_code or not offer_id:
         raise HTTPException(status_code=400, detail="缺少 ecom_code 或 offerId")
     
+    # 下载图片到本地
+    image_url = data.get("image", "")
+    local_image_path = ""
+    if image_url:
+        try:
+            local_image_path = download_sourcing_image(image_url, offer_id)
+        except Exception as e:
+            print(f"[Sourcing] 图片下载失败: {e}")
+    
     conn = get_sourcing_db()
     try:
         conn.execute('''
             INSERT OR REPLACE INTO sourcing_1688
-            (ecom_code, offer_id, title, price, min_order, shop_name, shop_url, product_url, image_url, collected_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (ecom_code, offer_id, title, price, min_order, shop_name, shop_url, product_url, image_url, local_image_path, collected_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             ecom_code,
             offer_id,
@@ -1459,12 +1526,13 @@ async def add_sourcing(request: Request):
             data.get("shopName", "")[:100],
             data.get("shopUrl", ""),
             data.get("productUrl", ""),
-            data.get("image", ""),
+            image_url,
+            local_image_path,
             data.get("collected_at", datetime.now().isoformat())
         ))
         conn.commit()
         
-        return {"success": True, "ecom_code": ecom_code, "offer_id": offer_id}
+        return {"success": True, "ecom_code": ecom_code, "offer_id": offer_id, "local_image": local_image_path}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:

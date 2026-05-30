@@ -657,7 +657,7 @@ export class EcomAgentSourcing extends LitElement {
                     <div class="product-cell">
                       <img 
                         class="product-thumb" 
-                        src=${item.image_url || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"><rect fill="%23ddd" width="50" height="50"/></svg>'}
+                        src=${item.local_image_path ? `/images/${item.local_image_path}` : (item.image_url || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"><rect fill="%23ddd" width="50" height="50"/></svg>')}
                         onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22><rect fill=%22%23ddd%22 width=%2250%22 height=%2250%22/></svg>'"
                       >
                       <div class="product-info">
