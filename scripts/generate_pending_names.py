@@ -60,26 +60,37 @@ def get_pending_products(limit: int = BATCH_SIZE) -> list:
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
-    cursor.execute("""
-        SELECT ecom_code, name, short_name
-        FROM product_master
-        ORDER BY id ASC
-    """)
+    # 优先使用 translation_status 字段筛选
+    cursor.execute("PRAGMA table_info(product_master)")
+    columns = [col[1] for col in cursor.fetchall()]
     
-    all_rows = cursor.fetchall()
+    if 'translation_status' in columns:
+        cursor.execute("""
+            SELECT ecom_code, name, short_name
+            FROM product_master
+            WHERE translation_status = 'pending' AND name IS NOT NULL AND name != ''
+            ORDER BY id ASC
+            LIMIT ?
+        """, (limit,))
+    else:
+        # 兼容旧版本
+        cursor.execute("""
+            SELECT ecom_code, name, short_name
+            FROM product_master
+            WHERE name IS NOT NULL AND name != ''
+            ORDER BY id ASC
+        """, ())
+    
+    rows = cursor.fetchall()
     conn.close()
     
-    # 过滤出需要翻译的（没有简称或简称不含中文）
     pending = []
-    for row in all_rows:
+    for row in rows:
         ecom_code, name, short_name = row
-        if not is_chinese_short_name(short_name):
-            pending.append({
-                "id": ecom_code,
-                "name": name
-            })
-            if len(pending) >= limit:
-                break
+        pending.append({
+            "id": ecom_code,
+            "name": name
+        })
     
     return pending
 

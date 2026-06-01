@@ -1,33 +1,39 @@
+import sqlite3
 import json
-import os
+from datetime import datetime
 
-# Load all items
-with open(r'C:\Users\Etroi\.openclaw\workspace\code\EcomAgent\data\name_processing\all_items.json', 'r', encoding='utf-8') as f:
-    all_items = json.load(f)
+db_path = r'C:\Users\Etroi\.openclaw\workspace\code\EcomAgent\data\product_master.db'
+conn = sqlite3.connect(db_path)
 
-# Load translated items
-translated_dir = r'C:\Users\Etroi\.openclaw\workspace\code\EcomAgent\data\name_processing\translated'
-translated_ids = set()
+# 查找没有 short_name 的产品
+cursor = conn.execute("""
+    SELECT id, ecom_code, name 
+    FROM product_master 
+    WHERE short_name IS NULL OR short_name = ''
+    LIMIT 50
+""")
+results = cursor.fetchall()
+print(f"Found {len(results)} products without short_name")
 
-for filename in os.listdir(translated_dir):
-    if filename.endswith('.json'):
-        with open(os.path.join(translated_dir, filename), 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            for item in data.get('items', []):
-                translated_ids.add(item['id'])
-
-# Find pending items
-pending = [item for item in all_items if item['id'] not in translated_ids]
-print(f'Total items: {len(all_items)}')
-print(f'Translated: {len(translated_ids)}')
-print(f'Pending: {len(pending)}')
-
-# Save pending items
-if pending:
-    output = {
-        'batch_id': f'pending_{len(pending)}',
-        'items': pending[:100]  # First 100 for processing
+if results:
+    # 创建 pending_names.json
+    data = {
+        "batch_id": f"batch_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+        "items": [
+            {"id": row[1], "name": row[2]}  # ecom_code, name
+            for row in results
+        ]
     }
-    with open(r'C:\Users\Etroi\.openclaw\workspace\code\EcomAgent\data\name_processing\pending_names.json', 'w', encoding='utf-8') as f:
-        json.dump(output, f, ensure_ascii=False, indent=2)
-    print(f'Saved {len(output["items"])} items to pending_names.json')
+    
+    output_path = r'C:\Users\Etroi\.openclaw\workspace\code\EcomAgent\data\name_processing\pending_names.json'
+    with open(output_path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    
+    print(f"Created pending_names.json with {len(results)} items")
+    print(f"Output: {output_path}")
+    
+    # 显示前几条
+    for i, row in enumerate(results[:5]):
+        print(f"\n  [{row[1]}] {row[2][:80]}..." if len(row[2]) > 80 else f"\n  [{row[1]}] {row[2]}")
+else:
+    print("No products need translation")

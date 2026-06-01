@@ -1,6 +1,8 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
+import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import type { PageName } from '../types';
+import * as api from '../services/api';
 
 const NAV_ITEMS: { group: string; items: { id: PageName; icon: string; label: string }[] }[] = [
   { group: 'Main', items: [
@@ -37,6 +39,7 @@ declare global {
     ecomagentNavigate: (page: PageName) => void;
     ecomagentGetCurrentPage: () => PageName;
     ecomagentOnPageChange: (callback: (page: PageName) => void) => void;
+    ecomagentAppName?: string;
   }
 }
 
@@ -44,7 +47,7 @@ declare global {
 export class EaSidebar extends LitElement {
   static styles = css`
     :host { width: 258px; background: var(--panel); color: var(--text); padding: 14px 10px 12px; flex-shrink: 0; border-right: 1px solid var(--border); transition: width 0.2s ease; overflow: hidden; display: flex; flex-direction: column; }
-    :host([collapsed]) { width: 60px; }
+    :host([collapsed]) { width: 60px; padding: 14px 6px 12px; }
     .header { display: flex; align-items: center; justify-content: space-between; padding: 14px 10px; border-bottom: 1px solid var(--border); margin-bottom: 12px; flex-shrink: 0; }
     :host([collapsed]) .header { justify-content: center; border-bottom: none; padding: 14px 0; }
     .brand { display: flex; align-items: center; gap: 10px; }
@@ -66,18 +69,24 @@ export class EaSidebar extends LitElement {
     .nav-item { padding: 8px 10px; cursor: pointer; border-radius: 8px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; color: var(--muted); border: 1px solid transparent; background: transparent; user-select: none; transition: 0.15s ease; }
     .nav-item:hover { background: var(--bg-hover); border-color: var(--border-hover); color: var(--text); }
     .nav-item.active { background: var(--accent-subtle); border-color: color-mix(in srgb, var(--accent) 25%, transparent); color: var(--accent); }
-    :host([collapsed]) .nav-item { justify-content: center; padding: 8px; }
+    :host([collapsed]) .nav-item { justify-content: center; padding: 8px 0; }
     .nav-icon { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    :host([collapsed]) .nav-icon { display: block; }
     :host([collapsed]) .nav-label { display: none; }
   `;
 
   @property({ type: Boolean, reflect: true }) collapsed = false;
+  
+  // 应用名称（从配置读取）
+  @state() private appName: string = window.ecomagentAppName || 'EcomAgent';
   
   // 内部状态，不通过属性传递
   private _currentPage: PageName = 'dashboard';
 
   constructor() {
     super();
+    // 加载应用名称配置
+    this._loadAppName();
     // 监听全局页面变化
     if (window.ecomagentOnPageChange) {
       window.ecomagentOnPageChange((page) => {
@@ -88,6 +97,21 @@ export class EaSidebar extends LitElement {
     // 获取初始页面
     if (window.ecomagentGetCurrentPage) {
       this._currentPage = window.ecomagentGetCurrentPage();
+    }
+  }
+
+  private async _loadAppName() {
+    // 如果全局已有缓存，直接使用
+    if (window.ecomagentAppName) {
+      this.appName = window.ecomagentAppName;
+      return;
+    }
+    try {
+      const result = await api.getAppName();
+      this.appName = result.app_name;
+      window.ecomagentAppName = result.app_name; // 缓存到全局
+    } catch (e) {
+      console.error('Failed to load app name:', e);
     }
   }
 
@@ -109,12 +133,13 @@ export class EaSidebar extends LitElement {
 
   render() {
     const currentPage = this._currentPage;
+    const firstChar = this.appName.charAt(0);
     return html`
       <div class="header">
         <div class="brand">
-          <div class="logo">E</div>
+          <div class="logo">${firstChar}</div>
           <div class="brand-text">
-            <span class="brand-title">EcomAgent</span>
+            <span class="brand-title">${this.appName}</span>
             <span class="brand-subtitle">数据可视化平台</span>
           </div>
         </div>
@@ -129,7 +154,7 @@ export class EaSidebar extends LitElement {
             <ul class="nav-items">
               ${group.items.map(item => html`
                 <li class="nav-item ${currentPage === item.id ? 'active' : ''}" @click=${() => this._onNavClick(item.id)}>
-                  <svg class="nav-icon" viewBox="0 0 24 24">${ICONS[item.icon]}</svg>
+                  <svg class="nav-icon" viewBox="0 0 24 24">${unsafeSVG(ICONS[item.icon])}</svg>
                   <span class="nav-label">${item.label}</span>
                 </li>
               `)}

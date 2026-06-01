@@ -14,8 +14,15 @@ TikTok Shop 热销榜单抓取脚本
 import json
 import random
 import re
+import sys
+import io
 from datetime import datetime
 from pathlib import Path
+
+# Windows UTF-8 兼容
+if sys.platform == 'win32':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 from playwright.sync_api import sync_playwright
 

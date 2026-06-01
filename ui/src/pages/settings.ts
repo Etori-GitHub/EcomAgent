@@ -12,6 +12,9 @@ interface ConfigData {
 
 // 配置字段的友好名称映射
 const FIELD_LABELS: Record<string, string> = {
+  // settings
+  'app_name': '软件名称',
+  
   // api_keys
   'google': 'Google API Key',
   'volcano': '火山引擎 API Key',
@@ -56,6 +59,11 @@ const FIELD_LABELS: Record<string, string> = {
 
 // 配置卡片的标题和描述
 const CONFIG_INFO: Record<string, { title: string; desc: string; icon: string }> = {
+  'settings': {
+    title: '系统设置',
+    desc: '应用名称等基础配置',
+    icon: '⚙️',
+  },
   'api_keys': {
     title: 'API 密钥',
     desc: '各平台 API 访问密钥',
@@ -181,21 +189,20 @@ export class EaSettings extends LitElement {
     }
     
     .field-item {
-      display: flex;
-      align-items: center;
+      display: grid;
+      grid-template-columns: 160px 1fr;
       gap: 16px;
+      align-items: center;
     }
     
     .field-label {
-      width: 160px;
       font-size: 13px;
       font-weight: 500;
       color: var(--text);
-      flex-shrink: 0;
     }
     
     .field-input {
-      flex: 1;
+      min-width: 0; /* 防止溢出 */
     }
     
     .input {
@@ -247,21 +254,26 @@ export class EaSettings extends LitElement {
     }
     
     .section-field {
-      display: flex;
-      align-items: center;
+      display: grid;
+      grid-template-columns: 160px 1fr;
       gap: 16px;
+      align-items: center;
     }
     
     .section-field-label {
-      width: 160px;
       font-size: 13px;
       font-weight: 500;
       color: var(--text);
-      flex-shrink: 0;
     }
     
     .section-field-input {
-      flex: 1;
+      min-width: 0;
+    }
+    
+    .section-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
     
     .config-meta {
@@ -619,7 +631,7 @@ export class EaSettings extends LitElement {
   private _renderConfigCard(config: ConfigData) {
     const info = this._getConfigInfo(config.name);
     const isSaving = this.saving === config.name;
-    const isSimple = config.name === 'api_keys';
+    const isSimple = config.name === 'api_keys' || config.name === 'settings';
 
     return html`
       <div class="config-card">

@@ -10,8 +10,15 @@
 
 import json
 import random
+import sys
+import io
 from datetime import datetime
 from pathlib import Path
+
+# Windows UTF-8 兼容
+if sys.platform == 'win32':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 from playwright.sync_api import sync_playwright
 
@@ -100,45 +107,145 @@ def fetch_category_bestsellers_pages(page, category, pages=2):
     js_code = """
         () => {
             const results = [];
-            const rows = document.querySelectorAll('li.zg-no-numbers');
+            const rows = document.querySelectorAll('li.zg-no-numbers, div#gridItemRoot > div');
 
             console.log(`找到 ${rows.length} 个商品行`);
 
             rows.forEach((row, idx) => {
                 try {
-                    const rankEl = row.querySelector('.zg-bdg-text');
+                    // 排名
+                    const rankEl = row.querySelector('.zg-bdg-text, span.zg-bdg-text');
                     const rank = rankEl ? parseInt(rankEl.innerText.replace('#', '').trim()) : idx + 1;
 
-                    const links = row.querySelectorAll('a.a-link-normal.aok-block');
-                    const link = links[1] || links[0];
-                    const href = link?.href || '';
-
-                    const asinMatch = href.match(/\\/dp\\/([A-Z0-9]{10})/);
-                    const asin = asinMatch ? asinMatch[1] : '';
-
-                    const name = link?.innerText?.trim() || ''; 
+                    // 商品链接和 ASIN
+                    const allLinks = row.querySelectorAll('a.a-link-normal');
+                    let link = null;
+                    let asin = '';
+                    let href = '';
                     
-                    // 提取图片URL
+                    // 遍历所有链接找到商品链接
+                    for (const a of allLinks) {
+                        const h = a.href || '';
+                        const match = h.match(/\\/dp\\/([A-Z0-9]{10})/);
+                        if (match) {
+                            link = a;
+                            asin = match[1];
+                            href = h;
+                            break;
+                        }
+                    }
+
+                    // 商品名称 - 按可靠性优先级提取
+                    let name = '';
+                    
+                    // 方法1: 从专门的名称容器获取 (最可靠)
+                    const nameEl = row.querySelector('div._cDEzb_p13n-sc-css-line-clamp-3_g3dy1, div[class*="line-clamp"], div[class*="p13n-sc-truncate"]');
+                    if (nameEl?.innerText?.trim()) {
+                        name = nameEl.innerText.trim();
+                    }
+                    
+                    // 方法2: 从图片 alt 属性获取（也很可靠）
+                    if (!name) {
+                        const imgEl = row.querySelector('img');
+                        if (imgEl?.alt?.trim()) {
+                            name = imgEl.alt.trim();
+                        }
+                    }
+                    
+                    // 方法3: 从链接文字获取
+                    if (!name && link?.innerText?.trim()) {
+                        name = link.innerText.trim();
+                    }
+                    
+                    // 方法4: 从 title 属性获取
+                    if (!name) {
+                        const titledEl = row.querySelector('[title]');
+                        if (titledEl?.title?.trim()) {
+                            name = titledEl.title.trim();
+                        }
+                    }
+                    
+                    // 图片URL
                     const imgEl = row.querySelector('img');
-                    const imageUrl = imgEl?.src || ''; 
+                    let imageUrl = imgEl?.src || '';
+                    // 清理图片URL，获取高清版本
+                    if (imageUrl && imageUrl.includes('._')) {
+                        imageUrl = imageUrl.replace(/\\._[^.]+\\./, '.');
+                    }
                     
-                    const priceLink = links[2] || links[1] || links[0];
-                    const priceText = priceLink?.innerText?.trim() || '';
-                    const price = priceText ? parseFloat(priceText.replace(/[^\\d.]/g, '')) : 0;
+                    // 价格 - 根据实际页面结构更新
+                    // <span class="_cDEzb_p13n-sc-price_3mJ9Z">$19.99</span>
+                    let price = null;
+                    const priceEl = row.querySelector('span._cDEzb_p13n-sc-price_3mJ9Z, span[class*=\"p13n-sc-price\"]');
+                    if (priceEl) {
+                        const priceText = priceEl.innerText.trim();
+                        const priceMatch = priceText.match(/\\$?([\\d.]+)/);
+                        if (priceMatch) {
+                            price = parseFloat(priceMatch[1]);
+                        }
+                    }
+                    
+                    // 备用价格选择器
+                    if (price === null) {
+                        const priceEl2 = row.querySelector('span.a-color-price');
+                        if (priceEl2) {
+                            const priceText = priceEl2.innerText.trim();
+                            const priceMatch = priceText.match(/\\$?([\\d.]+)/);
+                            if (priceMatch) {
+                                price = parseFloat(priceMatch[1]);
+                            }
+                        }
+                    }
 
-                    const ratingEl = row.querySelector('.a-icon-alt');
-                    const ratingText = ratingEl?.innerText || '';
-                    const ratingMatch = ratingText.match(/([\\d.]+)/);
-                    const rating = ratingMatch ? parseFloat(ratingMatch[1]) : 0;
+                    // 评分 - 根据实际页面结构
+                    // <span class="a-icon-alt">4.1 out of 5 stars</span>
+                    let rating = null;
+                    let ratingCount = null;
+                    
+                    // 方法1: 从 a-icon-alt 获取评分
+                    const ratingEl = row.querySelector('span.a-icon-alt');
+                    if (ratingEl) {
+                        const ratingText = ratingEl.innerText || '';
+                        const ratingMatch = ratingText.match(/([\\d.]+)\\s*out of/);
+                        if (ratingMatch) {
+                            rating = parseFloat(ratingMatch[1]);
+                        }
+                    }
+                    
+                    // 方法2: 从 aria-label 获取
+                    if (rating === null) {
+                        const ratingLink = row.querySelector('a[aria-label*=\"stars\"]');
+                        if (ratingLink) {
+                            const ariaLabel = ratingLink.getAttribute('aria-label') || '';
+                            // 格式: "4.1 out of 5 stars, 14,143 ratings"
+                            const ratingMatch = ariaLabel.match(/([\\d.]+)\\s*out of/);
+                            if (ratingMatch) {
+                                rating = parseFloat(ratingMatch[1]);
+                            }
+                            // 提取评价数
+                            const countMatch = ariaLabel.match(/([\\d,]+)\\s*ratings/);
+                            if (countMatch) {
+                                ratingCount = parseInt(countMatch[1].replace(/,/g, ''));
+                            }
+                        }
+                    }
+                    
+                    // 评价数量 - 从 span.a-size-small 获取
+                    if (ratingCount === null) {
+                        // <span aria-hidden="true" class="a-size-small">14,143</span>
+                        const countEl = row.querySelector('span.a-size-small');
+                        if (countEl) {
+                            const countText = countEl.innerText.replace(/[^\\d]/g, '');
+                            if (countText && parseInt(countText) > 0) {
+                                ratingCount = parseInt(countText);
+                            }
+                        }
+                    }
 
-                    const countEls = row.querySelectorAll('span.a-size-small');
-                    const countText = countEls[0]?.innerText || '';
-                    const ratingCount = parseInt(countText.replace(/[^\\d]/g, '')) || 0;
-
-                    console.log(`商品 ${idx}: rank=${rank}, asin=${asin}, name=${name.substring(0, 30)}...`);
+                    console.log(`商品 ${idx}: rank=${rank}, asin=${asin}, price=${price}, rating=${rating}, count=${ratingCount}`);
 
                     if (asin) {
-                        const productUrl = asin ? `https://www.amazon.com/dp/${asin}` : '';
+                        const productUrl = `https://www.amazon.com/dp/${asin}`;
 
                         results.push({
                             rank,
@@ -146,12 +253,17 @@ def fetch_category_bestsellers_pages(page, category, pages=2):
                             asin,
                             product_url: productUrl,
                             image_url: imageUrl,
-                            price,
-                            rating,
+                            price: price,
+                            rating: rating,
                             rating_count: ratingCount,
                             category: 'CATEGORY_PLACEHOLDER',
                             subcategory: 'SUBCATEGORY_PLACEHOLDER'
                         });
+                        
+                        // 详细打印每个商品
+                        if (idx < 3) {
+                            console.log(`[DEBUG] 商品${idx} 详情: name=${name.substring(0,30)}, price=${price}, rating=${rating}, count=${ratingCount}`);
+                        }
                     }
                 } catch (e) {
                     console.log(`商品 ${idx} 解析失败:`, e.message);
@@ -173,15 +285,28 @@ def fetch_category_bestsellers_pages(page, category, pages=2):
         print(f"[INFO] 访问第 {page_num} 页: {url}")
         page.goto(url, timeout=60000)
 
+        # 等待页面加载
         page.wait_for_timeout(random_wait(10000, 20000))
-        page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-        page.wait_for_timeout(random_wait(5000, 10000))
+        
+        # 滚动页面触发懒加载
+        for _ in range(3):
+            page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+            page.wait_for_timeout(random_wait(3000, 5000))
+            page.evaluate("window.scrollTo(0, 0)")
+            page.wait_for_timeout(500)
 
         # 使用字符串替换注入变量
         page_js_code = js_code.replace('CATEGORY_PLACEHOLDER', category['name']).replace('SUBCATEGORY_PLACEHOLDER', category['name'])
         items = page.evaluate(page_js_code)
 
         print(f"[INFO] 第 {page_num} 页成功提取 {len(items)} 个商品")
+        
+        # 打印前3个商品的详细数据
+        if items:
+            print("[DEBUG] 提取的商品示例:")
+            for i, item in enumerate(items[:3]):
+                print(f"  [{i}] asin={item.get('asin')}, price={item.get('price')}, rating={item.get('rating')}, count={item.get('rating_count')}")
+        
         all_items.extend(items)
 
     return all_items
@@ -324,12 +449,11 @@ def fetch_all_categories(pages=2):
         print(f"[OK] 分类列表已保存到:{categories_file}")
 
         # 抓取每个分类(复用同一个 page 和 browser)
-        # 测试模式:只抓第一个分类验证逻辑
-        test_categories = categories[:1]
-        print(f"[INFO] 测试模式:只抓取前 {len(test_categories)} 个分类")
-        for i, category in enumerate(test_categories):
+        # 抓取所有分类
+        print(f"[INFO] 开始抓取 {len(categories)} 个分类")
+        for i, category in enumerate(categories):
             fetch_and_save_category(category, page, pages)
-            if i < len(test_categories) - 1:
+            if i < len(categories) - 1:
                 wait_ms = random_wait(10000, 20000)
                 print(f"\n[INFO] 等待 {wait_ms}ms 后开始下一个分类...")
                 import time

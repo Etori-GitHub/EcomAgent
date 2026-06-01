@@ -318,9 +318,53 @@ def fetch_and_save_category(category, page):
 
 
 def fetch_all_categories_cdp():
-    """抓取所有 TikTok Shop 分类的热销数据（连接到已打开的 Chrome）"""
+    """抓取所有 TikTok Shop 分类的热销数据（自动启动 Chrome）"""
+    
+    import subprocess
+    import os
     
     print(f"[INFO] 开始抓取 TikTok Shop 所有分类（CDP 模式）...")
+    
+    # 检查 9222 端口是否已有 Chrome
+    chrome_started = False
+    try:
+        import urllib.request
+        urllib.request.urlopen("http://127.0.0.1:9222", timeout=2)
+        print(f"[OK] 发现已运行的 Chrome (端口 9222)")
+    except:
+        # 启动 Chrome
+        print(f"[INFO] 启动 Chrome...")
+        chrome_paths = [
+            r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+            r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+            os.path.expandvars(r"%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe"),
+        ]
+        
+        chrome_exe = None
+        for path in chrome_paths:
+            if os.path.exists(path):
+                chrome_exe = path
+                break
+        
+        if not chrome_exe:
+            print(f"[ERROR] 未找到 Chrome，请手动启动：")
+            print(f"       chrome.exe --remote-debugging-port=9222")
+            return
+        
+        user_data = os.path.expandvars(r"%LOCALAPPDATA%\Google\Chrome\User Data")
+        subprocess.Popen([
+            chrome_exe,
+            "--remote-debugging-port=9222",
+            f"--user-data-dir={user_data}",
+            "--profile-directory=Profile 1",
+            "--no-first-run",
+            "--no-default-browser-check",
+        ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        
+        chrome_started = True
+        print(f"[OK] Chrome 已启动，等待初始化...")
+        time.sleep(5)  # 等待 Chrome 启动
+    
     print(f"[INFO] 连接到 Chrome (端口 9222)...")
     
     with sync_playwright() as p:

@@ -33,7 +33,22 @@ class DataImporter:
         
         self.base_dir = base_dir
         self.scraping_dir = base_dir / "output" / "scraping"
+        self.imported_dir = base_dir / "output" / "imported"
         self.data_dir = base_dir / "data"
+        
+        # 确保导入目录存在
+        self.imported_dir.mkdir(parents=True, exist_ok=True)
+    
+    def move_to_imported(self, file_path: Path) -> Path:
+        """移动已导入的文件到 imported 目录"""
+        dest = self.imported_dir / file_path.name
+        if dest.exists():
+            # 如果目标文件已存在，添加时间戳
+            timestamp = datetime.now().strftime("%H%M%S")
+            dest = self.imported_dir / f"{file_path.stem}_{timestamp}{file_path.suffix}"
+        file_path.rename(dest)
+        print(f"[MOVE] {file_path.name} -> imported/")
+        return dest
     
     def extract_date(self, filename: str) -> str:
         """从文件名提取日期"""
@@ -92,11 +107,11 @@ class DataImporter:
                     self.record_event(cursor, product_id, 'cover_image_changed', old_image, image_url)
                     stats['events'] += 1
                 
-                cursor.execute("UPDATE products SET name=?, image_url=?, updated_at=datetime('now') WHERE asin=?", (name, image_url, asin))
+                cursor.execute("UPDATE products SET name=?, image_url=?, category=?, updated_at=datetime('now') WHERE asin=?", (name, image_url, p.get('category'), asin))
                 stats['upd'] += 1
             else:
                 master_id = get_or_create_product('amazon', asin, name, product_url=product_url, category=p.get('category'))
-                cursor.execute("INSERT INTO products (asin, name, image_url, master_id) VALUES (?, ?, ?, ?)", (asin, name, image_url, master_id))
+                cursor.execute("INSERT INTO products (asin, name, image_url, category, master_id) VALUES (?, ?, ?, ?, ?)", (asin, name, image_url, p.get('category'), master_id))
                 product_id = cursor.lastrowid
                 stats['new'] += 1
             
@@ -157,6 +172,8 @@ class DataImporter:
             cursor.execute("SELECT id, name, image_url FROM tiktok_products WHERE tiktokshop_id = ?", (tid,))
             existing = cursor.fetchone()
             
+            category = data.get('metadata', {}).get('category')
+            
             if existing:
                 product_id, old_name, old_image = existing
                 
@@ -168,11 +185,11 @@ class DataImporter:
                     self.record_event(cursor, product_id, 'cover_image_changed', old_image, image_url)
                     stats['events'] += 1
                 
-                cursor.execute("UPDATE tiktok_products SET name=?, image_url=?, updated_at=datetime('now') WHERE tiktokshop_id=?", (name, image_url, tid))
+                cursor.execute("UPDATE tiktok_products SET name=?, image_url=?, category=?, updated_at=datetime('now') WHERE tiktokshop_id=?", (name, image_url, category, tid))
                 stats['upd'] += 1
             else:
-                master_id = get_or_create_product('tiktok', tid, name, product_url=product_url)
-                cursor.execute("INSERT INTO tiktok_products (tiktokshop_id, name, image_url, master_id) VALUES (?, ?, ?, ?)", (tid, name, image_url, master_id))
+                master_id = get_or_create_product('tiktok', tid, name, product_url=product_url, category=category)
+                cursor.execute("INSERT INTO tiktok_products (tiktokshop_id, name, image_url, category, master_id) VALUES (?, ?, ?, ?, ?)", (tid, name, image_url, category, master_id))
                 product_id = cursor.lastrowid
                 stats['new'] += 1
             
@@ -191,13 +208,30 @@ class DataImporter:
         conn.close()
         print(f"[OK] TikTok: {stats['new']} new, {stats['upd']} upd, {stats['sales_new']}+{stats['sales_upd']} sales, {stats['events']} events")
     
-    def scan_and_import(self):
+    def scan_and_import(self, single_file: Path = None):
         """扫描并导入"""
         print(f"\n{'#'*60}")
         print(f"# EcomAgent Data Importer v2.0")
         print(f"# {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"{'#'*60}")
         
+        if single_file:
+            # 单文件导入
+            if single_file.name.startswith('amazon_'):
+                try:
+                    self.import_amazon(single_file)
+                    self.move_to_imported(single_file)
+                except Exception as e:
+                    print(f"[ERROR] {single_file.name}: {e}")
+            elif single_file.name.startswith('tiktok_'):
+                try:
+                    self.import_tiktok(single_file)
+                    self.move_to_imported(single_file)
+                except Exception as e:
+                    print(f"[ERROR] {single_file.name}: {e}")
+            return
+        
+        # 批量导入
         if not self.scraping_dir.exists():
             print(f"[ERROR] Dir not found: {self.scraping_dir}")
             return
@@ -211,12 +245,14 @@ class DataImporter:
         for f in amazon:
             try:
                 self.import_amazon(f)
+                self.move_to_imported(f)  # 成功后移动文件
             except Exception as e:
                 print(f"[ERROR] {f.name}: {e}")
         
         for f in tiktok:
             try:
                 self.import_tiktok(f)
+                self.move_to_imported(f)  # 成功后移动文件
             except Exception as e:
                 print(f"[ERROR] {f.name}: {e}")
         
@@ -226,4 +262,14 @@ class DataImporter:
 
 
 if __name__ == "__main__":
-    DataImporter().scan_and_import()
+    import argparse
+    parser = argparse.ArgumentParser(description='数据导入器')
+    parser.add_argument('--file', type=str, help='导入单个文件')
+    args = parser.parse_args()
+    
+    importer = DataImporter()
+    
+    if args.file:
+        importer.scan_and_import(single_file=Path(args.file))
+    else:
+        importer.scan_and_import()

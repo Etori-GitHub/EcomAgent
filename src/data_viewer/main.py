@@ -36,7 +36,7 @@ app.add_middleware(
 )
 
 
-# 自定义 JSON 响应，确保 UTF-8
+# 自定义 JSON 响应,确保 UTF-8
 class UnicodeJSONResponse(JSONResponse):
     def render(self, content: Any) -> bytes:
         return json.dumps(
@@ -48,7 +48,7 @@ class UnicodeJSONResponse(JSONResponse):
         ).encode("utf-8")
 
 
-# 创建 FastAPI 应用（使用自定义响应类）
+# 创建 FastAPI 应用(使用自定义响应类)
 app.default_response_class = UnicodeJSONResponse
 
 
@@ -113,46 +113,55 @@ def get_stats() -> Dict[str, Any]:
     # Amazon 统计
     amazon_db = DATA_DIR / "amazon.db"
     if amazon_db.exists():
-        conn = get_db_connection(amazon_db)
-        cursor = conn.cursor()
+        try:
+            conn = get_db_connection(amazon_db)
+            cursor = conn.cursor()
 
-        cursor.execute("SELECT COUNT(*) FROM products")
-        stats["amazon"]["products"] = cursor.fetchone()[0]
+            # 检查表是否存在
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='products'")
+            if cursor.fetchone():
+                cursor.execute("SELECT COUNT(*) FROM products")
+                stats["amazon"]["products"] = cursor.fetchone()[0]
 
-        cursor.execute("SELECT COUNT(*) FROM daily_sales")
-        stats["amazon"]["sales"] = cursor.fetchone()[0]
+                cursor.execute("SELECT COUNT(*) FROM daily_sales")
+                stats["amazon"]["sales"] = cursor.fetchone()[0]
 
-        cursor.execute("SELECT MAX(timestamp) FROM daily_sales")
-        result = cursor.fetchone()[0]
-        stats["amazon"]["last_updated"] = result
+                cursor.execute("SELECT MAX(date) FROM daily_sales")
+                result = cursor.fetchone()[0]
+                stats["amazon"]["last_updated"] = result
 
-        # 今日抓取数量
-        cursor.execute("SELECT COUNT(*) FROM daily_sales WHERE date = ?", (today,))
-        stats["amazon"]["today"] = cursor.fetchone()[0]
+                cursor.execute("SELECT COUNT(*) FROM daily_sales WHERE date = ?", (today,))
+                stats["amazon"]["today"] = cursor.fetchone()[0]
 
-        conn.close()
+            conn.close()
+        except Exception as e:
+            print(f"[ERROR] Amazon stats: {e}")
 
     # TikTok 统计
     tiktok_db = DATA_DIR / "tiktok.db"
     if tiktok_db.exists():
-        conn = get_db_connection(tiktok_db)
-        cursor = conn.cursor()
+        try:
+            conn = get_db_connection(tiktok_db)
+            cursor = conn.cursor()
 
-        cursor.execute("SELECT COUNT(*) FROM tiktok_products")
-        stats["tiktok"]["products"] = cursor.fetchone()[0]
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='tiktok_products'")
+            if cursor.fetchone():
+                cursor.execute("SELECT COUNT(*) FROM tiktok_products")
+                stats["tiktok"]["products"] = cursor.fetchone()[0]
 
-        cursor.execute("SELECT COUNT(*) FROM tiktok_daily_sales")
-        stats["tiktok"]["sales"] = cursor.fetchone()[0]
+                cursor.execute("SELECT COUNT(*) FROM tiktok_daily_sales")
+                stats["tiktok"]["sales"] = cursor.fetchone()[0]
 
-        cursor.execute("SELECT MAX(timestamp) FROM tiktok_daily_sales")
-        result = cursor.fetchone()[0]
-        stats["tiktok"]["last_updated"] = result
+                cursor.execute("SELECT MAX(date) FROM tiktok_daily_sales")
+                result = cursor.fetchone()[0]
+                stats["tiktok"]["last_updated"] = result
 
-        # 今日抓取数量
-        cursor.execute("SELECT COUNT(*) FROM tiktok_daily_sales WHERE date = ?", (today,))
-        stats["tiktok"]["today"] = cursor.fetchone()[0]
+                cursor.execute("SELECT COUNT(*) FROM tiktok_daily_sales WHERE date = ?", (today,))
+                stats["tiktok"]["today"] = cursor.fetchone()[0]
 
-        conn.close()
+            conn.close()
+        except Exception as e:
+            print(f"[ERROR] TikTok stats: {e}")
 
     # 商品总库统计
     master_db = DATA_DIR / "product_master.db"
@@ -197,41 +206,56 @@ async def get_stats_endpoint():
 
 
 @app.get("/api/categories")
-async def get_categories(platform: Optional[str] = None):
-    """获取分类列表"""
-    categories = set()
-    
-    # Amazon 分类
-    amazon_db = DATA_DIR / "amazon.db"
-    if amazon_db.exists() and (platform is None or platform == "amazon"):
-        conn = get_db_connection(amazon_db)
-        cursor = conn.cursor()
-        cursor.execute("SELECT DISTINCT category FROM products WHERE category IS NOT NULL")
-        for row in cursor.fetchall():
-            if row[0]:
-                categories.add(("amazon", row[0]))
-        conn.close()
-    
-    # TikTok 分类
-    tiktok_db = DATA_DIR / "tiktok.db"
-    if tiktok_db.exists() and (platform is None or platform == "tiktok"):
-        conn = get_db_connection(tiktok_db)
-        cursor = conn.cursor()
-        cursor.execute("SELECT DISTINCT category FROM tiktok_products WHERE category IS NOT NULL")
-        for row in cursor.fetchall():
-            if row[0]:
-                categories.add(("tiktok", row[0]))
-        conn.close()
-    
-    # 按平台分组
+async def get_categories_api(platform: Optional[str] = None):
+    """获取分类列表(优先从 categories.db，回退到 product_master.db)"""
     result = {"amazon": [], "tiktok": [], "all": []}
-    for p, c in categories:
-        result[p].append(c)
-        result["all"].append({"platform": p, "category": c})
-    
-    result["amazon"].sort()
-    result["tiktok"].sort()
-    
+
+    # 先从 categories.db 获取
+    conn = get_categories_db()
+    cursor = conn.cursor()
+
+    amazon_cats = []
+    tiktok_cats = []
+
+    cursor.execute("SELECT platform, name FROM categories WHERE platform = 'amazon' AND enabled = 1")
+    amazon_cats = [row[1] for row in cursor.fetchall()]
+
+    cursor.execute("SELECT platform, name FROM categories WHERE platform = 'tiktok' AND enabled = 1")
+    tiktok_cats = [row[1] for row in cursor.fetchall()]
+    conn.close()
+
+    # 如果某个平台在 categories.db 为空，回退到 product_master.db
+    master_db = DATA_DIR / "product_master.db"
+    if master_db.exists():
+        conn = get_db_connection(master_db)
+        cursor = conn.cursor()
+
+        if not amazon_cats:
+            cursor.execute("SELECT DISTINCT category FROM product_master WHERE platform = 'amazon' AND category IS NOT NULL ORDER BY category")
+            amazon_cats = [row[0] for row in cursor.fetchall()]
+
+        if not tiktok_cats:
+            cursor.execute("SELECT DISTINCT category FROM product_master WHERE platform = 'tiktok' AND category IS NOT NULL ORDER BY category")
+            tiktok_cats = [row[0] for row in cursor.fetchall()]
+
+        conn.close()
+
+    # 构建 all_list
+    all_list = [{"platform": "amazon", "category": c} for c in amazon_cats] + \
+               [{"platform": "tiktok", "category": c} for c in tiktok_cats]
+
+    result["amazon"] = amazon_cats
+    result["tiktok"] = tiktok_cats
+    result["all"] = all_list
+
+    # 如果指定了 platform，只返回该平台的分类
+    if platform == "amazon":
+        result["tiktok"] = []
+        result["all"] = [{"platform": "amazon", "category": c} for c in amazon_cats]
+    elif platform == "tiktok":
+        result["amazon"] = []
+        result["all"] = [{"platform": "tiktok", "category": c} for c in tiktok_cats]
+
     return result
 
 
@@ -253,7 +277,7 @@ async def get_product_master(
     conn = get_db_connection(db_path)
     cursor = conn.cursor()
 
-    # 构建查询 - 不分页，先获取所有数据
+    # 构建查询 - 不分页,先获取所有数据
     base_query = "SELECT * FROM product_master WHERE 1=1"
     count_query = "SELECT COUNT(*) FROM product_master WHERE 1=1"
     params = []
@@ -311,7 +335,7 @@ async def get_product_master(
                 amazon_conn = get_db_connection(amazon_db_path)
                 amazon_cursor = amazon_conn.cursor()
                 amazon_cursor.execute("""
-                    SELECT ds.price, ds.rating, ds.date, ds.sales_count, p.local_image_path
+                    SELECT ds.price, ds.rating, ds.date, ds.rank, p.local_image_path, p.image_url
                     FROM products p
                     LEFT JOIN daily_sales ds ON p.id = ds.product_id
                         AND ds.date = (SELECT MAX(date) FROM daily_sales WHERE product_id = p.id)
@@ -322,8 +346,9 @@ async def get_product_master(
                 if result:
                     product['price'] = result['price']
                     product['rating'] = result['rating']
-                    product['sales_count'] = result['sales_count']
+                    product['sales_count'] = result['rank']  # Amazon 用 rank 代替
                     product['local_image_path'] = result['local_image_path']
+                    product['image_url'] = result['image_url']
                     if result['date']:
                         product['last_updated_at'] = result['date']
                 amazon_conn.close()
@@ -335,7 +360,7 @@ async def get_product_master(
                 tiktok_conn = get_db_connection(tiktok_db_path)
                 tiktok_cursor = tiktok_conn.cursor()
                 tiktok_cursor.execute("""
-                    SELECT ds.price, ds.rating, ds.date, ds.sales_count, p.local_image_path
+                    SELECT ds.price, ds.rating, ds.date, ds.sales_count, p.local_image_path, p.image_url
                     FROM tiktok_products p
                     LEFT JOIN tiktok_daily_sales ds ON p.id = ds.product_id
                         AND ds.date = (SELECT MAX(date) FROM tiktok_daily_sales WHERE product_id = p.id)
@@ -344,24 +369,36 @@ async def get_product_master(
                 """, (product['id'],))
                 result = tiktok_cursor.fetchone()
                 if result:
-                    product['price'] = result['price']
-                    product['rating'] = result['rating']
-                    product['sales_count'] = result['sales_count']
-                    product['local_image_path'] = result['local_image_path']
-                    if result['date']:
-                        product['last_updated_at'] = result['date']
+                    product['price'] = result[0]
+                    product['rating'] = result[1]
+                    product['sales_count'] = result[3]
+                    product['local_image_path'] = result[4]
+                    product['image_url'] = result[5]
+                    if result[2]:
+                        product['last_updated_at'] = result[2]
                 tiktok_conn.close()
-            except:
-                pass
-    
+            except Exception as e:
+                print(f"[ERROR] TikTok query failed for product {product['id']}: {e}")
+
     # 排序
-    if sort_by in ['price', 'rating', 'sales_count']:
+    if sort_by in ['price', 'rating', 'sales_count', 'total_sales']:
         reverse = sort_order == 'desc'
-        # 处理 None 值，排序时放到最后
-        products.sort(
-            key=lambda x: (x.get(sort_by) is None, x.get(sort_by) or 0),
-            reverse=reverse
-        )
+        # 计算总销售额
+        for p in products:
+            if p.get('price') is not None and p.get('sales_count') is not None and p.get('sales_count') > 0:
+                p['total_sales'] = p['price'] * p['sales_count']
+            else:
+                p['total_sales'] = None
+        
+        # 排序时 None 值始终排最后
+        def sort_key(x):
+            val = x.get(sort_by)
+            if val is None:
+                # 用一个元组，第一个元素决定 None 的位置 (1 表示排最后)
+                return (1, 0)
+            return (0, val)
+        
+        products.sort(key=sort_key, reverse=reverse)
 
     conn.close()
 
@@ -407,8 +444,8 @@ async def get_amazon_products(
     # 构建查询 - JOIN daily_sales 获取最新价格和评分
     base_query = """
         SELECT
-            p.id, p.asin, p.name, p.short_name, p.search_keyword, p.product_url,
-            p.category, p.subcategory, p.platform, p.image_url, p.local_image_path,
+            p.id, p.asin, p.name, p.product_url,
+            p.category, p.image_url,
             ds.price, ds.rating, ds.rating_count, ds.rank, ds.date
         FROM products p
         LEFT JOIN daily_sales ds ON p.id = ds.product_id
@@ -540,9 +577,9 @@ async def get_tiktok_products(
     # 构建查询 - JOIN daily_sales 获取最新价格和评分
     base_query = """
         SELECT
-            p.id, p.name, p.short_name, p.search_keyword, p.product_url,
-            p.category, p.platform, p.tiktokshop_id, p.image_url, p.local_image_path,
-            ds.price, ds.original_price, ds.rating, ds.sales_count, ds.date
+            p.id, p.name, p.product_url,
+            p.category, p.tiktokshop_id, p.image_url,
+            ds.price, ds.rating, ds.sales_count, ds.date
         FROM tiktok_products p
         LEFT JOIN tiktok_daily_sales ds ON p.id = ds.product_id
             AND ds.date = (SELECT MAX(date) FROM tiktok_daily_sales WHERE product_id = p.id)
@@ -662,27 +699,27 @@ async def get_product_trend(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100)
 ):
-    """获取商品趋势数据（图表+详细表格）"""
+    """获取商品趋势数据(图表+详细表格)"""
     from datetime import timedelta
-    
+
     master_db = DATA_DIR / "product_master.db"
     if not master_db.exists():
         raise HTTPException(status_code=404, detail="Product master database not found")
-    
+
     conn = get_db_connection(master_db)
     cursor = conn.cursor()
-    
+
     # 查询商品信息
     cursor.execute("SELECT * FROM product_master WHERE ecom_code = ?", (ecom_code,))
     row = cursor.fetchone()
     if not row:
         conn.close()
         raise HTTPException(status_code=404, detail="Product not found")
-    
+
     product = dict(row)
     platform = product['platform']
     product_id = product['id']
-    
+
     # 计算日期范围
     if start_date and end_date:
         # 自定义时间区间
@@ -692,17 +729,17 @@ async def get_product_trend(
         # 快速选择
         query_end = datetime.now().strftime("%Y-%m-%d")
         query_start = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
-    
+
     trend = []
     details = []
     total_records = 0
-    
+
     if platform == 'amazon':
         amazon_db = DATA_DIR / "amazon.db"
         if amazon_db.exists():
             aconn = get_db_connection(amazon_db)
             acursor = aconn.cursor()
-            
+
             # 查询平台产品ID
             acursor.execute("SELECT id, name, search_keyword FROM products WHERE master_id = ?", (product_id,))
             p_row = acursor.fetchone()
@@ -710,28 +747,28 @@ async def get_product_trend(
                 platform_product_id = p_row['id']
                 platform_name = p_row['name']
                 platform_keyword = p_row['search_keyword']
-                
-                # 获取趋势数据（图表用）
+
+                # 获取趋势数据(图表用)
                 acursor.execute("""
-                    SELECT date, price, rating, rank, sales_count
+                    SELECT date, price, rating, rank
                     FROM daily_sales
                     WHERE product_id = ? AND date >= ? AND date <= ?
                     ORDER BY date ASC
                 """, (platform_product_id, query_start, query_end))
                 for r in acursor.fetchall():
                     trend.append(dict(r))
-                
+
                 # 获取详细数据总数
                 acursor.execute("""
                     SELECT COUNT(*) FROM daily_sales
                     WHERE product_id = ? AND date >= ? AND date <= ?
                 """, (platform_product_id, query_start, query_end))
                 total_records = acursor.fetchone()[0]
-                
-                # 获取详细数据（分页）
+
+                # 获取详细数据(分页)
                 offset = (page - 1) * limit
                 acursor.execute("""
-                    SELECT date, timestamp, price, rating, rank, sales_count
+                    SELECT date, timestamp, price, rating, rank
                     FROM daily_sales
                     WHERE product_id = ? AND date >= ? AND date <= ?
                     ORDER BY date DESC
@@ -743,15 +780,15 @@ async def get_product_trend(
                     record['search_keyword'] = platform_keyword
                     record['events'] = ''  # 暂不支持事件
                     details.append(record)
-            
+
             aconn.close()
-    
+
     elif platform == 'tiktok':
         tiktok_db = DATA_DIR / "tiktok.db"
         if tiktok_db.exists():
             tconn = get_db_connection(tiktok_db)
             tcursor = tconn.cursor()
-            
+
             # 查询平台产品ID
             tcursor.execute("SELECT id, name, search_keyword FROM tiktok_products WHERE master_id = ?", (product_id,))
             p_row = tcursor.fetchone()
@@ -759,8 +796,8 @@ async def get_product_trend(
                 platform_product_id = p_row['id']
                 platform_name = p_row['name']
                 platform_keyword = p_row['search_keyword']
-                
-                # 获取趋势数据（图表用）
+
+                # 获取趋势数据(图表用)
                 tcursor.execute("""
                     SELECT date, price, rating, sales_count
                     FROM tiktok_daily_sales
@@ -775,15 +812,15 @@ async def get_product_trend(
                         'rank': None,
                         'sales_count': r['sales_count']
                     })
-                
+
                 # 获取详细数据总数
                 tcursor.execute("""
                     SELECT COUNT(*) FROM tiktok_daily_sales
                     WHERE product_id = ? AND date >= ? AND date <= ?
                 """, (platform_product_id, query_start, query_end))
                 total_records = tcursor.fetchone()[0]
-                
-                # 获取详细数据（分页）
+
+                # 获取详细数据(分页)
                 offset = (page - 1) * limit
                 tcursor.execute("""
                     SELECT date, timestamp, price, rating, sales_count
@@ -799,13 +836,13 @@ async def get_product_trend(
                     record['rank'] = None
                     record['events'] = ''  # 暂不支持事件
                     details.append(record)
-            
+
             tconn.close()
-    
+
     conn.close()
-    
+
     pages = (total_records + limit - 1) // limit if total_records > 0 else 1
-    
+
     return {
         "product": product,
         "trend": trend,
@@ -827,29 +864,29 @@ async def get_product_trend(
 async def get_sales_trend_mini(ecom_code: str, days: int = Query(7, ge=1, le=30)):
     """获取商品销售趋势小图数据"""
     from datetime import timedelta
-    
+
     master_db = DATA_DIR / "product_master.db"
     if not master_db.exists():
         raise HTTPException(status_code=404, detail="Product master database not found")
-    
+
     conn = get_db_connection(master_db)
     cursor = conn.cursor()
-    
+
     cursor.execute("SELECT id, platform FROM product_master WHERE ecom_code = ?", (ecom_code,))
     row = cursor.fetchone()
     if not row:
         conn.close()
         raise HTTPException(status_code=404, detail="Product not found")
-    
+
     master_id = row['id']
     platform = row['platform']
-    
+
     # 计算日期范围
     end_date = datetime.now().strftime("%Y-%m-%d")
     start_date = (datetime.now() - timedelta(days=days-1)).strftime("%Y-%m-%d")
-    
+
     trend = []
-    
+
     if platform == 'amazon':
         amazon_db = DATA_DIR / "amazon.db"
         if amazon_db.exists():
@@ -860,16 +897,17 @@ async def get_sales_trend_mini(ecom_code: str, days: int = Query(7, ge=1, le=30)
             """, (master_id,))
             p_row = acursor.fetchone()
             if p_row:
+                # Amazon daily_sales 没有 sales_count，用 rank 代替
                 acursor.execute("""
-                    SELECT date, sales_count
+                    SELECT date, rank
                     FROM daily_sales
                     WHERE product_id = ? AND date >= ? AND date <= ?
                     ORDER BY date ASC
                 """, (p_row['id'], start_date, end_date))
                 for r in acursor.fetchall():
-                    trend.append({"date": r['date'], "value": r['sales_count']})
+                    trend.append({"date": r['date'], "value": r['rank']})
             aconn.close()
-    
+
     elif platform == 'tiktok':
         tiktok_db = DATA_DIR / "tiktok.db"
         if tiktok_db.exists():
@@ -889,7 +927,7 @@ async def get_sales_trend_mini(ecom_code: str, days: int = Query(7, ge=1, le=30)
                 for r in tcursor.fetchall():
                     trend.append({"date": r['date'], "value": r['sales_count']})
             tconn.close()
-    
+
     conn.close()
     return {"ecom_code": ecom_code, "trend": trend}
 
@@ -916,10 +954,10 @@ async def get_amazon_top_by_category():
 
     result = {}
     for category in categories:
-        # 每个分类取 TOP 15，按 rank 排序
+        # 每个分类取 TOP 15,按 rank 排序
         cursor.execute("""
             SELECT
-                p.id, p.asin, p.name, p.short_name, p.search_keyword, p.product_url,
+                p.id, p.asin, p.name, p.product_url,
                 p.category, ds.price, ds.rating, ds.rank, ds.date
             FROM products p
             LEFT JOIN daily_sales ds ON p.id = ds.product_id
@@ -929,17 +967,17 @@ async def get_amazon_top_by_category():
             LIMIT 15
         """, (category,))
         rows = cursor.fetchall()
-        
+
         products = []
         for row in rows:
             product = dict(row)
             # 查询昨天的排名
             cursor.execute("""
-                SELECT rank FROM daily_sales 
+                SELECT rank FROM daily_sales
                 WHERE product_id = ? AND date = ?
             """, (product['id'], yesterday))
             yesterday_rank = cursor.fetchone()
-            
+
             if yesterday_rank:
                 product['rank_change'] = yesterday_rank['rank'] - product['rank']  # 正数=上升
                 product['is_new'] = False
@@ -951,9 +989,9 @@ async def get_amazon_top_by_category():
                 first_date = cursor.fetchone()[0]
                 product['is_new'] = first_date == today if first_date else True
                 product['rank_change'] = None
-            
+
             products.append(product)
-        
+
         result[category] = products
 
     conn.close()
@@ -979,16 +1017,16 @@ async def get_tiktok_top_by_category():
 
     result = {}
     for category in categories:
-        # 每个分类取 TOP 10,按 rank 排序
+        # 每个分类取 TOP 10,按销量排序
         cursor.execute("""
             SELECT
-                p.id, p.name, p.short_name, p.search_keyword, p.product_url,
-                p.category, p.tiktokshop_id, p.rank, ds.price, ds.rating
+                p.id, p.name, p.product_url,
+                p.category, p.tiktokshop_id, ds.price, ds.rating, ds.sales_count
             FROM tiktok_products p
             LEFT JOIN tiktok_daily_sales ds ON p.id = ds.product_id
                 AND ds.date = (SELECT MAX(date) FROM tiktok_daily_sales WHERE product_id = p.id)
             WHERE p.category = ?
-            ORDER BY p.rank ASC
+            ORDER BY ds.sales_count DESC
             LIMIT 10
         """, (category,))
         rows = cursor.fetchall()
@@ -1142,15 +1180,160 @@ async def get_tracked_products(ids: str = Query(..., description="商品编码�
 
 @app.get("/api/1688-search-url")
 async def get_1688_search_url(keyword: str = Query(..., description="搜索关键词")):
-    """生成 1688 搜索 URL（GBK 编码）"""
+    """生成 1688 搜索 URL(GBK 编码)"""
     import urllib.parse
-    
-    # 将关键词编码为 GBK，然后转为 URL 编码
+
+    # 将关键词编码为 GBK,然后转为 URL 编码
     gbk_encoded = keyword.encode('gbk')
     encoded_keyword = urllib.parse.quote(gbk_encoded, safe='')
-    
+
     url = f"https://s.1688.com/selloffer/offer_search.htm?keywords={encoded_keyword}"
     return {"url": url, "keyword": keyword}
+
+
+# ==================== 类目管理 API ====================
+
+CATEGORIES_DB = DATA_DIR / "categories.db"
+DAILY_DB = DATA_DIR / "category_daily.db"
+TASKS_DB = DATA_DIR / "tasks.db"
+TASKS_DIR = BASE_DIR / "output" / "tasks"
+
+from datetime import date
+
+def get_categories_db():
+    """获取类目数据库连接"""
+    conn = sqlite3.connect(CATEGORIES_DB)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def get_daily_db():
+    """获取每日记录数据库连接"""
+    conn = sqlite3.connect(DAILY_DB)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def get_tasks_db():
+    """获取任务数据库连接"""
+    conn = sqlite3.connect(TASKS_DB)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+@app.get("/api/categories/{platform}")
+async def get_categories(platform: str):
+    """获取平台的类目列表"""
+    if platform not in ['amazon', 'tiktok']:
+        raise HTTPException(status_code=400, detail="Invalid platform")
+
+    conn = get_categories_db()
+    cursor = conn.cursor()
+
+    # 获取类目列表
+    cursor.execute('''
+        SELECT id, name, url, enabled, added_at, last_scraped_at,
+               last_products_count, total_scrapes, total_products
+        FROM categories
+        WHERE platform = ?
+        ORDER BY name
+    ''', (platform,))
+
+    categories = []
+    today = date.today().isoformat()
+
+    for row in cursor.fetchall():
+        cat = dict(row)
+
+        # 查询今日抓取记录
+        daily_conn = get_daily_db()
+        daily_cursor = daily_conn.cursor()
+        daily_cursor.execute('''
+            SELECT products_count, scraped_at
+            FROM category_daily
+            WHERE category_id = ? AND date = ?
+        ''', (cat['id'], today))
+        daily = daily_cursor.fetchone()
+        daily_conn.close()
+
+        if daily:
+            cat['today_status'] = 'done'
+            cat['today_count'] = daily['products_count']
+            cat['today_time'] = daily['scraped_at']
+        else:
+            cat['today_status'] = 'pending'
+            cat['today_count'] = None
+            cat['today_time'] = None
+
+        categories.append(cat)
+
+    conn.close()
+
+    return {
+        "platform": platform,
+        "categories": categories,
+        "total": len(categories),
+        "enabled": sum(1 for c in categories if c['enabled'])
+    }
+
+@app.post("/api/categories/{platform}/refresh")
+async def refresh_categories(platform: str):
+    """刷新类目列表(从平台重新获取)"""
+    if platform not in ['amazon', 'tiktok']:
+        raise HTTPException(status_code=400, detail="Invalid platform")
+
+    import subprocess
+
+    script_path = BASE_DIR / 'scripts' / 'extract_categories.py'
+
+    print(f"[API] 开始刷新 {platform} 类目...")
+    print(f"[API] 脚本路径: {script_path}")
+
+    # 运行类目提取脚本 - 实时输出
+    process = subprocess.Popen(
+        ['python', str(script_path), platform],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        cwd=str(BASE_DIR),
+        bufsize=1
+    )
+
+    # 实时打印输出
+    output_lines = []
+    for line in process.stdout:
+        print(line, end='')
+        output_lines.append(line)
+
+    process.wait(timeout=300)
+
+    output = ''.join(output_lines)
+
+    if process.returncode == 0:
+        return {
+            "success": True,
+            "message": "类目刷新成功",
+            "output": output
+        }
+    else:
+        return {
+            "success": False,
+            "message": output or "刷新失败"
+        }
+
+@app.put("/api/categories/{category_id}/enabled")
+async def set_category_enabled(category_id: int, enabled: bool):
+    """启用/禁用类目"""
+    conn = get_categories_db()
+    cursor = conn.cursor()
+
+    cursor.execute("UPDATE categories SET enabled = ? WHERE id = ?", (1 if enabled else 0, category_id))
+
+    if cursor.rowcount == 0:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Category not found")
+
+    conn.commit()
+    conn.close()
+
+    return {"success": True, "id": category_id, "enabled": enabled}
 
 
 # ==================== 配置管理 API ====================
@@ -1433,15 +1616,15 @@ def download_sourcing_image(image_url: str, offer_id: str) -> str:
     """下载货源图片到本地"""
     import urllib.request
     import os
-    
+
     # 确保目录存在
     SOURCING_IMAGE_DIR.mkdir(parents=True, exist_ok=True)
-    
+
     # 生成文件名
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"1688_{offer_id}_{timestamp}.jpg"
     filepath = SOURCING_IMAGE_DIR / filename
-    
+
     # 下载图片
     request = urllib.request.Request(
         image_url,
@@ -1453,7 +1636,7 @@ def download_sourcing_image(image_url: str, offer_id: str) -> str:
     with urllib.request.urlopen(request, timeout=10) as response:
         with open(filepath, 'wb') as f:
             f.write(response.read())
-    
+
     # 返回相对路径
     return f"sourcing/{filename}"
 
@@ -1461,7 +1644,7 @@ def get_sourcing_db():
     """获取货源数据库连接"""
     conn = sqlite3.connect(SOURCING_DB_PATH)
     conn.row_factory = sqlite3.Row
-    
+
     # 创建表
     conn.execute('''
         CREATE TABLE IF NOT EXISTS sourcing_1688 (
@@ -1480,13 +1663,13 @@ def get_sourcing_db():
             UNIQUE(ecom_code, offer_id)
         )
     ''')
-    
-    # 迁移：添加 local_image_path 字段（如果不存在）
+
+    # 迁移:添加 local_image_path 字段(如果不存在)
     try:
         conn.execute('ALTER TABLE sourcing_1688 ADD COLUMN local_image_path TEXT')
     except:
         pass  # 字段已存在
-    
+
     conn.commit()
     return conn
 
@@ -1495,13 +1678,13 @@ def get_sourcing_db():
 async def add_sourcing(request: Request):
     """添加货源记录"""
     data = await request.json()
-    
+
     ecom_code = data.get("ecom_code")
     offer_id = data.get("offerId")
-    
+
     if not ecom_code or not offer_id:
         raise HTTPException(status_code=400, detail="缺少 ecom_code 或 offerId")
-    
+
     # 下载图片到本地
     image_url = data.get("image", "")
     local_image_path = ""
@@ -1510,7 +1693,7 @@ async def add_sourcing(request: Request):
             local_image_path = download_sourcing_image(image_url, offer_id)
         except Exception as e:
             print(f"[Sourcing] 图片下载失败: {e}")
-    
+
     conn = get_sourcing_db()
     try:
         conn.execute('''
@@ -1531,7 +1714,7 @@ async def add_sourcing(request: Request):
             data.get("collected_at", datetime.now().isoformat())
         ))
         conn.commit()
-        
+
         return {"success": True, "ecom_code": ecom_code, "offer_id": offer_id, "local_image": local_image_path}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -1546,39 +1729,39 @@ async def list_sourcing(
     search: Optional[str] = None,
     ecom_code: Optional[str] = None
 ):
-    """获取货源列表（分页、搜索）"""
+    """获取货源列表(分页、搜索)"""
     conn = get_sourcing_db()
     try:
         # 构建查询
         base_query = "SELECT * FROM sourcing_1688 WHERE 1=1"
         count_query = "SELECT COUNT(*) FROM sourcing_1688 WHERE 1=1"
         params = []
-        
+
         if search:
             base_query += " AND (title LIKE ? OR shop_name LIKE ? OR offer_id LIKE ? OR ecom_code LIKE ?)"
             count_query += " AND (title LIKE ? OR shop_name LIKE ? OR offer_id LIKE ? OR ecom_code LIKE ?)"
             params.extend([f"%{search}%", f"%{search}%", f"%{search}%", f"%{search}%"])
-        
+
         if ecom_code:
             base_query += " AND ecom_code = ?"
             count_query += " AND ecom_code = ?"
             params.append(ecom_code)
-        
+
         # 获取总数
         cursor = conn.execute(count_query, params)
         total = cursor.fetchone()[0]
-        
+
         # 分页
         offset = (page - 1) * limit
         base_query += " ORDER BY collected_at DESC LIMIT ? OFFSET ?"
         params.extend([limit, offset])
-        
+
         cursor = conn.execute(base_query, params)
         rows = cursor.fetchall()
-        
+
         # 计算页数
         pages = (total + limit - 1) // limit if limit > 0 else 0
-        
+
         return {
             "data": [dict(row) for row in rows],
             "pagination": {
@@ -1600,19 +1783,19 @@ async def get_sourcing_stats():
         # 总数
         cursor = conn.execute("SELECT COUNT(*) FROM sourcing_1688")
         total = cursor.fetchone()[0]
-        
+
         # 关联商品数
         cursor = conn.execute("SELECT COUNT(DISTINCT ecom_code) FROM sourcing_1688")
         products_linked = cursor.fetchone()[0]
-        
+
         # 今日采集数
         cursor = conn.execute("SELECT COUNT(*) FROM sourcing_1688 WHERE date(collected_at) = date('now')")
         today_count = cursor.fetchone()[0]
-        
+
         # 最后更新时间
         cursor = conn.execute("SELECT MAX(collected_at) FROM sourcing_1688")
         last_updated = cursor.fetchone()[0]
-        
+
         return {
             "total": total,
             "products_linked": products_linked,
@@ -1671,7 +1854,7 @@ def run_script_async(script_path: str, task_name: str):
     global task_status
     task_status[task_name]["running"] = True
     task_status[task_name]["message"] = "正在执行..."
-    
+
     try:
         result = subprocess.run(
             ["python", script_path],
@@ -1680,7 +1863,7 @@ def run_script_async(script_path: str, task_name: str):
             timeout=600,
             cwd=str(BASE_DIR)
         )
-        
+
         if result.returncode == 0:
             task_status[task_name]["message"] = "执行成功"
         else:
@@ -1698,16 +1881,16 @@ def run_script_async(script_path: str, task_name: str):
 async def trigger_amazon_fetch():
     """触发 Amazon 数据抓取"""
     global task_status
-    
+
     if task_status["amazon_fetch"]["running"]:
         return {"success": False, "message": "Amazon 抓取任务正在运行中"}
-    
+
     script_path = str(BASE_DIR / "skills" / "amazon-fetcher" / "src" / "fetch_amazon_all_categories.py")
-    
+
     # 启动后台线程
     thread = threading.Thread(target=run_script_async, args=(script_path, "amazon_fetch"))
     thread.start()
-    
+
     return {"success": True, "message": "Amazon 抓取任务已启动"}
 
 
@@ -1715,15 +1898,15 @@ async def trigger_amazon_fetch():
 async def trigger_tiktok_fetch():
     """触发 TikTok 数据抓取"""
     global task_status
-    
+
     if task_status["tiktok_fetch"]["running"]:
         return {"success": False, "message": "TikTok 抓取任务正在运行中"}
-    
+
     script_path = str(BASE_DIR / "skills" / "tiktok-fetcher" / "src" / "fetch_tiktok_categories.py")
-    
+
     thread = threading.Thread(target=run_script_async, args=(script_path, "tiktok_fetch"))
     thread.start()
-    
+
     return {"success": True, "message": "TikTok 抓取任务已启动"}
 
 
@@ -1731,15 +1914,15 @@ async def trigger_tiktok_fetch():
 async def trigger_data_import():
     """触发数据导入"""
     global task_status
-    
+
     if task_status["data_import"]["running"]:
         return {"success": False, "message": "数据导入任务正在运行中"}
-    
+
     script_path = str(BASE_DIR / "skills" / "db-importer" / "src" / "import_to_db.py")
-    
+
     thread = threading.Thread(target=run_script_async, args=(script_path, "data_import"))
     thread.start()
-    
+
     return {"success": True, "message": "数据导入任务已启动"}
 
 
@@ -1747,6 +1930,177 @@ async def trigger_data_import():
 async def get_tasks_status():
     """获取任务状态"""
     return task_status
+
+
+# ==================== 抓取任务 API ====================
+
+import subprocess
+import threading
+import sys
+
+# 抓取任务状态
+fetch_tasks = {
+    'amazon': {'status': 'idle', 'message': '', 'started_at': None},
+    'tiktok': {'status': 'idle', 'message': '', 'started_at': None}
+}
+
+def run_fetch_task(platform: str):
+    """后台运行抓取任务"""
+    global fetch_tasks
+
+    fetch_tasks[platform]['status'] = 'running'
+    fetch_tasks[platform]['started_at'] = datetime.now().isoformat()
+    fetch_tasks[platform]['message'] = '正在启动...'
+
+    try:
+        # 使用新的任务脚本
+        script_path = BASE_DIR / 'scripts' / 'fetch_task.py'
+
+        print(f"[API] 启动 {platform} 抓取任务...")
+        print(f"[API] 脚本路径: {script_path}")
+
+        # 实时输出 - 使用 unbuffered 模式
+        process = subprocess.Popen(
+            ['python', '-u', str(script_path), platform],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            cwd=str(BASE_DIR),
+            encoding='utf-8',
+            errors='replace'
+        )
+
+        # 实时打印输出
+        for line in process.stdout:
+            print(line, end='')
+            sys.stdout.flush()  # 强制刷新
+
+        process.wait(timeout=600)
+
+        if process.returncode == 0:
+            fetch_tasks[platform]['status'] = 'completed'
+            fetch_tasks[platform]['message'] = '抓取完成'
+            print(f"[API] {platform} 抓取完成")
+        else:
+            fetch_tasks[platform]['status'] = 'failed'
+            fetch_tasks[platform]['message'] = '抓取失败'
+            print(f"[API] {platform} 抓取失败")
+
+    except subprocess.TimeoutExpired:
+        fetch_tasks[platform]['status'] = 'failed'
+        fetch_tasks[platform]['message'] = '抓取超时(10分钟)'
+        print(f"[API] {platform} 抓取超时")
+    except Exception as e:
+        fetch_tasks[platform]['status'] = 'failed'
+        fetch_tasks[platform]['message'] = str(e)
+        print(f"[API] {platform} 抓取异常: {e}")
+
+@app.post('/api/tasks/{platform}/fetch')
+async def start_fetch(platform: str):
+    """启动抓取任务"""
+    if platform not in ['amazon', 'tiktok']:
+        raise HTTPException(status_code=400, detail='Invalid platform')
+
+    if fetch_tasks[platform]['status'] == 'running':
+        return {'success': False, 'message': f'{platform} 抓取任务正在进行中'}
+
+    # 后台启动抓取
+    thread = threading.Thread(target=run_fetch_task, args=(platform,))
+    thread.daemon = True
+    thread.start()
+
+    return {'success': True, 'message': f'{platform} 抓取任务已启动'}
+
+@app.get('/api/tasks/{platform}/fetch/status')
+async def get_fetch_status(platform: str):
+    """获取抓取任务状态"""
+    if platform not in ['amazon', 'tiktok']:
+        raise HTTPException(status_code=400, detail='Invalid platform')
+
+    return fetch_tasks[platform]
+
+
+# ==================== 翻译状态 API ====================
+
+@app.post('/api/products/{ecom_code}/reset-translation')
+async def reset_translation(ecom_code: str):
+    """重置商品翻译状态为待翻译"""
+    db_path = DATA_DIR / 'product_master.db'
+    if not db_path.exists():
+        raise HTTPException(status_code=404, detail='Database not found')
+    
+    conn = get_db_connection(db_path)
+    cursor = conn.cursor()
+    
+    # 检查商品是否存在
+    cursor.execute('SELECT id, short_name FROM product_master WHERE ecom_code = ?', (ecom_code,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=404, detail='Product not found')
+    
+    # 更新翻译状态为 pending
+    cursor.execute(
+        'UPDATE product_master SET translation_status = ? WHERE ecom_code = ?',
+        ('pending', ecom_code)
+    )
+    conn.commit()
+    conn.close()
+    
+    return {'success': True, 'message': f'商品 {ecom_code} 翻译状态已重置为待翻译'}
+
+
+@app.get('/api/products/pending-translation')
+async def get_pending_translations(limit: int = Query(10, ge=1, le=100)):
+    """获取待翻译的商品列表"""
+    db_path = DATA_DIR / 'product_master.db'
+    if not db_path.exists():
+        raise HTTPException(status_code=404, detail='Database not found')
+    
+    conn = get_db_connection(db_path)
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        SELECT id, ecom_code, name, short_name, platform, category
+        FROM product_master
+        WHERE translation_status = 'pending' AND name IS NOT NULL AND name != ''
+        ORDER BY last_updated_at DESC
+        LIMIT ?
+    ''', (limit,))
+    
+    rows = cursor.fetchall()
+    products = [dict(row) for row in rows]
+    conn.close()
+    
+    return {'products': products, 'count': len(products)}
+
+
+@app.post('/api/products/{ecom_code}/set-translated')
+async def set_translated(ecom_code: str, short_name: str = Query(..., description='翻译后的中文名称')):
+    """设置商品翻译完成"""
+    db_path = DATA_DIR / 'product_master.db'
+    if not db_path.exists():
+        raise HTTPException(status_code=404, detail='Database not found')
+    
+    conn = get_db_connection(db_path)
+    cursor = conn.cursor()
+    
+    # 检查商品是否存在
+    cursor.execute('SELECT id FROM product_master WHERE ecom_code = ?', (ecom_code,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=404, detail='Product not found')
+    
+    # 更新翻译状态和 short_name
+    cursor.execute(
+        'UPDATE product_master SET translation_status = ?, short_name = ? WHERE ecom_code = ?',
+        ('translated', short_name, ecom_code)
+    )
+    conn.commit()
+    conn.close()
+    
+    return {'success': True, 'message': f'商品 {ecom_code} 翻译已完成'}
 
 
 # ==================== 服务启动 ====================
@@ -1764,7 +2118,7 @@ def run_server(host: str = "0.0.0.0", port: int = 8000):
 
     # 挂载静态文件 - 根目录(用于 index.html 等)
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
-    
+
     # 挂载图片目录 - 用于商品图片访问
     images_dir = DATA_DIR / "images"
     if images_dir.exists():
@@ -1773,8 +2127,8 @@ def run_server(host: str = "0.0.0.0", port: int = 8000):
     print(f"\n{'='*60}")
     print(f"EcomAgent Data Viewer")
     print(f"{'='*60}")
-    print(f"服务地址:http://{host}:{port}")
-    print(f"API 文档:http://{host}:{port}/docs")
+    print(f"服务地址: http://127.0.0.1:{port}")
+    print(f"API 文档: http://127.0.0.1:{port}/docs")
     print(f"{'='*60}\n")
 
     # Windows CMD 不支持 ANSI 颜色码,设置环境变量禁用颜色

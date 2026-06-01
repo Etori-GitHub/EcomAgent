@@ -75,6 +75,12 @@ export async function getConfig(name: string): Promise<{
   return request(`${API_BASE}/config/${name}`);
 }
 
+// 获取应用名称配置
+export async function getAppName(): Promise<{ app_name: string }> {
+  const config = await getConfig('settings');
+  return { app_name: (config.data.app_name as string) || 'EcomAgent' };
+}
+
 export async function updateConfig(name: string, content: string): Promise<{
   success: boolean;
   message: string;

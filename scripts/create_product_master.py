@@ -147,7 +147,7 @@ def migrate_existing_products():
         cursor_amazon = conn_amazon.cursor()
         
         cursor_amazon.execute("""
-            SELECT asin, name, short_name, search_keyword, product_url, category
+            SELECT asin, name, product_url, category
             FROM products
         """)
         
@@ -156,13 +156,11 @@ def migrate_existing_products():
         
         print(f"📦 Migrating {len(amazon_products)} Amazon products...")
         
-        for asin, name, short_name, search_keyword, product_url, category in amazon_products:
+        for asin, name, product_url, category in amazon_products:
             get_or_create_product(
                 platform='amazon',
                 platform_id=asin,
                 name=name,
-                short_name=short_name,
-                search_keyword=search_keyword,
                 product_url=product_url,
                 category=category
             )
@@ -176,7 +174,7 @@ def migrate_existing_products():
         cursor_tiktok = conn_tiktok.cursor()
         
         cursor_tiktok.execute("""
-            SELECT tiktokshop_id, name, short_name, search_keyword, product_url, category
+            SELECT tiktokshop_id, name, product_url, category
             FROM tiktok_products
             WHERE tiktokshop_id IS NOT NULL AND tiktokshop_id != ''
         """)
@@ -186,13 +184,11 @@ def migrate_existing_products():
         
         print(f"📦 Migrating {len(tiktok_products)} TikTok products...")
         
-        for tiktokshop_id, name, short_name, search_keyword, product_url, category in tiktok_products:
+        for tiktokshop_id, name, product_url, category in tiktok_products:
             get_or_create_product(
                 platform='tiktok',
                 platform_id=tiktokshop_id,
                 name=name,
-                short_name=short_name,
-                search_keyword=search_keyword,
                 product_url=product_url,
                 category=category
             )

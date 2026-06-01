@@ -32,6 +32,7 @@ export interface Product {
   price?: number;
   rating?: number;
   sales_count?: number;
+  total_sales?: number;
   product_url?: string;
   last_updated_at?: string;
   tiktokshop_id?: string;

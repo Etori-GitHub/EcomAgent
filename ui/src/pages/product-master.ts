@@ -166,10 +166,15 @@ export class EaProductMaster extends LitElement {
       color: var(--muted); font-size: 18px; flex-shrink: 0;
     }
     .product-info { min-width: 0; }
+    .product-name-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
     .product-name {
       font-size: 13px; font-weight: 500; color: var(--text);
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-      max-width: 200px; display: block;
+      max-width: 200px;
     }
     .product-name:hover { color: var(--accent); }
     .product-code {
@@ -211,6 +216,16 @@ export class EaProductMaster extends LitElement {
     }
     .track-btn.active { color: #fbbf24; }
     .track-btn:hover { color: #fbbf24; }
+    
+    /* 重翻译按钮 */
+    .retranslate-btn {
+      background: transparent; border: none;
+      font-size: 11px; cursor: pointer;
+      padding: 2px 6px; line-height: 1;
+      color: var(--muted); transition: color 0.15s;
+      margin-left: 4px;
+    }
+    .retranslate-btn:hover { color: var(--accent); }
     
     /* 操作按钮 */
     .action-btn {
@@ -400,6 +415,21 @@ export class EaProductMaster extends LitElement {
     }
     this.saveTracked();
     this.requestUpdate();
+  }
+
+  private async _resetTranslation(ecomCode: string) {
+    try {
+      const response = await fetch(`/api/products/${ecomCode}/reset-translation`, {
+        method: 'POST'
+      });
+      const data = await response.json();
+      if (data.success) {
+        // 刷新数据
+        this.loadData();
+      }
+    } catch (e) {
+      console.error('Reset translation failed:', e);
+    }
   }
 
   private _showTrendPage(ecomCode: string) {
@@ -623,6 +653,7 @@ export class EaProductMaster extends LitElement {
               ${this._renderSortHeader('价格', 'price')}
               ${this._renderSortHeader('评分', 'rating')}
               ${this._renderSortHeader('销量', 'sales_count')}
+              ${this._renderSortHeader('总销售额', 'total_sales')}
               <th style="width:100px">7日趋势</th>
               <th style="width:90px">操作</th>
             </tr>
@@ -632,18 +663,21 @@ export class EaProductMaster extends LitElement {
               <tr class="product-row">
                 <td style="text-align:center;font-weight:600;color:var(--muted)">${(this.page - 1) * 20 + i + 1}</td>
                 <td>
-                  ${p.local_image_path 
-                    ? html`<img class="product-img" src="/images/${p.local_image_path}" loading="lazy" 
-                        @mouseenter=${(e: MouseEvent) => this._showImgPreview(e, `/images/${p.local_image_path}`)}
+                  ${(p.local_image_path || p.image_url)
+                    ? html`<img class="product-img" src=${p.local_image_path ? `/images/${p.local_image_path}` : p.image_url || ''} loading="lazy" 
+                        @mouseenter=${(e: MouseEvent) => this._showImgPreview(e, p.local_image_path ? `/images/${p.local_image_path}` : p.image_url || '')}
                         @mouseleave=${this._hideImgPreview}
                         @mousemove=${this._moveImgPreview} />`
                     : html`<div class="product-img-placeholder">📦</div>`}
                 </td>
                 <td>
                   <div class="product-info">
-                    ${p.product_url 
-                      ? html`<a class="product-name product-link" href=${p.product_url} target="_blank" title=${p.name}>${p.short_name || p.name || '无名称'}</a>`
-                      : html`<span class="product-name" title=${p.name}>${p.short_name || p.name || '无名称'}</span>`}
+                    <div class="product-name-row">
+                      ${p.product_url 
+                        ? html`<a class="product-name product-link" href=${p.product_url} target="_blank" title=${p.name}>${p.short_name || p.name || '无名称'}</a>`
+                        : html`<span class="product-name" title=${p.name}>${p.short_name || p.name || '无名称'}</span>`}
+                      ${p.short_name ? html`<button class="retranslate-btn" @click=${() => this._resetTranslation(p.ecom_code)} title="重新翻译">🔄</button>` : ''}
+                    </div>
                     <div class="product-code">
                       <button class="track-btn ${this.trackedIds.has(p.ecom_code) ? 'active' : ''}"
                         @click=${() => this._toggleTrack(p.ecom_code)}
@@ -656,6 +690,7 @@ export class EaProductMaster extends LitElement {
                 <td>${p.price ? `$${p.price.toFixed(2)}` : '-'}</td>
                 <td>${p.rating ? html`${p.rating.toFixed(1)} ⭐` : '-'}</td>
                 <td><span class="sales-count">${this._formatSales(p.sales_count)}</span></td>
+                <td>${p.total_sales ? `$${this._formatSales(p.total_sales)}` : '-'}</td>
                 <td class="sparkline-cell">${this._renderSparkline(p.ecom_code)}</td>
                 <td>
                   <button class="action-btn" @click=${() => this._showTrendPage(p.ecom_code)} title="查看趋势">趋势</button>
