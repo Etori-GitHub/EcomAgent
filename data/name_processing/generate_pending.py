@@ -5,11 +5,11 @@ from datetime import datetime
 db_path = r'C:\Users\Etroi\.openclaw\workspace\code\EcomAgent\data\product_master.db'
 conn = sqlite3.connect(db_path)
 
-# 查找没有 short_name 的产品
+# 查找有名称但没有 short_name 的产品
 cursor = conn.execute("""
     SELECT id, ecom_code, name 
     FROM product_master 
-    WHERE short_name IS NULL OR short_name = ''
+    WHERE (short_name IS NULL OR short_name = '') AND name IS NOT NULL AND name != ''
     LIMIT 50
 """)
 results = cursor.fetchall()

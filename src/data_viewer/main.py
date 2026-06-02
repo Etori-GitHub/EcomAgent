@@ -385,20 +385,24 @@ async def get_product_master(
         reverse = sort_order == 'desc'
         # 计算总销售额
         for p in products:
-            if p.get('price') is not None and p.get('sales_count') is not None and p.get('sales_count') > 0:
-                p['total_sales'] = p['price'] * p['sales_count']
+            price = p.get('price')
+            sales = p.get('sales_count')
+            if price is not None and sales is not None and price > 0 and sales > 0:
+                p['total_sales'] = price * sales
             else:
-                p['total_sales'] = None
+                p['total_sales'] = 0
         
-        # 排序时 None 值始终排最后
+        # 排序时 None/0 值始终排最后
         def sort_key(x):
             val = x.get(sort_by)
-            if val is None:
-                # 用一个元组，第一个元素决定 None 的位置 (1 表示排最后)
-                return (1, 0)
-            return (0, val)
+            if val is None or val == 0:
+                # 降序时用 -inf 确保排在最后，升序时用 inf 确保排在最后
+                return float('-inf') if reverse else float('inf')
+            return val
         
         products.sort(key=sort_key, reverse=reverse)
+    else:
+        print(f"[DEBUG] sort_by '{sort_by}' not in sort fields, skipping sort")
 
     conn.close()
 
@@ -2101,6 +2105,186 @@ async def set_translated(ecom_code: str, short_name: str = Query(..., descriptio
     conn.close()
     
     return {'success': True, 'message': f'商品 {ecom_code} 翻译已完成'}
+
+
+# ==================== 翻译日志 API ====================
+
+@app.get('/api/translation-logs')
+async def get_translation_logs(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    status: Optional[str] = Query(None, description='筛选状态: pending, running, completed, failed')
+):
+    """获取翻译日志列表"""
+    db_path = DATA_DIR / 'product_master.db'
+    if not db_path.exists():
+        raise HTTPException(status_code=404, detail='Database not found')
+    
+    conn = get_db_connection(db_path)
+    cursor = conn.cursor()
+    
+    # 构建查询
+    base_query = 'SELECT * FROM translation_logs'
+    count_query = 'SELECT COUNT(*) FROM translation_logs'
+    params = []
+    
+    if status:
+        base_query += ' WHERE status = ?'
+        count_query += ' WHERE status = ?'
+        params.append(status)
+    
+    # 获取总数
+    cursor.execute(count_query, params)
+    total = cursor.fetchone()[0]
+    
+    # 分页
+    offset = (page - 1) * limit
+    base_query += f' ORDER BY created_at DESC LIMIT {limit} OFFSET {offset}'
+    
+    cursor.execute(base_query, params)
+    rows = cursor.fetchall()
+    logs = [dict(row) for row in rows]
+    
+    # 计算分页信息
+    pages = (total + limit - 1) // limit
+    
+    conn.close()
+    
+    return {
+        'data': logs,
+        'pagination': {
+            'page': page,
+            'limit': limit,
+            'total': total,
+            'pages': pages
+        }
+    }
+
+
+@app.post('/api/translation-logs')
+async def create_translation_log(
+    batch_id: str = Query(..., description='批次ID'),
+    total_count: int = Query(..., description='待翻译数量')
+):
+    """创建翻译日志记录"""
+    db_path = DATA_DIR / 'product_master.db'
+    if not db_path.exists():
+        raise HTTPException(status_code=404, detail='Database not found')
+    
+    conn = get_db_connection(db_path)
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        INSERT INTO translation_logs (batch_id, status, total_count, started_at)
+        VALUES (?, 'running', ?, ?)
+    ''', (batch_id, total_count, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+    
+    log_id = cursor.lastrowid
+    conn.commit()
+    conn.close()
+    
+    return {'success': True, 'log_id': log_id, 'message': f'翻译日志已创建，批次: {batch_id}'}
+
+
+@app.patch('/api/translation-logs/{log_id}')
+async def update_translation_log(
+    log_id: int,
+    status: Optional[str] = Query(None, description='状态: pending, running, completed, failed'),
+    success_count: Optional[int] = Query(None, description='成功数量'),
+    failed_count: Optional[int] = Query(None, description='失败数量'),
+    error_message: Optional[str] = Query(None, description='错误信息')
+):
+    """更新翻译日志状态"""
+    db_path = DATA_DIR / 'product_master.db'
+    if not db_path.exists():
+        raise HTTPException(status_code=404, detail='Database not found')
+    
+    conn = get_db_connection(db_path)
+    cursor = conn.cursor()
+    
+    # 检查日志是否存在
+    cursor.execute('SELECT id FROM translation_logs WHERE id = ?', (log_id,))
+    if not cursor.fetchone():
+        conn.close()
+        raise HTTPException(status_code=404, detail='Log not found')
+    
+    # 构建更新
+    updates = []
+    params = []
+    
+    if status:
+        updates.append('status = ?')
+        params.append(status)
+        if status == 'completed' or status == 'failed':
+            updates.append('completed_at = ?')
+            params.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    
+    if success_count is not None:
+        updates.append('success_count = ?')
+        params.append(success_count)
+    
+    if failed_count is not None:
+        updates.append('failed_count = ?')
+        params.append(failed_count)
+    
+    if error_message:
+        updates.append('error_message = ?')
+        params.append(error_message)
+    
+    if updates:
+        query = f"UPDATE translation_logs SET {', '.join(updates)} WHERE id = ?"
+        params.append(log_id)
+        cursor.execute(query, params)
+        conn.commit()
+    
+    conn.close()
+    
+    return {'success': True, 'message': f'翻译日志 {log_id} 已更新'}
+
+
+@app.get('/api/translation-logs/stats')
+async def get_translation_logs_stats():
+    """获取翻译日志统计"""
+    db_path = DATA_DIR / 'product_master.db'
+    if not db_path.exists():
+        raise HTTPException(status_code=404, detail='Database not found')
+    
+    conn = get_db_connection(db_path)
+    cursor = conn.cursor()
+    
+    # 总任务数
+    cursor.execute('SELECT COUNT(*) FROM translation_logs')
+    total_tasks = cursor.fetchone()[0]
+    
+    # 各状态数量
+    cursor.execute('SELECT status, COUNT(*) FROM translation_logs GROUP BY status')
+    status_counts = {row[0]: row[1] for row in cursor.fetchall()}
+    
+    # 总翻译数量
+    cursor.execute('SELECT SUM(total_count) FROM translation_logs')
+    total_count = cursor.fetchone()[0] or 0
+    
+    cursor.execute('SELECT SUM(success_count) FROM translation_logs WHERE status = "completed"')
+    success_count = cursor.fetchone()[0] or 0
+    
+    cursor.execute('SELECT SUM(failed_count) FROM translation_logs WHERE status = "failed"')
+    failed_count = cursor.fetchone()[0] or 0
+    
+    # 最近一次运行
+    cursor.execute('SELECT * FROM translation_logs ORDER BY created_at DESC LIMIT 1')
+    last_run = cursor.fetchone()
+    last_run_data = dict(last_run) if last_run else None
+    
+    conn.close()
+    
+    return {
+        'total_tasks': total_tasks,
+        'status_counts': status_counts,
+        'total_count': total_count,
+        'success_count': success_count,
+        'failed_count': failed_count,
+        'last_run': last_run_data
+    }
 
 
 # ==================== 服务启动 ====================

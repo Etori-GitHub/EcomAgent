@@ -1,22 +1,22 @@
-var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e;var d=(o,t,e)=>De(o,typeof t!="symbol"?t+"":t,e);(function(){const t=document.createElement("link").relList;if(t&&t.supports&&t.supports("modulepreload"))return;for(const r of document.querySelectorAll('link[rel="modulepreload"]'))a(r);new MutationObserver(r=>{for(const i of r)if(i.type==="childList")for(const s of i.addedNodes)s.tagName==="LINK"&&s.rel==="modulepreload"&&a(s)}).observe(document,{childList:!0,subtree:!0});function e(r){const i={};return r.integrity&&(i.integrity=r.integrity),r.referrerPolicy&&(i.referrerPolicy=r.referrerPolicy),r.crossOrigin==="use-credentials"?i.credentials="include":r.crossOrigin==="anonymous"?i.credentials="omit":i.credentials="same-origin",i}function a(r){if(r.ep)return;r.ep=!0;const i=e(r);fetch(r.href,i)}})();/**
+var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e;var d=(o,t,e)=>Ue(o,typeof t!="symbol"?t+"":t,e);(function(){const t=document.createElement("link").relList;if(t&&t.supports&&t.supports("modulepreload"))return;for(const r of document.querySelectorAll('link[rel="modulepreload"]'))a(r);new MutationObserver(r=>{for(const i of r)if(i.type==="childList")for(const s of i.addedNodes)s.tagName==="LINK"&&s.rel==="modulepreload"&&a(s)}).observe(document,{childList:!0,subtree:!0});function e(r){const i={};return r.integrity&&(i.integrity=r.integrity),r.referrerPolicy&&(i.referrerPolicy=r.referrerPolicy),r.crossOrigin==="use-credentials"?i.credentials="include":r.crossOrigin==="anonymous"?i.credentials="omit":i.credentials="same-origin",i}function a(r){if(r.ep)return;r.ep=!0;const i=e(r);fetch(r.href,i)}})();/**
  * @license
  * Copyright 2019 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */const xt=globalThis,jt=xt.ShadowRoot&&(xt.ShadyCSS===void 0||xt.ShadyCSS.nativeShadow)&&"adoptedStyleSheets"in Document.prototype&&"replace"in CSSStyleSheet.prototype,Lt=Symbol(),Vt=new WeakMap;let oe=class{constructor(t,e,a){if(this._$cssResult$=!0,a!==Lt)throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");this.cssText=t,this.t=e}get styleSheet(){let t=this.o;const e=this.t;if(jt&&t===void 0){const a=e!==void 0&&e.length===1;a&&(t=Vt.get(e)),t===void 0&&((this.o=t=new CSSStyleSheet).replaceSync(this.cssText),a&&Vt.set(e,t))}return t}toString(){return this.cssText}};const Ie=o=>new oe(typeof o=="string"?o:o+"",void 0,Lt),$=(o,...t)=>{const e=o.length===1?o[0]:t.reduce((a,r,i)=>a+(s=>{if(s._$cssResult$===!0)return s.cssText;if(typeof s=="number")return s;throw Error("Value passed to 'css' function must be a 'css' function result: "+s+". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.")})(r)+o[i+1],o[0]);return new oe(e,o,Lt)},Ne=(o,t)=>{if(jt)o.adoptedStyleSheets=t.map(e=>e instanceof CSSStyleSheet?e:e.styleSheet);else for(const e of t){const a=document.createElement("style"),r=xt.litNonce;r!==void 0&&a.setAttribute("nonce",r),a.textContent=e.cssText,o.appendChild(a)}},Gt=jt?o=>o:o=>o instanceof CSSStyleSheet?(t=>{let e="";for(const a of t.cssRules)e+=a.cssText;return Ie(e)})(o):o;/**
+ */const $t=globalThis,Ut=$t.ShadowRoot&&($t.ShadyCSS===void 0||$t.ShadyCSS.nativeShadow)&&"adoptedStyleSheets"in Document.prototype&&"replace"in CSSStyleSheet.prototype,Ft=Symbol(),Jt=new WeakMap;let se=class{constructor(t,e,a){if(this._$cssResult$=!0,a!==Ft)throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");this.cssText=t,this.t=e}get styleSheet(){let t=this.o;const e=this.t;if(Ut&&t===void 0){const a=e!==void 0&&e.length===1;a&&(t=Jt.get(e)),t===void 0&&((this.o=t=new CSSStyleSheet).replaceSync(this.cssText),a&&Jt.set(e,t))}return t}toString(){return this.cssText}};const Fe=o=>new se(typeof o=="string"?o:o+"",void 0,Ft),$=(o,...t)=>{const e=o.length===1?o[0]:t.reduce((a,r,i)=>a+(s=>{if(s._$cssResult$===!0)return s.cssText;if(typeof s=="number")return s;throw Error("Value passed to 'css' function must be a 'css' function result: "+s+". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.")})(r)+o[i+1],o[0]);return new se(e,o,Ft)},Re=(o,t)=>{if(Ut)o.adoptedStyleSheets=t.map(e=>e instanceof CSSStyleSheet?e:e.styleSheet);else for(const e of t){const a=document.createElement("style"),r=$t.litNonce;r!==void 0&&a.setAttribute("nonce",r),a.textContent=e.cssText,o.appendChild(a)}},Yt=Ut?o=>o:o=>o instanceof CSSStyleSheet?(t=>{let e="";for(const a of t.cssRules)e+=a.cssText;return Fe(e)})(o):o;/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */const{is:je,defineProperty:Le,getOwnPropertyDescriptor:Ue,getOwnPropertyNames:Fe,getOwnPropertySymbols:Re,getPrototypeOf:He}=Object,U=globalThis,Jt=U.trustedTypes,Be=Jt?Jt.emptyScript:"",Tt=U.reactiveElementPolyfillSupport,ct=(o,t)=>o,yt={toAttribute(o,t){switch(t){case Boolean:o=o?Be:null;break;case Object:case Array:o=o==null?o:JSON.stringify(o)}return o},fromAttribute(o,t){let e=o;switch(t){case Boolean:e=o!==null;break;case Number:e=o===null?null:Number(o);break;case Object:case Array:try{e=JSON.parse(o)}catch{e=null}}return e}},Ut=(o,t)=>!je(o,t),Yt={attribute:!0,type:String,converter:yt,reflect:!1,useDefault:!1,hasChanged:Ut};Symbol.metadata??(Symbol.metadata=Symbol("metadata")),U.litPropertyMetadata??(U.litPropertyMetadata=new WeakMap);let tt=class extends HTMLElement{static addInitializer(t){this._$Ei(),(this.l??(this.l=[])).push(t)}static get observedAttributes(){return this.finalize(),this._$Eh&&[...this._$Eh.keys()]}static createProperty(t,e=Yt){if(e.state&&(e.attribute=!1),this._$Ei(),this.prototype.hasOwnProperty(t)&&((e=Object.create(e)).wrapped=!0),this.elementProperties.set(t,e),!e.noAccessor){const a=Symbol(),r=this.getPropertyDescriptor(t,a,e);r!==void 0&&Le(this.prototype,t,r)}}static getPropertyDescriptor(t,e,a){const{get:r,set:i}=Ue(this.prototype,t)??{get(){return this[e]},set(s){this[e]=s}};return{get:r,set(s){const p=r==null?void 0:r.call(this);i==null||i.call(this,s),this.requestUpdate(t,p,a)},configurable:!0,enumerable:!0}}static getPropertyOptions(t){return this.elementProperties.get(t)??Yt}static _$Ei(){if(this.hasOwnProperty(ct("elementProperties")))return;const t=He(this);t.finalize(),t.l!==void 0&&(this.l=[...t.l]),this.elementProperties=new Map(t.elementProperties)}static finalize(){if(this.hasOwnProperty(ct("finalized")))return;if(this.finalized=!0,this._$Ei(),this.hasOwnProperty(ct("properties"))){const e=this.properties,a=[...Fe(e),...Re(e)];for(const r of a)this.createProperty(r,e[r])}const t=this[Symbol.metadata];if(t!==null){const e=litPropertyMetadata.get(t);if(e!==void 0)for(const[a,r]of e)this.elementProperties.set(a,r)}this._$Eh=new Map;for(const[e,a]of this.elementProperties){const r=this._$Eu(e,a);r!==void 0&&this._$Eh.set(r,e)}this.elementStyles=this.finalizeStyles(this.styles)}static finalizeStyles(t){const e=[];if(Array.isArray(t)){const a=new Set(t.flat(1/0).reverse());for(const r of a)e.unshift(Gt(r))}else t!==void 0&&e.push(Gt(t));return e}static _$Eu(t,e){const a=e.attribute;return a===!1?void 0:typeof a=="string"?a:typeof t=="string"?t.toLowerCase():void 0}constructor(){super(),this._$Ep=void 0,this.isUpdatePending=!1,this.hasUpdated=!1,this._$Em=null,this._$Ev()}_$Ev(){var t;this._$ES=new Promise(e=>this.enableUpdating=e),this._$AL=new Map,this._$E_(),this.requestUpdate(),(t=this.constructor.l)==null||t.forEach(e=>e(this))}addController(t){var e;(this._$EO??(this._$EO=new Set)).add(t),this.renderRoot!==void 0&&this.isConnected&&((e=t.hostConnected)==null||e.call(t))}removeController(t){var e;(e=this._$EO)==null||e.delete(t)}_$E_(){const t=new Map,e=this.constructor.elementProperties;for(const a of e.keys())this.hasOwnProperty(a)&&(t.set(a,this[a]),delete this[a]);t.size>0&&(this._$Ep=t)}createRenderRoot(){const t=this.shadowRoot??this.attachShadow(this.constructor.shadowRootOptions);return Ne(t,this.constructor.elementStyles),t}connectedCallback(){var t;this.renderRoot??(this.renderRoot=this.createRenderRoot()),this.enableUpdating(!0),(t=this._$EO)==null||t.forEach(e=>{var a;return(a=e.hostConnected)==null?void 0:a.call(e)})}enableUpdating(t){}disconnectedCallback(){var t;(t=this._$EO)==null||t.forEach(e=>{var a;return(a=e.hostDisconnected)==null?void 0:a.call(e)})}attributeChangedCallback(t,e,a){this._$AK(t,a)}_$ET(t,e){var i;const a=this.constructor.elementProperties.get(t),r=this.constructor._$Eu(t,a);if(r!==void 0&&a.reflect===!0){const s=(((i=a.converter)==null?void 0:i.toAttribute)!==void 0?a.converter:yt).toAttribute(e,a.type);this._$Em=t,s==null?this.removeAttribute(r):this.setAttribute(r,s),this._$Em=null}}_$AK(t,e){var i,s;const a=this.constructor,r=a._$Eh.get(t);if(r!==void 0&&this._$Em!==r){const p=a.getPropertyOptions(r),c=typeof p.converter=="function"?{fromAttribute:p.converter}:((i=p.converter)==null?void 0:i.fromAttribute)!==void 0?p.converter:yt;this._$Em=r;const h=c.fromAttribute(e,p.type);this[r]=h??((s=this._$Ej)==null?void 0:s.get(r))??h,this._$Em=null}}requestUpdate(t,e,a,r=!1,i){var s;if(t!==void 0){const p=this.constructor;if(r===!1&&(i=this[t]),a??(a=p.getPropertyOptions(t)),!((a.hasChanged??Ut)(i,e)||a.useDefault&&a.reflect&&i===((s=this._$Ej)==null?void 0:s.get(t))&&!this.hasAttribute(p._$Eu(t,a))))return;this.C(t,e,a)}this.isUpdatePending===!1&&(this._$ES=this._$EP())}C(t,e,{useDefault:a,reflect:r,wrapped:i},s){a&&!(this._$Ej??(this._$Ej=new Map)).has(t)&&(this._$Ej.set(t,s??e??this[t]),i!==!0||s!==void 0)||(this._$AL.has(t)||(this.hasUpdated||a||(e=void 0),this._$AL.set(t,e)),r===!0&&this._$Em!==t&&(this._$Eq??(this._$Eq=new Set)).add(t))}async _$EP(){this.isUpdatePending=!0;try{await this._$ES}catch(e){Promise.reject(e)}const t=this.scheduleUpdate();return t!=null&&await t,!this.isUpdatePending}scheduleUpdate(){return this.performUpdate()}performUpdate(){var a;if(!this.isUpdatePending)return;if(!this.hasUpdated){if(this.renderRoot??(this.renderRoot=this.createRenderRoot()),this._$Ep){for(const[i,s]of this._$Ep)this[i]=s;this._$Ep=void 0}const r=this.constructor.elementProperties;if(r.size>0)for(const[i,s]of r){const{wrapped:p}=s,c=this[i];p!==!0||this._$AL.has(i)||c===void 0||this.C(i,void 0,s,c)}}let t=!1;const e=this._$AL;try{t=this.shouldUpdate(e),t?(this.willUpdate(e),(a=this._$EO)==null||a.forEach(r=>{var i;return(i=r.hostUpdate)==null?void 0:i.call(r)}),this.update(e)):this._$EM()}catch(r){throw t=!1,this._$EM(),r}t&&this._$AE(e)}willUpdate(t){}_$AE(t){var e;(e=this._$EO)==null||e.forEach(a=>{var r;return(r=a.hostUpdated)==null?void 0:r.call(a)}),this.hasUpdated||(this.hasUpdated=!0,this.firstUpdated(t)),this.updated(t)}_$EM(){this._$AL=new Map,this.isUpdatePending=!1}get updateComplete(){return this.getUpdateComplete()}getUpdateComplete(){return this._$ES}shouldUpdate(t){return!0}update(t){this._$Eq&&(this._$Eq=this._$Eq.forEach(e=>this._$ET(e,this[e]))),this._$EM()}updated(t){}firstUpdated(t){}};tt.elementStyles=[],tt.shadowRootOptions={mode:"open"},tt[ct("elementProperties")]=new Map,tt[ct("finalized")]=new Map,Tt==null||Tt({ReactiveElement:tt}),(U.reactiveElementVersions??(U.reactiveElementVersions=[])).push("2.1.2");/**
+ */const{is:He,defineProperty:Be,getOwnPropertyDescriptor:qe,getOwnPropertyNames:Ve,getOwnPropertySymbols:Ge,getPrototypeOf:Je}=Object,F=globalThis,Wt=F.trustedTypes,Ye=Wt?Wt.emptyScript:"",Ot=F.reactiveElementPolyfillSupport,ht=(o,t)=>o,_t={toAttribute(o,t){switch(t){case Boolean:o=o?Ye:null;break;case Object:case Array:o=o==null?o:JSON.stringify(o)}return o},fromAttribute(o,t){let e=o;switch(t){case Boolean:e=o!==null;break;case Number:e=o===null?null:Number(o);break;case Object:case Array:try{e=JSON.parse(o)}catch{e=null}}return e}},Rt=(o,t)=>!He(o,t),Kt={attribute:!0,type:String,converter:_t,reflect:!1,useDefault:!1,hasChanged:Rt};Symbol.metadata??(Symbol.metadata=Symbol("metadata")),F.litPropertyMetadata??(F.litPropertyMetadata=new WeakMap);let at=class extends HTMLElement{static addInitializer(t){this._$Ei(),(this.l??(this.l=[])).push(t)}static get observedAttributes(){return this.finalize(),this._$Eh&&[...this._$Eh.keys()]}static createProperty(t,e=Kt){if(e.state&&(e.attribute=!1),this._$Ei(),this.prototype.hasOwnProperty(t)&&((e=Object.create(e)).wrapped=!0),this.elementProperties.set(t,e),!e.noAccessor){const a=Symbol(),r=this.getPropertyDescriptor(t,a,e);r!==void 0&&Be(this.prototype,t,r)}}static getPropertyDescriptor(t,e,a){const{get:r,set:i}=qe(this.prototype,t)??{get(){return this[e]},set(s){this[e]=s}};return{get:r,set(s){const p=r==null?void 0:r.call(this);i==null||i.call(this,s),this.requestUpdate(t,p,a)},configurable:!0,enumerable:!0}}static getPropertyOptions(t){return this.elementProperties.get(t)??Kt}static _$Ei(){if(this.hasOwnProperty(ht("elementProperties")))return;const t=Je(this);t.finalize(),t.l!==void 0&&(this.l=[...t.l]),this.elementProperties=new Map(t.elementProperties)}static finalize(){if(this.hasOwnProperty(ht("finalized")))return;if(this.finalized=!0,this._$Ei(),this.hasOwnProperty(ht("properties"))){const e=this.properties,a=[...Ve(e),...Ge(e)];for(const r of a)this.createProperty(r,e[r])}const t=this[Symbol.metadata];if(t!==null){const e=litPropertyMetadata.get(t);if(e!==void 0)for(const[a,r]of e)this.elementProperties.set(a,r)}this._$Eh=new Map;for(const[e,a]of this.elementProperties){const r=this._$Eu(e,a);r!==void 0&&this._$Eh.set(r,e)}this.elementStyles=this.finalizeStyles(this.styles)}static finalizeStyles(t){const e=[];if(Array.isArray(t)){const a=new Set(t.flat(1/0).reverse());for(const r of a)e.unshift(Yt(r))}else t!==void 0&&e.push(Yt(t));return e}static _$Eu(t,e){const a=e.attribute;return a===!1?void 0:typeof a=="string"?a:typeof t=="string"?t.toLowerCase():void 0}constructor(){super(),this._$Ep=void 0,this.isUpdatePending=!1,this.hasUpdated=!1,this._$Em=null,this._$Ev()}_$Ev(){var t;this._$ES=new Promise(e=>this.enableUpdating=e),this._$AL=new Map,this._$E_(),this.requestUpdate(),(t=this.constructor.l)==null||t.forEach(e=>e(this))}addController(t){var e;(this._$EO??(this._$EO=new Set)).add(t),this.renderRoot!==void 0&&this.isConnected&&((e=t.hostConnected)==null||e.call(t))}removeController(t){var e;(e=this._$EO)==null||e.delete(t)}_$E_(){const t=new Map,e=this.constructor.elementProperties;for(const a of e.keys())this.hasOwnProperty(a)&&(t.set(a,this[a]),delete this[a]);t.size>0&&(this._$Ep=t)}createRenderRoot(){const t=this.shadowRoot??this.attachShadow(this.constructor.shadowRootOptions);return Re(t,this.constructor.elementStyles),t}connectedCallback(){var t;this.renderRoot??(this.renderRoot=this.createRenderRoot()),this.enableUpdating(!0),(t=this._$EO)==null||t.forEach(e=>{var a;return(a=e.hostConnected)==null?void 0:a.call(e)})}enableUpdating(t){}disconnectedCallback(){var t;(t=this._$EO)==null||t.forEach(e=>{var a;return(a=e.hostDisconnected)==null?void 0:a.call(e)})}attributeChangedCallback(t,e,a){this._$AK(t,a)}_$ET(t,e){var i;const a=this.constructor.elementProperties.get(t),r=this.constructor._$Eu(t,a);if(r!==void 0&&a.reflect===!0){const s=(((i=a.converter)==null?void 0:i.toAttribute)!==void 0?a.converter:_t).toAttribute(e,a.type);this._$Em=t,s==null?this.removeAttribute(r):this.setAttribute(r,s),this._$Em=null}}_$AK(t,e){var i,s;const a=this.constructor,r=a._$Eh.get(t);if(r!==void 0&&this._$Em!==r){const p=a.getPropertyOptions(r),c=typeof p.converter=="function"?{fromAttribute:p.converter}:((i=p.converter)==null?void 0:i.fromAttribute)!==void 0?p.converter:_t;this._$Em=r;const h=c.fromAttribute(e,p.type);this[r]=h??((s=this._$Ej)==null?void 0:s.get(r))??h,this._$Em=null}}requestUpdate(t,e,a,r=!1,i){var s;if(t!==void 0){const p=this.constructor;if(r===!1&&(i=this[t]),a??(a=p.getPropertyOptions(t)),!((a.hasChanged??Rt)(i,e)||a.useDefault&&a.reflect&&i===((s=this._$Ej)==null?void 0:s.get(t))&&!this.hasAttribute(p._$Eu(t,a))))return;this.C(t,e,a)}this.isUpdatePending===!1&&(this._$ES=this._$EP())}C(t,e,{useDefault:a,reflect:r,wrapped:i},s){a&&!(this._$Ej??(this._$Ej=new Map)).has(t)&&(this._$Ej.set(t,s??e??this[t]),i!==!0||s!==void 0)||(this._$AL.has(t)||(this.hasUpdated||a||(e=void 0),this._$AL.set(t,e)),r===!0&&this._$Em!==t&&(this._$Eq??(this._$Eq=new Set)).add(t))}async _$EP(){this.isUpdatePending=!0;try{await this._$ES}catch(e){Promise.reject(e)}const t=this.scheduleUpdate();return t!=null&&await t,!this.isUpdatePending}scheduleUpdate(){return this.performUpdate()}performUpdate(){var a;if(!this.isUpdatePending)return;if(!this.hasUpdated){if(this.renderRoot??(this.renderRoot=this.createRenderRoot()),this._$Ep){for(const[i,s]of this._$Ep)this[i]=s;this._$Ep=void 0}const r=this.constructor.elementProperties;if(r.size>0)for(const[i,s]of r){const{wrapped:p}=s,c=this[i];p!==!0||this._$AL.has(i)||c===void 0||this.C(i,void 0,s,c)}}let t=!1;const e=this._$AL;try{t=this.shouldUpdate(e),t?(this.willUpdate(e),(a=this._$EO)==null||a.forEach(r=>{var i;return(i=r.hostUpdate)==null?void 0:i.call(r)}),this.update(e)):this._$EM()}catch(r){throw t=!1,this._$EM(),r}t&&this._$AE(e)}willUpdate(t){}_$AE(t){var e;(e=this._$EO)==null||e.forEach(a=>{var r;return(r=a.hostUpdated)==null?void 0:r.call(a)}),this.hasUpdated||(this.hasUpdated=!0,this.firstUpdated(t)),this.updated(t)}_$EM(){this._$AL=new Map,this.isUpdatePending=!1}get updateComplete(){return this.getUpdateComplete()}getUpdateComplete(){return this._$ES}shouldUpdate(t){return!0}update(t){this._$Eq&&(this._$Eq=this._$Eq.forEach(e=>this._$ET(e,this[e]))),this._$EM()}updated(t){}firstUpdated(t){}};at.elementStyles=[],at.shadowRootOptions={mode:"open"},at[ht("elementProperties")]=new Map,at[ht("finalized")]=new Map,Ot==null||Ot({ReactiveElement:at}),(F.reactiveElementVersions??(F.reactiveElementVersions=[])).push("2.1.2");/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */const pt=globalThis,Wt=o=>o,$t=pt.trustedTypes,Kt=$t?$t.createPolicy("lit-html",{createHTML:o=>o}):void 0,ie="$lit$",L=`lit$${Math.random().toFixed(9).slice(2)}$`,se="?"+L,qe=`<${se}>`,W=document,ht=()=>W.createComment(""),ut=o=>o===null||typeof o!="object"&&typeof o!="function",Ft=Array.isArray,Ve=o=>Ft(o)||typeof(o==null?void 0:o[Symbol.iterator])=="function",Et=`[ 	
-\f\r]`,lt=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,Xt=/-->/g,Zt=/>/g,G=RegExp(`>|${Et}(?:([^\\s"'>=/]+)(${Et}*=${Et}*(?:[^ 	
-\f\r"'\`<>=]|("|')|))|$)`,"g"),Qt=/'/g,te=/"/g,ne=/^(?:script|style|textarea|title)$/i,Ge=o=>(t,...e)=>({_$litType$:o,strings:t,values:e}),n=Ge(1),K=Symbol.for("lit-noChange"),f=Symbol.for("lit-nothing"),ee=new WeakMap,J=W.createTreeWalker(W,129);function de(o,t){if(!Ft(o)||!o.hasOwnProperty("raw"))throw Error("invalid template strings array");return Kt!==void 0?Kt.createHTML(t):t}const Je=(o,t)=>{const e=o.length-1,a=[];let r,i=t===2?"<svg>":t===3?"<math>":"",s=lt;for(let p=0;p<e;p++){const c=o[p];let h,b,u=-1,g=0;for(;g<c.length&&(s.lastIndex=g,b=s.exec(c),b!==null);)g=s.lastIndex,s===lt?b[1]==="!--"?s=Xt:b[1]!==void 0?s=Zt:b[2]!==void 0?(ne.test(b[2])&&(r=RegExp("</"+b[2],"g")),s=G):b[3]!==void 0&&(s=G):s===G?b[0]===">"?(s=r??lt,u=-1):b[1]===void 0?u=-2:(u=s.lastIndex-b[2].length,h=b[1],s=b[3]===void 0?G:b[3]==='"'?te:Qt):s===te||s===Qt?s=G:s===Xt||s===Zt?s=lt:(s=G,r=void 0);const x=s===G&&o[p+1].startsWith("/>")?" ":"";i+=s===lt?c+qe:u>=0?(a.push(h),c.slice(0,u)+ie+c.slice(u)+L+x):c+L+(u===-2?p:x)}return[de(o,i+(o[e]||"<?>")+(t===2?"</svg>":t===3?"</math>":"")),a]};class gt{constructor({strings:t,_$litType$:e},a){let r;this.parts=[];let i=0,s=0;const p=t.length-1,c=this.parts,[h,b]=Je(t,e);if(this.el=gt.createElement(h,a),J.currentNode=this.el.content,e===2||e===3){const u=this.el.content.firstChild;u.replaceWith(...u.childNodes)}for(;(r=J.nextNode())!==null&&c.length<p;){if(r.nodeType===1){if(r.hasAttributes())for(const u of r.getAttributeNames())if(u.endsWith(ie)){const g=b[s++],x=r.getAttribute(u).split(L),O=/([.?@])?(.*)/.exec(g);c.push({type:1,index:i,name:O[2],strings:x,ctor:O[1]==="."?We:O[1]==="?"?Ke:O[1]==="@"?Xe:kt}),r.removeAttribute(u)}else u.startsWith(L)&&(c.push({type:6,index:i}),r.removeAttribute(u));if(ne.test(r.tagName)){const u=r.textContent.split(L),g=u.length-1;if(g>0){r.textContent=$t?$t.emptyScript:"";for(let x=0;x<g;x++)r.append(u[x],ht()),J.nextNode(),c.push({type:2,index:++i});r.append(u[g],ht())}}}else if(r.nodeType===8)if(r.data===se)c.push({type:2,index:i});else{let u=-1;for(;(u=r.data.indexOf(L,u+1))!==-1;)c.push({type:7,index:i}),u+=L.length-1}i++}}static createElement(t,e){const a=W.createElement("template");return a.innerHTML=t,a}}function et(o,t,e=o,a){var s,p;if(t===K)return t;let r=a!==void 0?(s=e._$Co)==null?void 0:s[a]:e._$Cl;const i=ut(t)?void 0:t._$litDirective$;return(r==null?void 0:r.constructor)!==i&&((p=r==null?void 0:r._$AO)==null||p.call(r,!1),i===void 0?r=void 0:(r=new i(o),r._$AT(o,e,a)),a!==void 0?(e._$Co??(e._$Co=[]))[a]=r:e._$Cl=r),r!==void 0&&(t=et(o,r._$AS(o,t.values),r,a)),t}class Ye{constructor(t,e){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=e}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){const{el:{content:e},parts:a}=this._$AD,r=((t==null?void 0:t.creationScope)??W).importNode(e,!0);J.currentNode=r;let i=J.nextNode(),s=0,p=0,c=a[0];for(;c!==void 0;){if(s===c.index){let h;c.type===2?h=new ft(i,i.nextSibling,this,t):c.type===1?h=new c.ctor(i,c.name,c.strings,this,t):c.type===6&&(h=new Ze(i,this,t)),this._$AV.push(h),c=a[++p]}s!==(c==null?void 0:c.index)&&(i=J.nextNode(),s++)}return J.currentNode=W,r}p(t){let e=0;for(const a of this._$AV)a!==void 0&&(a.strings!==void 0?(a._$AI(t,a,e),e+=a.strings.length-2):a._$AI(t[e])),e++}}class ft{get _$AU(){var t;return((t=this._$AM)==null?void 0:t._$AU)??this._$Cv}constructor(t,e,a,r){this.type=2,this._$AH=f,this._$AN=void 0,this._$AA=t,this._$AB=e,this._$AM=a,this.options=r,this._$Cv=(r==null?void 0:r.isConnected)??!0}get parentNode(){let t=this._$AA.parentNode;const e=this._$AM;return e!==void 0&&(t==null?void 0:t.nodeType)===11&&(t=e.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,e=this){t=et(this,t,e),ut(t)?t===f||t==null||t===""?(this._$AH!==f&&this._$AR(),this._$AH=f):t!==this._$AH&&t!==K&&this._(t):t._$litType$!==void 0?this.$(t):t.nodeType!==void 0?this.T(t):Ve(t)?this.k(t):this._(t)}O(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}T(t){this._$AH!==t&&(this._$AR(),this._$AH=this.O(t))}_(t){this._$AH!==f&&ut(this._$AH)?this._$AA.nextSibling.data=t:this.T(W.createTextNode(t)),this._$AH=t}$(t){var i;const{values:e,_$litType$:a}=t,r=typeof a=="number"?this._$AC(t):(a.el===void 0&&(a.el=gt.createElement(de(a.h,a.h[0]),this.options)),a);if(((i=this._$AH)==null?void 0:i._$AD)===r)this._$AH.p(e);else{const s=new Ye(r,this),p=s.u(this.options);s.p(e),this.T(p),this._$AH=s}}_$AC(t){let e=ee.get(t.strings);return e===void 0&&ee.set(t.strings,e=new gt(t)),e}k(t){Ft(this._$AH)||(this._$AH=[],this._$AR());const e=this._$AH;let a,r=0;for(const i of t)r===e.length?e.push(a=new ft(this.O(ht()),this.O(ht()),this,this.options)):a=e[r],a._$AI(i),r++;r<e.length&&(this._$AR(a&&a._$AB.nextSibling,r),e.length=r)}_$AR(t=this._$AA.nextSibling,e){var a;for((a=this._$AP)==null?void 0:a.call(this,!1,!0,e);t!==this._$AB;){const r=Wt(t).nextSibling;Wt(t).remove(),t=r}}setConnected(t){var e;this._$AM===void 0&&(this._$Cv=t,(e=this._$AP)==null||e.call(this,t))}}class kt{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(t,e,a,r,i){this.type=1,this._$AH=f,this._$AN=void 0,this.element=t,this.name=e,this._$AM=r,this.options=i,a.length>2||a[0]!==""||a[1]!==""?(this._$AH=Array(a.length-1).fill(new String),this.strings=a):this._$AH=f}_$AI(t,e=this,a,r){const i=this.strings;let s=!1;if(i===void 0)t=et(this,t,e,0),s=!ut(t)||t!==this._$AH&&t!==K,s&&(this._$AH=t);else{const p=t;let c,h;for(t=i[0],c=0;c<i.length-1;c++)h=et(this,p[a+c],e,c),h===K&&(h=this._$AH[c]),s||(s=!ut(h)||h!==this._$AH[c]),h===f?t=f:t!==f&&(t+=(h??"")+i[c+1]),this._$AH[c]=h}s&&!r&&this.j(t)}j(t){t===f?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,t??"")}}class We extends kt{constructor(){super(...arguments),this.type=3}j(t){this.element[this.name]=t===f?void 0:t}}class Ke extends kt{constructor(){super(...arguments),this.type=4}j(t){this.element.toggleAttribute(this.name,!!t&&t!==f)}}class Xe extends kt{constructor(t,e,a,r,i){super(t,e,a,r,i),this.type=5}_$AI(t,e=this){if((t=et(this,t,e,0)??f)===K)return;const a=this._$AH,r=t===f&&a!==f||t.capture!==a.capture||t.once!==a.once||t.passive!==a.passive,i=t!==f&&(a===f||r);r&&this.element.removeEventListener(this.name,this,a),i&&this.element.addEventListener(this.name,this,t),this._$AH=t}handleEvent(t){var e;typeof this._$AH=="function"?this._$AH.call(((e=this.options)==null?void 0:e.host)??this.element,t):this._$AH.handleEvent(t)}}class Ze{constructor(t,e,a){this.element=t,this.type=6,this._$AN=void 0,this._$AM=e,this.options=a}get _$AU(){return this._$AM._$AU}_$AI(t){et(this,t)}}const Ot=pt.litHtmlPolyfillSupport;Ot==null||Ot(gt,ft),(pt.litHtmlVersions??(pt.litHtmlVersions=[])).push("3.3.2");const Qe=(o,t,e)=>{const a=(e==null?void 0:e.renderBefore)??t;let r=a._$litPart$;if(r===void 0){const i=(e==null?void 0:e.renderBefore)??null;a._$litPart$=r=new ft(t.insertBefore(ht(),i),i,void 0,e??{})}return r._$AI(o),r};/**
+ */const gt=globalThis,Xt=o=>o,wt=gt.trustedTypes,Zt=wt?wt.createPolicy("lit-html",{createHTML:o=>o}):void 0,ne="$lit$",U=`lit$${Math.random().toFixed(9).slice(2)}$`,de="?"+U,We=`<${de}>`,K=document,ut=()=>K.createComment(""),vt=o=>o===null||typeof o!="object"&&typeof o!="function",Ht=Array.isArray,Ke=o=>Ht(o)||typeof(o==null?void 0:o[Symbol.iterator])=="function",Mt=`[ 	
+\f\r]`,pt=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,Qt=/-->/g,te=/>/g,J=RegExp(`>|${Mt}(?:([^\\s"'>=/]+)(${Mt}*=${Mt}*(?:[^ 	
+\f\r"'\`<>=]|("|')|))|$)`,"g"),ee=/'/g,ae=/"/g,le=/^(?:script|style|textarea|title)$/i,Xe=o=>(t,...e)=>({_$litType$:o,strings:t,values:e}),n=Xe(1),X=Symbol.for("lit-noChange"),m=Symbol.for("lit-nothing"),re=new WeakMap,Y=K.createTreeWalker(K,129);function ce(o,t){if(!Ht(o)||!o.hasOwnProperty("raw"))throw Error("invalid template strings array");return Zt!==void 0?Zt.createHTML(t):t}const Ze=(o,t)=>{const e=o.length-1,a=[];let r,i=t===2?"<svg>":t===3?"<math>":"",s=pt;for(let p=0;p<e;p++){const c=o[p];let h,b,g=-1,u=0;for(;u<c.length&&(s.lastIndex=u,b=s.exec(c),b!==null);)u=s.lastIndex,s===pt?b[1]==="!--"?s=Qt:b[1]!==void 0?s=te:b[2]!==void 0?(le.test(b[2])&&(r=RegExp("</"+b[2],"g")),s=J):b[3]!==void 0&&(s=J):s===J?b[0]===">"?(s=r??pt,g=-1):b[1]===void 0?g=-2:(g=s.lastIndex-b[2].length,h=b[1],s=b[3]===void 0?J:b[3]==='"'?ae:ee):s===ae||s===ee?s=J:s===Qt||s===te?s=pt:(s=J,r=void 0);const x=s===J&&o[p+1].startsWith("/>")?" ":"";i+=s===pt?c+We:g>=0?(a.push(h),c.slice(0,g)+ne+c.slice(g)+U+x):c+U+(g===-2?p:x)}return[ce(o,i+(o[e]||"<?>")+(t===2?"</svg>":t===3?"</math>":"")),a]};class bt{constructor({strings:t,_$litType$:e},a){let r;this.parts=[];let i=0,s=0;const p=t.length-1,c=this.parts,[h,b]=Ze(t,e);if(this.el=bt.createElement(h,a),Y.currentNode=this.el.content,e===2||e===3){const g=this.el.content.firstChild;g.replaceWith(...g.childNodes)}for(;(r=Y.nextNode())!==null&&c.length<p;){if(r.nodeType===1){if(r.hasAttributes())for(const g of r.getAttributeNames())if(g.endsWith(ne)){const u=b[s++],x=r.getAttribute(g).split(U),O=/([.?@])?(.*)/.exec(u);c.push({type:1,index:i,name:O[2],strings:x,ctor:O[1]==="."?ta:O[1]==="?"?ea:O[1]==="@"?aa:St}),r.removeAttribute(g)}else g.startsWith(U)&&(c.push({type:6,index:i}),r.removeAttribute(g));if(le.test(r.tagName)){const g=r.textContent.split(U),u=g.length-1;if(u>0){r.textContent=wt?wt.emptyScript:"";for(let x=0;x<u;x++)r.append(g[x],ut()),Y.nextNode(),c.push({type:2,index:++i});r.append(g[u],ut())}}}else if(r.nodeType===8)if(r.data===de)c.push({type:2,index:i});else{let g=-1;for(;(g=r.data.indexOf(U,g+1))!==-1;)c.push({type:7,index:i}),g+=U.length-1}i++}}static createElement(t,e){const a=K.createElement("template");return a.innerHTML=t,a}}function rt(o,t,e=o,a){var s,p;if(t===X)return t;let r=a!==void 0?(s=e._$Co)==null?void 0:s[a]:e._$Cl;const i=vt(t)?void 0:t._$litDirective$;return(r==null?void 0:r.constructor)!==i&&((p=r==null?void 0:r._$AO)==null||p.call(r,!1),i===void 0?r=void 0:(r=new i(o),r._$AT(o,e,a)),a!==void 0?(e._$Co??(e._$Co=[]))[a]=r:e._$Cl=r),r!==void 0&&(t=rt(o,r._$AS(o,t.values),r,a)),t}class Qe{constructor(t,e){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=e}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){const{el:{content:e},parts:a}=this._$AD,r=((t==null?void 0:t.creationScope)??K).importNode(e,!0);Y.currentNode=r;let i=Y.nextNode(),s=0,p=0,c=a[0];for(;c!==void 0;){if(s===c.index){let h;c.type===2?h=new yt(i,i.nextSibling,this,t):c.type===1?h=new c.ctor(i,c.name,c.strings,this,t):c.type===6&&(h=new ra(i,this,t)),this._$AV.push(h),c=a[++p]}s!==(c==null?void 0:c.index)&&(i=Y.nextNode(),s++)}return Y.currentNode=K,r}p(t){let e=0;for(const a of this._$AV)a!==void 0&&(a.strings!==void 0?(a._$AI(t,a,e),e+=a.strings.length-2):a._$AI(t[e])),e++}}class yt{get _$AU(){var t;return((t=this._$AM)==null?void 0:t._$AU)??this._$Cv}constructor(t,e,a,r){this.type=2,this._$AH=m,this._$AN=void 0,this._$AA=t,this._$AB=e,this._$AM=a,this.options=r,this._$Cv=(r==null?void 0:r.isConnected)??!0}get parentNode(){let t=this._$AA.parentNode;const e=this._$AM;return e!==void 0&&(t==null?void 0:t.nodeType)===11&&(t=e.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,e=this){t=rt(this,t,e),vt(t)?t===m||t==null||t===""?(this._$AH!==m&&this._$AR(),this._$AH=m):t!==this._$AH&&t!==X&&this._(t):t._$litType$!==void 0?this.$(t):t.nodeType!==void 0?this.T(t):Ke(t)?this.k(t):this._(t)}O(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}T(t){this._$AH!==t&&(this._$AR(),this._$AH=this.O(t))}_(t){this._$AH!==m&&vt(this._$AH)?this._$AA.nextSibling.data=t:this.T(K.createTextNode(t)),this._$AH=t}$(t){var i;const{values:e,_$litType$:a}=t,r=typeof a=="number"?this._$AC(t):(a.el===void 0&&(a.el=bt.createElement(ce(a.h,a.h[0]),this.options)),a);if(((i=this._$AH)==null?void 0:i._$AD)===r)this._$AH.p(e);else{const s=new Qe(r,this),p=s.u(this.options);s.p(e),this.T(p),this._$AH=s}}_$AC(t){let e=re.get(t.strings);return e===void 0&&re.set(t.strings,e=new bt(t)),e}k(t){Ht(this._$AH)||(this._$AH=[],this._$AR());const e=this._$AH;let a,r=0;for(const i of t)r===e.length?e.push(a=new yt(this.O(ut()),this.O(ut()),this,this.options)):a=e[r],a._$AI(i),r++;r<e.length&&(this._$AR(a&&a._$AB.nextSibling,r),e.length=r)}_$AR(t=this._$AA.nextSibling,e){var a;for((a=this._$AP)==null?void 0:a.call(this,!1,!0,e);t!==this._$AB;){const r=Xt(t).nextSibling;Xt(t).remove(),t=r}}setConnected(t){var e;this._$AM===void 0&&(this._$Cv=t,(e=this._$AP)==null||e.call(this,t))}}class St{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(t,e,a,r,i){this.type=1,this._$AH=m,this._$AN=void 0,this.element=t,this.name=e,this._$AM=r,this.options=i,a.length>2||a[0]!==""||a[1]!==""?(this._$AH=Array(a.length-1).fill(new String),this.strings=a):this._$AH=m}_$AI(t,e=this,a,r){const i=this.strings;let s=!1;if(i===void 0)t=rt(this,t,e,0),s=!vt(t)||t!==this._$AH&&t!==X,s&&(this._$AH=t);else{const p=t;let c,h;for(t=i[0],c=0;c<i.length-1;c++)h=rt(this,p[a+c],e,c),h===X&&(h=this._$AH[c]),s||(s=!vt(h)||h!==this._$AH[c]),h===m?t=m:t!==m&&(t+=(h??"")+i[c+1]),this._$AH[c]=h}s&&!r&&this.j(t)}j(t){t===m?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,t??"")}}class ta extends St{constructor(){super(...arguments),this.type=3}j(t){this.element[this.name]=t===m?void 0:t}}class ea extends St{constructor(){super(...arguments),this.type=4}j(t){this.element.toggleAttribute(this.name,!!t&&t!==m)}}class aa extends St{constructor(t,e,a,r,i){super(t,e,a,r,i),this.type=5}_$AI(t,e=this){if((t=rt(this,t,e,0)??m)===X)return;const a=this._$AH,r=t===m&&a!==m||t.capture!==a.capture||t.once!==a.once||t.passive!==a.passive,i=t!==m&&(a===m||r);r&&this.element.removeEventListener(this.name,this,a),i&&this.element.addEventListener(this.name,this,t),this._$AH=t}handleEvent(t){var e;typeof this._$AH=="function"?this._$AH.call(((e=this.options)==null?void 0:e.host)??this.element,t):this._$AH.handleEvent(t)}}class ra{constructor(t,e,a){this.element=t,this.type=6,this._$AN=void 0,this._$AM=e,this.options=a}get _$AU(){return this._$AM._$AU}_$AI(t){rt(this,t)}}const Dt=gt.litHtmlPolyfillSupport;Dt==null||Dt(bt,yt),(gt.litHtmlVersions??(gt.litHtmlVersions=[])).push("3.3.2");const oa=(o,t,e)=>{const a=(e==null?void 0:e.renderBefore)??t;let r=a._$litPart$;if(r===void 0){const i=(e==null?void 0:e.renderBefore)??null;a._$litPart$=r=new yt(t.insertBefore(ut(),i),i,void 0,e??{})}return r._$AI(o),r};/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */const Y=globalThis;let m=class extends tt{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0}createRenderRoot(){var e;const t=super.createRenderRoot();return(e=this.renderOptions).renderBefore??(e.renderBefore=t.firstChild),t}update(t){const e=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=Qe(e,this.renderRoot,this.renderOptions)}connectedCallback(){var t;super.connectedCallback(),(t=this._$Do)==null||t.setConnected(!0)}disconnectedCallback(){var t;super.disconnectedCallback(),(t=this._$Do)==null||t.setConnected(!1)}render(){return K}};var re;m._$litElement$=!0,m.finalized=!0,(re=Y.litElementHydrateSupport)==null||re.call(Y,{LitElement:m});const Mt=Y.litElementPolyfillSupport;Mt==null||Mt({LitElement:m});(Y.litElementVersions??(Y.litElementVersions=[])).push("4.2.2");/**
+ */const W=globalThis;let f=class extends at{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0}createRenderRoot(){var e;const t=super.createRenderRoot();return(e=this.renderOptions).renderBefore??(e.renderBefore=t.firstChild),t}update(t){const e=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=oa(e,this.renderRoot,this.renderOptions)}connectedCallback(){var t;super.connectedCallback(),(t=this._$Do)==null||t.setConnected(!0)}disconnectedCallback(){var t;super.disconnectedCallback(),(t=this._$Do)==null||t.setConnected(!1)}render(){return X}};var ie;f._$litElement$=!0,f.finalized=!0,(ie=W.litElementHydrateSupport)==null||ie.call(W,{LitElement:f});const It=W.litElementPolyfillSupport;It==null||It({LitElement:f});(W.litElementVersions??(W.litElementVersions=[])).push("4.2.2");/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
@@ -24,7 +24,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */const ta={attribute:!0,type:String,converter:yt,reflect:!1,hasChanged:Ut},ea=(o=ta,t,e)=>{const{kind:a,metadata:r}=e;let i=globalThis.litPropertyMetadata.get(r);if(i===void 0&&globalThis.litPropertyMetadata.set(r,i=new Map),a==="setter"&&((o=Object.create(o)).wrapped=!0),i.set(e.name,o),a==="accessor"){const{name:s}=e;return{set(p){const c=t.get.call(this);t.set.call(this,p),this.requestUpdate(s,c,o,!0,p)},init(p){return p!==void 0&&this.C(s,void 0,o,p),p}}}if(a==="setter"){const{name:s}=e;return function(p){const c=this[s];t.call(this,p),this.requestUpdate(s,c,o,!0,p)}}throw Error("Unsupported decorator location: "+a)};function A(o){return(t,e)=>typeof e=="object"?ea(o,t,e):((a,r,i)=>{const s=r.hasOwnProperty(i);return r.constructor.createProperty(i,a),s?Object.getOwnPropertyDescriptor(r,i):void 0})(o,t,e)}/**
+ */const ia={attribute:!0,type:String,converter:_t,reflect:!1,hasChanged:Rt},sa=(o=ia,t,e)=>{const{kind:a,metadata:r}=e;let i=globalThis.litPropertyMetadata.get(r);if(i===void 0&&globalThis.litPropertyMetadata.set(r,i=new Map),a==="setter"&&((o=Object.create(o)).wrapped=!0),i.set(e.name,o),a==="accessor"){const{name:s}=e;return{set(p){const c=t.get.call(this);t.set.call(this,p),this.requestUpdate(s,c,o,!0,p)},init(p){return p!==void 0&&this.C(s,void 0,o,p),p}}}if(a==="setter"){const{name:s}=e;return function(p){const c=this[s];t.call(this,p),this.requestUpdate(s,c,o,!0,p)}}throw Error("Unsupported decorator location: "+a)};function A(o){return(t,e)=>typeof e=="object"?sa(o,t,e):((a,r,i)=>{const s=r.hasOwnProperty(i);return r.constructor.createProperty(i,a),s?Object.getOwnPropertyDescriptor(r,i):void 0})(o,t,e)}/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
@@ -32,15 +32,15 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */const aa={CHILD:2},ra=o=>(...t)=>({_$litDirective$:o,values:t});class oa{constructor(t){}get _$AU(){return this._$AM._$AU}_$AT(t,e,a){this._$Ct=t,this._$AM=e,this._$Ci=a}_$AS(t,e){return this.update(t,e)}update(t,e){return this.render(...e)}}/**
+ */const na={CHILD:2},da=o=>(...t)=>({_$litDirective$:o,values:t});class la{constructor(t){}get _$AU(){return this._$AM._$AU}_$AT(t,e,a){this._$Ct=t,this._$AM=e,this._$Ci=a}_$AS(t,e){return this.update(t,e)}update(t,e){return this.render(...e)}}/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */class Dt extends oa{constructor(t){if(super(t),this.it=f,t.type!==aa.CHILD)throw Error(this.constructor.directiveName+"() can only be used in child bindings")}render(t){if(t===f||t==null)return this._t=void 0,this.it=t;if(t===K)return t;if(typeof t!="string")throw Error(this.constructor.directiveName+"() called with a non-string value");if(t===this.it)return this._t;this.it=t;const e=[t];return e.raw=e,this._t={_$litType$:this.constructor.resultType,strings:e,values:[]}}}Dt.directiveName="unsafeHTML",Dt.resultType=1;/**
+ */class jt extends la{constructor(t){if(super(t),this.it=m,t.type!==na.CHILD)throw Error(this.constructor.directiveName+"() can only be used in child bindings")}render(t){if(t===m||t==null)return this._t=void 0,this.it=t;if(t===X)return t;if(typeof t!="string")throw Error(this.constructor.directiveName+"() called with a non-string value");if(t===this.it)return this._t;this.it=t;const e=[t];return e.raw=e,this._t={_$litType$:this.constructor.resultType,strings:e,values:[]}}}jt.directiveName="unsafeHTML",jt.resultType=1;/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */class It extends Dt{}It.directiveName="unsafeSVG",It.resultType=2;const Nt=ra(It),w="/api";async function k(o,t){const e=await fetch(o,t);if(!e.ok){const a=await e.json().catch(()=>({detail:"Request failed"}));throw new Error(a.detail||`HTTP ${e.status}`)}return e.json()}async function ia(){return k(`${w}/stats`)}async function sa(o){return k(`${w}/categories`)}async function na(o){const t=new URLSearchParams(Object.entries(o).filter(([,e])=>e!==void 0&&e!=="").map(([e,a])=>[e,String(a)]));return k(`${w}/product-master?${t}`)}async function le(o,t=7){return k(`${w}/sales-trend/${o}?days=${t}`)}async function da(o){return k(`${w}/tracked-products?ids=${o.join(",")}`)}async function la(){return k(`${w}/config/list`)}async function ce(o){return k(`${w}/config/${o}`)}async function ca(){return{app_name:(await ce("settings")).data.app_name||"EcomAgent"}}async function pa(o,t){return k(`${w}/config/${o}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({content:t})})}async function ae(){return k(`${w}/config/backups/list`)}async function ha(o){return k(`${w}/config/backups/${o}/restore`,{method:"POST"})}async function ua(o){return k(`${w}/config/backups/${o}`,{method:"DELETE"})}async function ga(o,t=7){return k(`${w}/product-trend/${o}?days=${t}`)}async function va(){return k(`${w}/amazon/top-by-category`)}async function ba(){return k(`${w}/tiktok/top-by-category`)}async function ma(o){const t=new URLSearchParams(Object.entries(o).filter(([,e])=>e!==void 0&&e!=="").map(([e,a])=>[e,String(a)]));return k(`${w}/amazon/products?${t}`)}async function fa(o){const t=new URLSearchParams(Object.entries(o).filter(([,e])=>e!==void 0&&e!=="").map(([e,a])=>[e,String(a)]));return k(`${w}/tiktok/products?${t}`)}async function xa(){return k(`${w}/cross-platform-analysis`)}var pe=Object.defineProperty,ya=Object.getOwnPropertyDescriptor,$a=(o,t,e)=>t in o?pe(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,Rt=(o,t,e,a)=>{for(var r=a>1?void 0:a?ya(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&pe(t,e,r),r},_a=(o,t,e)=>$a(o,t+"",e);const wa=[{group:"Main",items:[{id:"dashboard",icon:"grid",label:"数据概览"},{id:"product-master",icon:"box",label:"商品总库"},{id:"sourcing",icon:"package",label:"货源库"},{id:"tracking",icon:"target",label:"商品追踪"},{id:"cross-platform",icon:"sync",label:"跨平台分析"}]},{group:"平台数据",items:[{id:"today-top",icon:"star",label:"今日TOP榜"},{id:"raw-data",icon:"database",label:"原始数据"}]},{group:"配置",items:[{id:"export",icon:"download",label:"数据导出"},{id:"settings",icon:"settings",label:"系统设置"}]}],ka={grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',box:'<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',package:'<line x1="16.5" y1="9.4" x2="7.5" y1="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/><line x1="12" y1="12" x2="7.5" y1="9.4"/>',target:'<circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>',sync:'<path d="M16 3h5v5M8 21H3v-5M21 3l-7 7M3 21l7-7"/>',star:'<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>',database:'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>',download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>'};let vt=class extends m{constructor(){super();d(this,"collapsed",!1);d(this,"appName",window.ecomagentAppName||"EcomAgent");d(this,"_currentPage","dashboard");this._loadAppName(),window.ecomagentOnPageChange&&window.ecomagentOnPageChange(t=>{this._currentPage=t,this.requestUpdate()}),window.ecomagentGetCurrentPage&&(this._currentPage=window.ecomagentGetCurrentPage())}async _loadAppName(){if(window.ecomagentAppName){this.appName=window.ecomagentAppName;return}try{const t=await ca();this.appName=t.app_name,window.ecomagentAppName=t.app_name}catch(t){console.error("Failed to load app name:",t)}}_onNavClick(t){if(t==="sourcing"&&window.ecomagentNavigateDirectToSourcing){window.ecomagentNavigateDirectToSourcing();return}window.ecomagentNavigate&&window.ecomagentNavigate(t)}_onToggle(){this.collapsed=!this.collapsed,this.requestUpdate("collapsed")}render(){const t=this._currentPage,e=this.appName.charAt(0);return n`
+ */class Nt extends jt{}Nt.directiveName="unsafeSVG",Nt.resultType=2;const Lt=da(Nt),w="/api";async function k(o,t){const e=await fetch(o,t);if(!e.ok){const a=await e.json().catch(()=>({detail:"Request failed"}));throw new Error(a.detail||`HTTP ${e.status}`)}return e.json()}async function ca(){return k(`${w}/stats`)}async function pa(o){return k(`${w}/categories`)}async function ha(o){const t=new URLSearchParams(Object.entries(o).filter(([,e])=>e!==void 0&&e!=="").map(([e,a])=>[e,String(a)]));return k(`${w}/product-master?${t}`)}async function pe(o,t=7){return k(`${w}/sales-trend/${o}?days=${t}`)}async function ga(o){return k(`${w}/tracked-products?ids=${o.join(",")}`)}async function ua(){return k(`${w}/config/list`)}async function he(o){return k(`${w}/config/${o}`)}async function va(){return{app_name:(await he("settings")).data.app_name||"EcomAgent"}}async function ba(o,t){return k(`${w}/config/${o}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({content:t})})}async function oe(){return k(`${w}/config/backups/list`)}async function fa(o){return k(`${w}/config/backups/${o}/restore`,{method:"POST"})}async function ma(o){return k(`${w}/config/backups/${o}`,{method:"DELETE"})}async function xa(o,t=7){return k(`${w}/product-trend/${o}?days=${t}`)}async function ya(){return k(`${w}/amazon/top-by-category`)}async function $a(){return k(`${w}/tiktok/top-by-category`)}async function _a(o){const t=new URLSearchParams(Object.entries(o).filter(([,e])=>e!==void 0&&e!=="").map(([e,a])=>[e,String(a)]));return k(`${w}/amazon/products?${t}`)}async function wa(o){const t=new URLSearchParams(Object.entries(o).filter(([,e])=>e!==void 0&&e!=="").map(([e,a])=>[e,String(a)]));return k(`${w}/tiktok/products?${t}`)}async function ka(){return k(`${w}/cross-platform-analysis`)}var ge=Object.defineProperty,Pa=Object.getOwnPropertyDescriptor,Sa=(o,t,e)=>t in o?ge(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,Bt=(o,t,e,a)=>{for(var r=a>1?void 0:a?Pa(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&ge(t,e,r),r},za=(o,t,e)=>Sa(o,t+"",e);const Ca=[{group:"Main",items:[{id:"dashboard",icon:"grid",label:"数据概览"},{id:"product-master",icon:"box",label:"商品总库"},{id:"sourcing",icon:"package",label:"货源库"},{id:"tracking",icon:"target",label:"商品追踪"},{id:"cross-platform",icon:"sync",label:"跨平台分析"}]},{group:"平台数据",items:[{id:"today-top",icon:"star",label:"今日TOP榜"},{id:"raw-data",icon:"database",label:"原始数据"}]},{group:"系统",items:[{id:"export",icon:"download",label:"数据导出"},{id:"translation-logs",icon:"file-text",label:"翻译日志"},{id:"settings",icon:"settings",label:"系统设置"}]}],Aa={grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',box:'<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',package:'<line x1="16.5" y1="9.4" x2="7.5" y1="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/><line x1="12" y1="12" x2="7.5" y1="9.4"/>',target:'<circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>',sync:'<path d="M16 3h5v5M8 21H3v-5M21 3l-7 7M3 21l7-7"/>',star:'<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>',database:'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>',download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>',"file-text":'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>'};let ft=class extends f{constructor(){super();d(this,"collapsed",!1);d(this,"appName",window.ecomagentAppName||"EcomAgent");d(this,"_currentPage","dashboard");this._loadAppName(),window.ecomagentOnPageChange&&window.ecomagentOnPageChange(t=>{this._currentPage=t,this.requestUpdate()}),window.ecomagentGetCurrentPage&&(this._currentPage=window.ecomagentGetCurrentPage())}async _loadAppName(){if(window.ecomagentAppName){this.appName=window.ecomagentAppName;return}try{const t=await va();this.appName=t.app_name,window.ecomagentAppName=t.app_name}catch(t){console.error("Failed to load app name:",t)}}_onNavClick(t){if(t==="sourcing"&&window.ecomagentNavigateDirectToSourcing){window.ecomagentNavigateDirectToSourcing();return}window.ecomagentNavigate&&window.ecomagentNavigate(t)}_onToggle(){this.collapsed=!this.collapsed,this.requestUpdate("collapsed")}render(){const t=this._currentPage,e=this.appName.charAt(0);return n`
       <div class="header">
         <div class="brand">
           <div class="logo">${e}</div>
@@ -54,13 +54,13 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
         </button>
       </div>
       <div class="nav-content">
-        ${wa.map(a=>n`
+        ${Ca.map(a=>n`
           <div class="nav-group">
             <div class="nav-group-header"><span class="nav-group-title">${a.group}</span></div>
             <ul class="nav-items">
               ${a.items.map(r=>n`
                 <li class="nav-item ${t===r.id?"active":""}" @click=${()=>this._onNavClick(r.id)}>
-                  <svg class="nav-icon" viewBox="0 0 24 24">${Nt(ka[r.icon])}</svg>
+                  <svg class="nav-icon" viewBox="0 0 24 24">${Lt(Aa[r.icon])}</svg>
                   <span class="nav-label">${r.label}</span>
                 </li>
               `)}
@@ -68,7 +68,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
           </div>
         `)}
       </div>
-    `}};_a(vt,"styles",$`
+    `}};za(ft,"styles",$`
     :host { width: 258px; background: var(--panel); color: var(--text); padding: 14px 10px 12px; flex-shrink: 0; border-right: 1px solid var(--border); transition: width 0.2s ease; overflow: hidden; display: flex; flex-direction: column; }
     :host([collapsed]) { width: 60px; padding: 14px 6px 12px; }
     .header { display: flex; align-items: center; justify-content: space-between; padding: 14px 10px; border-bottom: 1px solid var(--border); margin-bottom: 12px; flex-shrink: 0; }
@@ -96,7 +96,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
     .nav-icon { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
     :host([collapsed]) .nav-icon { display: block; }
     :host([collapsed]) .nav-label { display: none; }
-  `);Rt([A({type:Boolean,reflect:!0})],vt.prototype,"collapsed",2);Rt([l()],vt.prototype,"appName",2);vt=Rt([_("ea-sidebar")],vt);var he=Object.defineProperty,Pa=Object.getOwnPropertyDescriptor,Sa=(o,t,e)=>t in o?he(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,ue=(o,t,e,a)=>{for(var r=a>1?void 0:a?Pa(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&he(t,e,r),r},Ca=(o,t,e)=>Sa(o,t+"",e);const za={dashboard:{title:"数据概览",subtitle:"查看数据统计和概览"},"product-master":{title:"商品总库",subtitle:"统一管理所有平台商品"},sourcing:{title:"货源库",subtitle:"1688货源采集与管理"},tracking:{title:"商品追踪",subtitle:"追踪特定商品的价格、销量变化"},"cross-platform":{title:"跨平台分析",subtitle:"对比分析不同平台数据"},"today-top":{title:"今日TOP榜",subtitle:"各平台热销产品排行"},"raw-data":{title:"原始数据",subtitle:"查看和搜索原始数据"},export:{title:"数据导出",subtitle:"导出数据为 CSV 或 Excel"},settings:{title:"系统设置",subtitle:"配置数据源和其他选项"},"product-trend":{title:"商品趋势",subtitle:"查看商品各维度数据随时间变化"}};let _t=class extends m{constructor(){super(...arguments);d(this,"currentPage","dashboard")}toggleTheme(){const t=document.body,a=t.getAttribute("data-theme-mode")==="dark"?"light":"dark";t.setAttribute("data-theme-mode",a),localStorage.setItem("theme",a),this.requestUpdate()}render(){const{title:t,subtitle:e}=za[this.currentPage],a=document.body.getAttribute("data-theme-mode")!=="light";return n`
+  `);Bt([A({type:Boolean,reflect:!0})],ft.prototype,"collapsed",2);Bt([l()],ft.prototype,"appName",2);ft=Bt([_("ea-sidebar")],ft);var ue=Object.defineProperty,Ta=Object.getOwnPropertyDescriptor,Ea=(o,t,e)=>t in o?ue(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,ve=(o,t,e,a)=>{for(var r=a>1?void 0:a?Ta(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&ue(t,e,r),r},Oa=(o,t,e)=>Ea(o,t+"",e);const Ma={dashboard:{title:"数据概览",subtitle:"查看数据统计和概览"},"product-master":{title:"商品总库",subtitle:"统一管理所有平台商品"},sourcing:{title:"货源库",subtitle:"1688货源采集与管理"},tracking:{title:"商品追踪",subtitle:"追踪特定商品的价格、销量变化"},"cross-platform":{title:"跨平台分析",subtitle:"对比分析不同平台数据"},"today-top":{title:"今日TOP榜",subtitle:"各平台热销产品排行"},"raw-data":{title:"原始数据",subtitle:"查看和搜索原始数据"},export:{title:"数据导出",subtitle:"导出数据为 CSV 或 Excel"},"translation-logs":{title:"翻译日志",subtitle:"翻译任务执行记录"},settings:{title:"系统设置",subtitle:"配置数据源和其他选项"},"product-trend":{title:"商品趋势",subtitle:"查看商品各维度数据随时间变化"}};let kt=class extends f{constructor(){super(...arguments);d(this,"currentPage","dashboard")}toggleTheme(){const t=document.body,a=t.getAttribute("data-theme-mode")==="dark"?"light":"dark";t.setAttribute("data-theme-mode",a),localStorage.setItem("theme",a),this.requestUpdate()}render(){const{title:t,subtitle:e}=Ma[this.currentPage],a=document.body.getAttribute("data-theme-mode")!=="light";return n`
       <div>
         <div class="title">${t}</div>
         <div class="subtitle">${e}</div>
@@ -122,7 +122,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
           </svg>
         </button>
       </div>
-    `}};Ca(_t,"styles",$`
+    `}};Oa(kt,"styles",$`
     :host {
       display: flex;
       align-items: center;
@@ -176,23 +176,23 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
       fill: none;
       stroke-width: 1.75px;
     }
-  `);ue([A({type:String})],_t.prototype,"currentPage",2);_t=ue([_("ea-header")],_t);var ge=Object.defineProperty,Aa=Object.getOwnPropertyDescriptor,Ta=(o,t,e)=>t in o?ge(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,Ht=(o,t,e,a)=>{for(var r=a>1?void 0:a?Aa(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&ge(t,e,r),r},Ea=(o,t,e)=>Ta(o,t+"",e);let bt=class extends m{constructor(){super(...arguments);d(this,"currentPage","dashboard");d(this,"sidebarCollapsed",!1)}render(){return n`
+  `);ve([A({type:String})],kt.prototype,"currentPage",2);kt=ve([_("ea-header")],kt);var be=Object.defineProperty,Da=Object.getOwnPropertyDescriptor,Ia=(o,t,e)=>t in o?be(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,qt=(o,t,e,a)=>{for(var r=a>1?void 0:a?Da(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&be(t,e,r),r},ja=(o,t,e)=>Ia(o,t+"",e);let mt=class extends f{constructor(){super(...arguments);d(this,"currentPage","dashboard");d(this,"sidebarCollapsed",!1)}render(){return n`
       <ea-sidebar ?collapsed=${this.sidebarCollapsed}></ea-sidebar>
       <main class="main-content">
         <ea-header .currentPage=${this.currentPage}></ea-header>
         <div class="content-body"><slot></slot></div>
       </main>
-    `}};Ea(bt,"styles",$`
+    `}};ja(mt,"styles",$`
     :host { display: flex; min-height: 100vh; }
     .main-content { flex: 1; padding: 24px; overflow-y: auto; background: var(--bg); }
     .content-body { animation: fadeIn 0.3s ease; }
     @media (max-width: 1024px) { :host { flex-direction: column; } .main-content { padding: 16px; } }
-  `);Ht([A({type:String})],bt.prototype,"currentPage",2);Ht([l()],bt.prototype,"sidebarCollapsed",2);bt=Ht([_("ea-layout")],bt);var ve=Object.defineProperty,Oa=Object.getOwnPropertyDescriptor,Ma=(o,t,e)=>t in o?ve(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,B=(o,t,e,a)=>{for(var r=a>1?void 0:a?Oa(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&ve(t,e,r),r},be=(o,t,e)=>Ma(o,t+"",e);let wt=class extends m{constructor(){super(...arguments);d(this,"padding",16)}render(){return n`
+  `);qt([A({type:String})],mt.prototype,"currentPage",2);qt([l()],mt.prototype,"sidebarCollapsed",2);mt=qt([_("ea-layout")],mt);var fe=Object.defineProperty,Na=Object.getOwnPropertyDescriptor,La=(o,t,e)=>t in o?fe(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,q=(o,t,e,a)=>{for(var r=a>1?void 0:a?Na(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&fe(t,e,r),r},me=(o,t,e)=>La(o,t+"",e);let Pt=class extends f{constructor(){super(...arguments);d(this,"padding",16)}render(){return n`
       <slot name="header"></slot>
       <div class="card-content" style="--padding: ${this.padding}px">
         <slot></slot>
       </div>
-    `}};be(wt,"styles",$`
+    `}};me(Pt,"styles",$`
     :host {
       display: block;
       background: var(--card);
@@ -218,7 +218,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
       font-weight: 600;
       color: var(--text-strong);
     }
-  `);B([A({type:Number})],wt.prototype,"padding",2);wt=B([_("ea-card")],wt);let F=class extends m{constructor(){super(...arguments);d(this,"label","");d(this,"value","-");d(this,"icon","");d(this,"desc","");d(this,"color","")}render(){return n`
+  `);q([A({type:Number})],Pt.prototype,"padding",2);Pt=q([_("ea-card")],Pt);let R=class extends f{constructor(){super(...arguments);d(this,"label","");d(this,"value","-");d(this,"icon","");d(this,"desc","");d(this,"color","")}render(){return n`
       <div class="stat-header">
         <div>
           <div class="stat-label">${this.label}</div>
@@ -228,7 +228,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
         ${this.icon?n`<span class="stat-icon">${this.icon}</span>`:""}
       </div>
       <slot></slot>
-    `}};be(F,"styles",$`
+    `}};me(R,"styles",$`
     :host {
       display: block;
       background: var(--card);
@@ -291,7 +291,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
     .stat-action {
       margin-left: auto;
     }
-  `);B([A({type:String})],F.prototype,"label",2);B([A({type:String})],F.prototype,"value",2);B([A({type:String})],F.prototype,"icon",2);B([A({type:String})],F.prototype,"desc",2);B([A({type:String})],F.prototype,"color",2);F=B([_("ea-stat-card")],F);var me=Object.defineProperty,Da=Object.getOwnPropertyDescriptor,Ia=(o,t,e)=>t in o?me(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,q=(o,t,e,a)=>{for(var r=a>1?void 0:a?Da(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&me(t,e,r),r},Na=(o,t,e)=>Ia(o,t+"",e);let M=class extends m{constructor(){super(...arguments);d(this,"stats",null);d(this,"loading",!0);d(this,"error","");d(this,"expandedPanel",null);d(this,"categories",{amazon:[],tiktok:[]});d(this,"categoriesLoading",!1);d(this,"fetchTaskStatus",{amazon:"",tiktok:""})}connectedCallback(){super.connectedCallback(),this.loadStats()}async loadStats(){this.loading=!0,this.error="";try{this.stats=await ia()}catch(t){this.error=t instanceof Error?t.message:String(t)}finally{this.loading=!1,this.requestUpdate()}}async _togglePanel(t){if(this.expandedPanel===t){this.expandedPanel=null;return}this.expandedPanel=t,this.requestUpdate(),(!this.categories[t]||this.categories[t].length===0)&&await this._loadCategories(t)}async _loadCategories(t){this.categoriesLoading=!0,this.requestUpdate();try{const a=await(await fetch(`/api/categories/${t}`)).json();this.categories={...this.categories,[t]:a.categories||[]},this.requestUpdate()}catch(e){console.error("加载类目失败:",e)}finally{this.categoriesLoading=!1,this.requestUpdate()}}async _refreshCategories(t){this.categoriesLoading=!0;try{const a=await(await fetch(`/api/categories/${t}/refresh`,{method:"POST"})).json();a.success?await this._loadCategories(t):alert(a.message||"刷新失败")}catch(e){alert(`刷新失败: ${e}`)}finally{this.categoriesLoading=!1}}async _toggleCategory(t,e,a){try{await fetch(`/api/categories/${e}/enabled?enabled=${a}`,{method:"PUT"}),this.categories={...this.categories,[t]:this.categories[t].map(r=>r.id===e?{...r,enabled:a?1:0}:r)}}catch(r){alert(`更新失败: ${r}`)}}async _startFetch(t){this.fetchTaskStatus={...this.fetchTaskStatus,[t]:"running"};try{const a=await(await fetch(`/api/tasks/${t}/fetch`,{method:"POST"})).json();a.success?alert(`${t} 抓取任务已启动`):(alert(a.message||"启动失败"),this.fetchTaskStatus={...this.fetchTaskStatus,[t]:""})}catch(e){alert(`启动失败: ${e}`),this.fetchTaskStatus={...this.fetchTaskStatus,[t]:""}}}_renderFetchPanel(t){const e=this.expandedPanel===t,a=this.categories[t],r=this.categoriesLoading,i=this.fetchTaskStatus[t]==="running",s=a.filter(c=>c.today_status==="done").length,p=a.filter(c=>c.today_status==="pending").length;return n`
+  `);q([A({type:String})],R.prototype,"label",2);q([A({type:String})],R.prototype,"value",2);q([A({type:String})],R.prototype,"icon",2);q([A({type:String})],R.prototype,"desc",2);q([A({type:String})],R.prototype,"color",2);R=q([_("ea-stat-card")],R);var xe=Object.defineProperty,Ua=Object.getOwnPropertyDescriptor,Fa=(o,t,e)=>t in o?xe(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,V=(o,t,e,a)=>{for(var r=a>1?void 0:a?Ua(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&xe(t,e,r),r},Ra=(o,t,e)=>Fa(o,t+"",e);let M=class extends f{constructor(){super(...arguments);d(this,"stats",null);d(this,"loading",!0);d(this,"error","");d(this,"expandedPanel",null);d(this,"categories",{amazon:[],tiktok:[]});d(this,"categoriesLoading",!1);d(this,"fetchTaskStatus",{amazon:"",tiktok:""})}connectedCallback(){super.connectedCallback(),this.loadStats()}async loadStats(){this.loading=!0,this.error="";try{this.stats=await ca()}catch(t){this.error=t instanceof Error?t.message:String(t)}finally{this.loading=!1,this.requestUpdate()}}async _togglePanel(t){if(this.expandedPanel===t){this.expandedPanel=null;return}this.expandedPanel=t,this.requestUpdate(),(!this.categories[t]||this.categories[t].length===0)&&await this._loadCategories(t)}async _loadCategories(t){this.categoriesLoading=!0,this.requestUpdate();try{const a=await(await fetch(`/api/categories/${t}`)).json();this.categories={...this.categories,[t]:a.categories||[]},this.requestUpdate()}catch(e){console.error("加载类目失败:",e)}finally{this.categoriesLoading=!1,this.requestUpdate()}}async _refreshCategories(t){this.categoriesLoading=!0;try{const a=await(await fetch(`/api/categories/${t}/refresh`,{method:"POST"})).json();a.success?await this._loadCategories(t):alert(a.message||"刷新失败")}catch(e){alert(`刷新失败: ${e}`)}finally{this.categoriesLoading=!1}}async _toggleCategory(t,e,a){try{await fetch(`/api/categories/${e}/enabled?enabled=${a}`,{method:"PUT"}),this.categories={...this.categories,[t]:this.categories[t].map(r=>r.id===e?{...r,enabled:a?1:0}:r)}}catch(r){alert(`更新失败: ${r}`)}}async _startFetch(t){this.fetchTaskStatus={...this.fetchTaskStatus,[t]:"running"};try{const a=await(await fetch(`/api/tasks/${t}/fetch`,{method:"POST"})).json();a.success?alert(`${t} 抓取任务已启动`):(alert(a.message||"启动失败"),this.fetchTaskStatus={...this.fetchTaskStatus,[t]:""})}catch(e){alert(`启动失败: ${e}`),this.fetchTaskStatus={...this.fetchTaskStatus,[t]:""}}}_renderFetchPanel(t){const e=this.expandedPanel===t,a=this.categories[t],r=this.categoriesLoading,i=this.fetchTaskStatus[t]==="running",s=a.filter(c=>c.today_status==="done").length,p=a.filter(c=>c.today_status==="pending").length;return n`
       <div class="fetch-panel ${e?"expanded":""}">
         <div class="fetch-header" @click=${()=>this._togglePanel(t)}>
           <div class="fetch-header-left">
@@ -384,7 +384,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
           ${this._renderFetchPanel("tiktok")}
         </div>
       </div>
-    `}};Na(M,"styles",$`
+    `}};Ra(M,"styles",$`
     :host { display: block; }
     h2 { font-size: 20px; font-weight: 700; color: var(--text-strong); margin-bottom: 24px; }
     .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
@@ -439,7 +439,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
 
     @keyframes spin { to { transform: rotate(360deg); } }
     @media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr; } }
-  `);q([l()],M.prototype,"stats",2);q([l()],M.prototype,"loading",2);q([l()],M.prototype,"error",2);q([l()],M.prototype,"expandedPanel",2);q([l()],M.prototype,"categories",2);q([l()],M.prototype,"categoriesLoading",2);q([l()],M.prototype,"fetchTaskStatus",2);M=q([_("ea-dashboard")],M);var fe=Object.defineProperty,ja=Object.getOwnPropertyDescriptor,La=(o,t,e)=>t in o?fe(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,Z=(o,t,e,a)=>{for(var r=a>1?void 0:a?ja(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&fe(t,e,r),r},Ua=(o,t,e)=>La(o,t+"",e);let I=class extends m{constructor(){super(...arguments);d(this,"ecomCode","");d(this,"product",null);d(this,"trendData",[]);d(this,"loading",!0);d(this,"metric","rating");d(this,"days",7)}connectedCallback(){super.connectedCallback(),this.ecomCode&&this.loadTrendData()}updated(t){t.has("ecomCode")&&this.ecomCode&&this.loadTrendData()}async loadTrendData(){if(this.ecomCode){this.loading=!0;try{const t=await ga(this.ecomCode,this.days);this.product=t.product,this.trendData=t.trend||[]}catch(t){console.error("Load trend error:",t)}finally{this.loading=!1,this.requestUpdate()}}}_onMetricChange(t){this.metric=t.target.value,this.requestUpdate()}_onDaysChange(t){const e=t.target.value;e!=="custom"&&(this.days=parseInt(e),this.loadTrendData())}_getMetricLabel(){switch(this.metric){case"price":return"价格";case"rating":return"评分";case"rank":return"排名"}}_renderChart(){if(this.trendData.length===0)return n`<div class="chart-empty">暂无数据</div>`;const t=this.trendData.map(i=>i[this.metric]).filter(i=>i!=null);if(t.length===0)return n`<div class="chart-empty">暂无${this._getMetricLabel()}数据</div>`;const e=Math.max(...t),a=Math.min(...t),r=e-a||1;return n`
+  `);V([l()],M.prototype,"stats",2);V([l()],M.prototype,"loading",2);V([l()],M.prototype,"error",2);V([l()],M.prototype,"expandedPanel",2);V([l()],M.prototype,"categories",2);V([l()],M.prototype,"categoriesLoading",2);V([l()],M.prototype,"fetchTaskStatus",2);M=V([_("ea-dashboard")],M);var ye=Object.defineProperty,Ha=Object.getOwnPropertyDescriptor,Ba=(o,t,e)=>t in o?ye(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,Q=(o,t,e,a)=>{for(var r=a>1?void 0:a?Ha(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&ye(t,e,r),r},qa=(o,t,e)=>Ba(o,t+"",e);let I=class extends f{constructor(){super(...arguments);d(this,"ecomCode","");d(this,"product",null);d(this,"trendData",[]);d(this,"loading",!0);d(this,"metric","rating");d(this,"days",7)}connectedCallback(){super.connectedCallback(),this.ecomCode&&this.loadTrendData()}updated(t){t.has("ecomCode")&&this.ecomCode&&this.loadTrendData()}async loadTrendData(){if(this.ecomCode){this.loading=!0;try{const t=await xa(this.ecomCode,this.days);this.product=t.product,this.trendData=t.trend||[]}catch(t){console.error("Load trend error:",t)}finally{this.loading=!1,this.requestUpdate()}}}_onMetricChange(t){this.metric=t.target.value,this.requestUpdate()}_onDaysChange(t){const e=t.target.value;e!=="custom"&&(this.days=parseInt(e),this.loadTrendData())}_getMetricLabel(){switch(this.metric){case"price":return"价格";case"rating":return"评分";case"rank":return"排名"}}_renderChart(){if(this.trendData.length===0)return n`<div class="chart-empty">暂无数据</div>`;const t=this.trendData.map(i=>i[this.metric]).filter(i=>i!=null);if(t.length===0)return n`<div class="chart-empty">暂无${this._getMetricLabel()}数据</div>`;const e=Math.max(...t),a=Math.min(...t),r=e-a||1;return n`
       <div class="chart">
         ${this.trendData.map(i=>{const s=i[this.metric];if(s==null)return n`<div class="chart-bar" style="height:0"></div>`;const p=(s-a)/r*250+20;return n`
             <div class="chart-bar" style="height:${p}px">
@@ -515,7 +515,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
           <a class="back-link" href="javascript:history.back()">← 返回</a>
         </div>
         <div style="text-align:center;padding:48px;color:var(--muted)">商品不存在</div>
-      `}};Ua(I,"styles",$`
+      `}};qa(I,"styles",$`
     :host { display: block; padding: 24px; }
     
     .header {
@@ -713,7 +713,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
     }
     
     @keyframes spin { to { transform: rotate(360deg); } }
-  `);Z([A({type:String})],I.prototype,"ecomCode",2);Z([l()],I.prototype,"product",2);Z([l()],I.prototype,"trendData",2);Z([l()],I.prototype,"loading",2);Z([l()],I.prototype,"metric",2);Z([l()],I.prototype,"days",2);I=Z([_("ea-product-trend")],I);var xe=Object.defineProperty,Fa=Object.getOwnPropertyDescriptor,Ra=(o,t,e)=>t in o?xe(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,P=(o,t,e,a)=>{for(var r=a>1?void 0:a?Fa(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&xe(t,e,r),r},Ha=(o,t,e)=>Ra(o,t+"",e);let y=class extends m{constructor(){super(...arguments);d(this,"products",[]);d(this,"loading",!0);d(this,"page",1);d(this,"pages",0);d(this,"search","");d(this,"platform","amazon");d(this,"category","");d(this,"categories",{amazon:[],tiktok:[],all:[]});d(this,"sortBy","sales_count");d(this,"sortOrder","desc");d(this,"trackedIds",new Set);d(this,"showTrend",!1);d(this,"trendCode","");d(this,"sparklines",new Map);d(this,"previewImg",{show:!1,src:"",x:0,y:0})}async connectedCallback(){super.connectedCallback(),this.loadTracked(),await this.loadCategories(),this.loadData()}loadTracked(){const t=localStorage.getItem("tracked-products");t&&(this.trackedIds=new Set(JSON.parse(t)))}saveTracked(){localStorage.setItem("tracked-products",JSON.stringify([...this.trackedIds]))}async loadCategories(){try{if(this.categories=await sa(),!this.category){const t=this.platform==="amazon"?this.categories.amazon:this.categories.tiktok;t.length>0&&(this.category=t[0])}}catch(t){console.error("Failed to load categories",t)}}async loadData(){this.loading=!0;try{const t=await na({page:this.page,limit:20,search:this.search,platform:this.platform,category:this.category,sort_by:this.sortBy||void 0,sort_order:this.sortOrder});this.products=t.data,this.pages=t.pagination.pages,this.loadSparklines(t.data)}catch(t){console.error("Failed to load products",t)}finally{this.loading=!1,this.requestUpdate()}}async loadSparklines(t){const e=t.map(async a=>{try{const r=await le(a.ecom_code,7);this.sparklines.set(a.ecom_code,r.trend)}catch{this.sparklines.set(a.ecom_code,[])}});await Promise.all(e),this.requestUpdate()}_onPlatformChange(t){this.platform=t;const e=t==="amazon"?this.categories.amazon:this.categories.tiktok;this.category=e.length>0?e[0]:"",this.page=1,this.loadData()}_onSearch(){this.page=1,this.loadData()}_onInputChange(t,e){this[e]=t.target.value}_onCategoryChange(t){this.category=t.target.value,this.page=1,this.loadData()}_onSort(t){this.sortBy===t?this.sortOrder=this.sortOrder==="desc"?"asc":"desc":(this.sortBy=t,this.sortOrder="desc"),this.page=1,this.loadData()}_onPageChange(t){this.page=t,this.loadData()}_toggleTrack(t){this.trackedIds.has(t)?this.trackedIds.delete(t):this.trackedIds.add(t),this.saveTracked(),this.requestUpdate()}async _resetTranslation(t){try{(await(await fetch(`/api/products/${t}/reset-translation`,{method:"POST"})).json()).success&&this.loadData()}catch(e){console.error("Reset translation failed:",e)}}_showTrendPage(t){const e={platform:this.platform,category:this.category,search:this.search,sortBy:this.sortBy,sortOrder:this.sortOrder,page:this.page,scrollY:window.scrollY};sessionStorage.setItem("product-master-state",JSON.stringify(e)),window.ecomagentOpenTrend(t,"product-master")}_closeTrendModal(){this.showTrend=!1,this.trendCode=""}_showSourcingModal(t){window.ecomagentNavigateToSourcing(t)}async _open1688(t,e){if(t)try{const i=`${(await(await fetch(`/api/1688-search-url?keyword=${encodeURIComponent(t)}`)).json()).url}&ecom_code=${e}`;window.open(i,"_blank")}catch{const r=`https://s.1688.com/selloffer/offer_search.htm?keywords=${encodeURIComponent(t)}&ecom_code=${e}`;window.open(r,"_blank")}}_showImgPreview(t,e){this.previewImg={show:!0,src:e,x:t.clientX+16,y:t.clientY+16},this._updatePreviewElement()}_hideImgPreview(){this.previewImg={...this.previewImg,show:!1},this._updatePreviewElement()}_moveImgPreview(t){this.previewImg.show&&(this.previewImg={...this.previewImg,x:t.clientX+16,y:t.clientY+16},this._updatePreviewElement())}_updatePreviewElement(){let t=document.getElementById("global-img-preview");t||(t=document.createElement("img"),t.id="global-img-preview",t.style.cssText="position:fixed;z-index:9999;max-width:400px;max-height:400px;border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.5);pointer-events:none;border:1px solid rgba(255,255,255,0.1);",document.body.appendChild(t)),this.previewImg.show?(t.src=this.previewImg.src,t.style.left=this.previewImg.x+"px",t.style.top=this.previewImg.y+"px",t.style.display="block"):t.style.display="none"}_formatSales(t){return t==null?"-":t>=1e4?`${(t/1e3).toFixed(1)}K`:t>=1e3?`${(t/1e3).toFixed(1)}K`:String(t)}_renderSparkline(t){const e=this.sparklines.get(t);if(!e||e.length<2)return n`<div class="sparkline-container" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px;">暂无数据</div>`;const a=e.map(g=>g.value).filter(g=>g!=null);if(a.length<2)return n`<div class="sparkline-container" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px;">暂无数据</div>`;const r=Math.min(...a),s=Math.max(...a)-r||1,p=100,c=32,h=2,b=a.map((g,x)=>{const O=h+x/(a.length-1)*(p-h*2),nt=c-h-(g-r)/s*(c-h*2);return`${O},${nt}`}).join(" "),u=b+` ${h+(a.length-1)/(a.length-1)*(p-h*2)},${c-h} ${h},${c-h}`;return n`
+  `);Q([A({type:String})],I.prototype,"ecomCode",2);Q([l()],I.prototype,"product",2);Q([l()],I.prototype,"trendData",2);Q([l()],I.prototype,"loading",2);Q([l()],I.prototype,"metric",2);Q([l()],I.prototype,"days",2);I=Q([_("ea-product-trend")],I);var $e=Object.defineProperty,Va=Object.getOwnPropertyDescriptor,Ga=(o,t,e)=>t in o?$e(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,P=(o,t,e,a)=>{for(var r=a>1?void 0:a?Va(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&$e(t,e,r),r},Ja=(o,t,e)=>Ga(o,t+"",e);let y=class extends f{constructor(){super(...arguments);d(this,"products",[]);d(this,"loading",!0);d(this,"page",1);d(this,"pages",0);d(this,"search","");d(this,"platform","amazon");d(this,"category","");d(this,"categories",{amazon:[],tiktok:[],all:[]});d(this,"sortBy","total_sales");d(this,"sortOrder","desc");d(this,"trackedIds",new Set);d(this,"showTrend",!1);d(this,"trendCode","");d(this,"sparklines",new Map);d(this,"previewImg",{show:!1,src:"",x:0,y:0})}async connectedCallback(){super.connectedCallback(),this.loadTracked(),await this.loadCategories(),this.loadData()}loadTracked(){const t=localStorage.getItem("tracked-products");t&&(this.trackedIds=new Set(JSON.parse(t)))}saveTracked(){localStorage.setItem("tracked-products",JSON.stringify([...this.trackedIds]))}async loadCategories(){try{if(this.categories=await pa(),!this.category){const t=this.platform==="amazon"?this.categories.amazon:this.categories.tiktok;t.length>0&&(this.category=t[0])}}catch(t){console.error("Failed to load categories",t)}}async loadData(){this.loading=!0;try{const t=await ha({page:this.page,limit:20,search:this.search,platform:this.platform,category:this.category,sort_by:this.sortBy||void 0,sort_order:this.sortOrder});this.products=t.data,this.pages=t.pagination.pages,this.loadSparklines(t.data)}catch(t){console.error("Failed to load products",t)}finally{this.loading=!1,this.requestUpdate()}}async loadSparklines(t){const e=t.map(async a=>{try{const r=await pe(a.ecom_code,7);this.sparklines.set(a.ecom_code,r.trend)}catch{this.sparklines.set(a.ecom_code,[])}});await Promise.all(e),this.requestUpdate()}_onPlatformChange(t){this.platform=t;const e=t==="amazon"?this.categories.amazon:this.categories.tiktok;this.category=e.length>0?e[0]:"",this.page=1,this.loadData()}_onSearch(){this.page=1,this.loadData()}_onInputChange(t,e){this[e]=t.target.value}_onCategoryChange(t){this.category=t.target.value,this.page=1,this.loadData()}_onSort(t){this.sortBy===t?this.sortOrder=this.sortOrder==="desc"?"asc":"desc":(this.sortBy=t,this.sortOrder="desc"),this.page=1,this.loadData()}_onPageChange(t){this.page=t,this.loadData()}_toggleTrack(t){this.trackedIds.has(t)?this.trackedIds.delete(t):this.trackedIds.add(t),this.saveTracked(),this.requestUpdate()}async _resetTranslation(t){try{(await(await fetch(`/api/products/${t}/reset-translation`,{method:"POST"})).json()).success&&this.loadData()}catch(e){console.error("Reset translation failed:",e)}}_showTrendPage(t){const e={platform:this.platform,category:this.category,search:this.search,sortBy:this.sortBy,sortOrder:this.sortOrder,page:this.page,scrollY:window.scrollY};sessionStorage.setItem("product-master-state",JSON.stringify(e)),window.ecomagentOpenTrend(t,"product-master")}_closeTrendModal(){this.showTrend=!1,this.trendCode=""}_showSourcingModal(t){window.ecomagentNavigateToSourcing(t)}async _open1688(t,e){if(t)try{const i=`${(await(await fetch(`/api/1688-search-url?keyword=${encodeURIComponent(t)}`)).json()).url}&ecom_code=${e}`;window.open(i,"_blank")}catch{const r=`https://s.1688.com/selloffer/offer_search.htm?keywords=${encodeURIComponent(t)}&ecom_code=${e}`;window.open(r,"_blank")}}_showImgPreview(t,e){this.previewImg={show:!0,src:e,x:t.clientX+16,y:t.clientY+16},this._updatePreviewElement()}_hideImgPreview(){this.previewImg={...this.previewImg,show:!1},this._updatePreviewElement()}_moveImgPreview(t){this.previewImg.show&&(this.previewImg={...this.previewImg,x:t.clientX+16,y:t.clientY+16},this._updatePreviewElement())}_updatePreviewElement(){let t=document.getElementById("global-img-preview");t||(t=document.createElement("img"),t.id="global-img-preview",t.style.cssText="position:fixed;z-index:9999;max-width:400px;max-height:400px;border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.5);pointer-events:none;border:1px solid rgba(255,255,255,0.1);",document.body.appendChild(t)),this.previewImg.show?(t.src=this.previewImg.src,t.style.left=this.previewImg.x+"px",t.style.top=this.previewImg.y+"px",t.style.display="block"):t.style.display="none"}_formatSales(t){return t==null?"-":t>=1e4?`${(t/1e3).toFixed(1)}K`:t>=1e3?`${(t/1e3).toFixed(1)}K`:String(t)}_renderSparkline(t){const e=this.sparklines.get(t);if(!e||e.length<2)return n`<div class="sparkline-container" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px;">暂无数据</div>`;const a=e.map(u=>u.value).filter(u=>u!=null);if(a.length<2)return n`<div class="sparkline-container" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px;">暂无数据</div>`;const r=Math.min(...a),s=Math.max(...a)-r||1,p=100,c=32,h=2,b=a.map((u,x)=>{const O=h+x/(a.length-1)*(p-h*2),lt=c-h-(u-r)/s*(c-h*2);return`${O},${lt}`}).join(" "),g=b+` ${h+(a.length-1)/(a.length-1)*(p-h*2)},${c-h} ${h},${c-h}`;return n`
       <div class="sparkline-container">
         <svg viewBox="0 0 ${p} ${c}" preserveAspectRatio="none">
           <defs>
@@ -722,7 +722,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
               <stop offset="100%" stop-color="var(--accent)" stop-opacity="0" />
             </linearGradient>
           </defs>
-          <polygon points="${u}" fill="url(#grad-${t})" />
+          <polygon points="${g}" fill="url(#grad-${t})" />
           <polyline points="${b}" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </div>
@@ -789,7 +789,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
                   <div class="product-info">
                     <div class="product-name-row">
                       ${e.product_url?n`<a class="product-name product-link" href=${e.product_url} target="_blank" title=${e.name}>${e.short_name||e.name||"无名称"}</a>`:n`<span class="product-name" title=${e.name}>${e.short_name||e.name||"无名称"}</span>`}
-                      ${e.short_name?n`<button class="retranslate-btn" @click=${()=>this._resetTranslation(e.ecom_code)} title="重新翻译">🔄</button>`:""}
+                      ${e.translation_status==="translated"?n`<button class="retranslate-btn" @click=${()=>this._resetTranslation(e.ecom_code)} title="重新翻译">🔄</button>`:""}
                     </div>
                     <div class="product-code">
                       <button class="track-btn ${this.trackedIds.has(e.ecom_code)?"active":""}"
@@ -829,7 +829,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
       `:""}
       
       <!-- 图片预览浮框 -->
-    `}};Ha(y,"styles",$`
+    `}};Ja(y,"styles",$`
     :host { display: block; }
     
     /* 模态框 */
@@ -1101,7 +1101,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
       margin: 0 auto 12px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-  `);P([l()],y.prototype,"products",2);P([l()],y.prototype,"loading",2);P([l()],y.prototype,"page",2);P([l()],y.prototype,"pages",2);P([l()],y.prototype,"search",2);P([l()],y.prototype,"platform",2);P([l()],y.prototype,"category",2);P([l()],y.prototype,"categories",2);P([l()],y.prototype,"sortBy",2);P([l()],y.prototype,"sortOrder",2);P([l()],y.prototype,"trackedIds",2);P([l()],y.prototype,"showTrend",2);P([l()],y.prototype,"trendCode",2);P([l()],y.prototype,"sparklines",2);P([l()],y.prototype,"previewImg",2);y=P([_("ea-product-master")],y);var ye=Object.defineProperty,Ba=Object.getOwnPropertyDescriptor,qa=(o,t,e)=>t in o?ye(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,Q=(o,t,e,a)=>{for(var r=a>1?void 0:a?Ba(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&ye(t,e,r),r},Va=(o,t,e)=>qa(o,t+"",e);let N=class extends m{constructor(){super(...arguments);d(this,"products",[]);d(this,"loading",!0);d(this,"trackedIds",new Set);d(this,"showTrend",!1);d(this,"trendCode","");d(this,"sparklines",new Map)}connectedCallback(){super.connectedCallback(),this.loadTracked()}loadTracked(){const t=localStorage.getItem("tracked-products");t&&(this.trackedIds=new Set(JSON.parse(t))),this.loadData()}saveTracked(){localStorage.setItem("tracked-products",JSON.stringify([...this.trackedIds]))}async loadData(){if(this.loading=!0,this.trackedIds.size===0){this.products=[],this.loading=!1,this.requestUpdate();return}try{const t=await da([...this.trackedIds]);this.products=t.products||[],this.loadSparklines(this.products)}catch(t){console.error("Load tracking error:",t),this.products=[]}finally{this.loading=!1,this.requestUpdate()}}async loadSparklines(t){const e=t.map(async a=>{try{const r=await le(a.ecom_code,7);this.sparklines.set(a.ecom_code,r.trend)}catch{this.sparklines.set(a.ecom_code,[])}});await Promise.all(e),this.requestUpdate()}_untrack(t){this.trackedIds.delete(t),this.saveTracked(),this.products=this.products.filter(e=>e.ecom_code!==t),this.requestUpdate()}_showTrendPage(t){const e={scrollY:window.scrollY};sessionStorage.setItem("tracking-state",JSON.stringify(e)),window.ecomagentOpenTrend(t,"tracking")}_closeTrendModal(){this.showTrend=!1,this.trendCode=""}_formatSales(t){return t==null?"-":t>=1e4?`${(t/1e3).toFixed(1)}K`:t>=1e3?`${(t/1e3).toFixed(1)}K`:String(t)}_renderSparkline(t){const e=this.sparklines.get(t);if(!e||e.length<2)return n`<div class="sparkline-container" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px;">暂无数据</div>`;const a=e.map(g=>g.value).filter(g=>g!=null);if(a.length<2)return n`<div class="sparkline-container" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px;">暂无数据</div>`;const r=Math.min(...a),s=Math.max(...a)-r||1,p=100,c=32,h=2,b=a.map((g,x)=>{const O=h+x/(a.length-1)*(p-h*2),nt=c-h-(g-r)/s*(c-h*2);return`${O},${nt}`}).join(" "),u=b+` ${h+(a.length-1)/(a.length-1)*(p-h*2)},${c-h} ${h},${c-h}`;return n`
+  `);P([l()],y.prototype,"products",2);P([l()],y.prototype,"loading",2);P([l()],y.prototype,"page",2);P([l()],y.prototype,"pages",2);P([l()],y.prototype,"search",2);P([l()],y.prototype,"platform",2);P([l()],y.prototype,"category",2);P([l()],y.prototype,"categories",2);P([l()],y.prototype,"sortBy",2);P([l()],y.prototype,"sortOrder",2);P([l()],y.prototype,"trackedIds",2);P([l()],y.prototype,"showTrend",2);P([l()],y.prototype,"trendCode",2);P([l()],y.prototype,"sparklines",2);P([l()],y.prototype,"previewImg",2);y=P([_("ea-product-master")],y);var _e=Object.defineProperty,Ya=Object.getOwnPropertyDescriptor,Wa=(o,t,e)=>t in o?_e(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,tt=(o,t,e,a)=>{for(var r=a>1?void 0:a?Ya(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&_e(t,e,r),r},Ka=(o,t,e)=>Wa(o,t+"",e);let j=class extends f{constructor(){super(...arguments);d(this,"products",[]);d(this,"loading",!0);d(this,"trackedIds",new Set);d(this,"showTrend",!1);d(this,"trendCode","");d(this,"sparklines",new Map)}connectedCallback(){super.connectedCallback(),this.loadTracked()}loadTracked(){const t=localStorage.getItem("tracked-products");t&&(this.trackedIds=new Set(JSON.parse(t))),this.loadData()}saveTracked(){localStorage.setItem("tracked-products",JSON.stringify([...this.trackedIds]))}async loadData(){if(this.loading=!0,this.trackedIds.size===0){this.products=[],this.loading=!1,this.requestUpdate();return}try{const t=await ga([...this.trackedIds]);this.products=t.products||[],this.loadSparklines(this.products)}catch(t){console.error("Load tracking error:",t),this.products=[]}finally{this.loading=!1,this.requestUpdate()}}async loadSparklines(t){const e=t.map(async a=>{try{const r=await pe(a.ecom_code,7);this.sparklines.set(a.ecom_code,r.trend)}catch{this.sparklines.set(a.ecom_code,[])}});await Promise.all(e),this.requestUpdate()}_untrack(t){this.trackedIds.delete(t),this.saveTracked(),this.products=this.products.filter(e=>e.ecom_code!==t),this.requestUpdate()}_showTrendPage(t){const e={scrollY:window.scrollY};sessionStorage.setItem("tracking-state",JSON.stringify(e)),window.ecomagentOpenTrend(t,"tracking")}_closeTrendModal(){this.showTrend=!1,this.trendCode=""}_formatSales(t){return t==null?"-":t>=1e4?`${(t/1e3).toFixed(1)}K`:t>=1e3?`${(t/1e3).toFixed(1)}K`:String(t)}_renderSparkline(t){const e=this.sparklines.get(t);if(!e||e.length<2)return n`<div class="sparkline-container" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px;">暂无数据</div>`;const a=e.map(u=>u.value).filter(u=>u!=null);if(a.length<2)return n`<div class="sparkline-container" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px;">暂无数据</div>`;const r=Math.min(...a),s=Math.max(...a)-r||1,p=100,c=32,h=2,b=a.map((u,x)=>{const O=h+x/(a.length-1)*(p-h*2),lt=c-h-(u-r)/s*(c-h*2);return`${O},${lt}`}).join(" "),g=b+` ${h+(a.length-1)/(a.length-1)*(p-h*2)},${c-h} ${h},${c-h}`;return n`
       <div class="sparkline-container">
         <svg viewBox="0 0 ${p} ${c}" preserveAspectRatio="none">
           <defs>
@@ -1110,7 +1110,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
               <stop offset="100%" stop-color="var(--accent)" stop-opacity="0" />
             </linearGradient>
           </defs>
-          <polygon points="${u}" fill="url(#grad-track-${t})" />
+          <polygon points="${g}" fill="url(#grad-track-${t})" />
           <polyline points="${b}" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </div>
@@ -1173,7 +1173,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
           </div>
         </div>
       `:""}
-    `}};Va(N,"styles",$`
+    `}};Ka(j,"styles",$`
     :host { display: block; }
     
     /* 模态框 */
@@ -1308,9 +1308,9 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
       margin: 0 auto 12px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-  `);Q([l()],N.prototype,"products",2);Q([l()],N.prototype,"loading",2);Q([l()],N.prototype,"trackedIds",2);Q([l()],N.prototype,"showTrend",2);Q([l()],N.prototype,"trendCode",2);Q([l()],N.prototype,"sparklines",2);N=Q([_("ea-tracking")],N);var $e=Object.defineProperty,Ga=Object.getOwnPropertyDescriptor,Ja=(o,t,e)=>t in o?$e(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,ot=(o,t,e,a)=>{for(var r=a>1?void 0:a?Ga(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&$e(t,e,r),r},Ya=(o,t,e)=>Ja(o,t+"",e);const Wa={app_name:"软件名称",google:"Google API Key",volcano:"火山引擎 API Key",xai:"xAI API Key",image_providers:"图片生成模型",default:"默认模型",available:"可用模型",flash_image:"Flash Image",model:"模型名称",aspect_ratios:"支持比例",resolutions:"支持分辨率",video_providers:"视频生成模型",grok:"Grok",max_duration:"最大时长(秒)",gemini:"Gemini 配置",temperature:"温度参数",max_output_tokens:"最大输出Token",triggers:"触发器列表",image:"生成图片",video:"生成视频",amazon:"亚马逊抓取",tiktok:"TikTok抓取",test:"测试模式",name:"名称",script:"脚本路径",keywords:"触发关键词",description:"描述",settings:"设置",cache_expire_minutes:"缓存过期时间(分钟)",case_sensitive:"区分大小写"},Ka={settings:{title:"系统设置",desc:"应用名称等基础配置",icon:"⚙️"},api_keys:{title:"API 密钥",desc:"各平台 API 访问密钥",icon:"🔑"},models:{title:"模型配置",desc:"图片、视频生成模型参数",icon:"🤖"},triggers:{title:"触发器",desc:"命令关键词触发配置",icon:"⚡"}};let R=class extends m{constructor(){super(...arguments);d(this,"configs",[]);d(this,"backups",[]);d(this,"showBackups",!1);d(this,"loading",!0);d(this,"saving",null)}connectedCallback(){super.connectedCallback(),this.loadConfigs()}async loadConfigs(){this.loading=!0;try{const t=await la(),e=await ae(),a=[];for(const r of t.configs)if(!r.name.includes("template"))try{const i=await ce(r.name);a.push({name:r.name,filename:r.filename,data:i.data,modified:i.modified})}catch(i){console.error("Load config error:",r.name,i)}this.configs=a,this.backups=e.backups}catch(t){console.error("Failed to load configs:",t)}finally{this.loading=!1,this.requestUpdate()}}_getLabel(t){return Wa[t]||t}_getConfigInfo(t){return Ka[t]||{title:t,desc:"",icon:"📄"}}_onFieldChange(t,e,a){const r=this.configs.find(i=>i.name===t);if(r){const i=e.split(".");let s=r.data;for(let p=0;p<i.length-1;p++)s=s[i[p]];s[i[i.length-1]]=a,this.requestUpdate()}}async _saveConfig(t){const e=this.configs.find(a=>a.name===t);if(e){this.saving=t;try{const a=JSON.stringify(e.data,null,2),r=await pa(t,a);alert(`✅ 配置已保存
-备份文件: `+r.backup),this.loadConfigs()}catch(a){alert("保存失败: "+(a instanceof Error?a.message:String(a)))}finally{this.saving=null}}}async _restoreBackup(t){if(confirm(`确定要还原备份 ${t} 吗？`))try{const e=await ha(t);alert(`✅ 已还原备份
-原配置已备份为: ${e.pre_restore_backup}`),this.showBackups=!1,this.loadConfigs()}catch(e){alert("还原失败: "+(e instanceof Error?e.message:String(e)))}}async _deleteBackup(t){if(confirm(`确定要删除备份 ${t} 吗？`))try{await ua(t);const e=await ae();this.backups=e.backups}catch(e){alert("删除失败: "+(e instanceof Error?e.message:String(e)))}}_renderSimpleFields(t){return n`
+  `);tt([l()],j.prototype,"products",2);tt([l()],j.prototype,"loading",2);tt([l()],j.prototype,"trackedIds",2);tt([l()],j.prototype,"showTrend",2);tt([l()],j.prototype,"trendCode",2);tt([l()],j.prototype,"sparklines",2);j=tt([_("ea-tracking")],j);var we=Object.defineProperty,Xa=Object.getOwnPropertyDescriptor,Za=(o,t,e)=>t in o?we(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,st=(o,t,e,a)=>{for(var r=a>1?void 0:a?Xa(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&we(t,e,r),r},Qa=(o,t,e)=>Za(o,t+"",e);const tr={app_name:"软件名称",google:"Google API Key",volcano:"火山引擎 API Key",xai:"xAI API Key",image_providers:"图片生成模型",default:"默认模型",available:"可用模型",flash_image:"Flash Image",model:"模型名称",aspect_ratios:"支持比例",resolutions:"支持分辨率",video_providers:"视频生成模型",grok:"Grok",max_duration:"最大时长(秒)",gemini:"Gemini 配置",temperature:"温度参数",max_output_tokens:"最大输出Token",triggers:"触发器列表",image:"生成图片",video:"生成视频",amazon:"亚马逊抓取",tiktok:"TikTok抓取",test:"测试模式",name:"名称",script:"脚本路径",keywords:"触发关键词",description:"描述",settings:"设置",cache_expire_minutes:"缓存过期时间(分钟)",case_sensitive:"区分大小写"},er={settings:{title:"系统设置",desc:"应用名称等基础配置",icon:"⚙️"},api_keys:{title:"API 密钥",desc:"各平台 API 访问密钥",icon:"🔑"},models:{title:"模型配置",desc:"图片、视频生成模型参数",icon:"🤖"},triggers:{title:"触发器",desc:"命令关键词触发配置",icon:"⚡"}};let H=class extends f{constructor(){super(...arguments);d(this,"configs",[]);d(this,"backups",[]);d(this,"showBackups",!1);d(this,"loading",!0);d(this,"saving",null)}connectedCallback(){super.connectedCallback(),this.loadConfigs()}async loadConfigs(){this.loading=!0;try{const t=await ua(),e=await oe(),a=[];for(const r of t.configs)if(!r.name.includes("template"))try{const i=await he(r.name);a.push({name:r.name,filename:r.filename,data:i.data,modified:i.modified})}catch(i){console.error("Load config error:",r.name,i)}this.configs=a,this.backups=e.backups}catch(t){console.error("Failed to load configs:",t)}finally{this.loading=!1,this.requestUpdate()}}_getLabel(t){return tr[t]||t}_getConfigInfo(t){return er[t]||{title:t,desc:"",icon:"📄"}}_onFieldChange(t,e,a){const r=this.configs.find(i=>i.name===t);if(r){const i=e.split(".");let s=r.data;for(let p=0;p<i.length-1;p++)s=s[i[p]];s[i[i.length-1]]=a,this.requestUpdate()}}async _saveConfig(t){const e=this.configs.find(a=>a.name===t);if(e){this.saving=t;try{const a=JSON.stringify(e.data,null,2),r=await ba(t,a);alert(`✅ 配置已保存
+备份文件: `+r.backup),this.loadConfigs()}catch(a){alert("保存失败: "+(a instanceof Error?a.message:String(a)))}finally{this.saving=null}}}async _restoreBackup(t){if(confirm(`确定要还原备份 ${t} 吗？`))try{const e=await fa(t);alert(`✅ 已还原备份
+原配置已备份为: ${e.pre_restore_backup}`),this.showBackups=!1,this.loadConfigs()}catch(e){alert("还原失败: "+(e instanceof Error?e.message:String(e)))}}async _deleteBackup(t){if(confirm(`确定要删除备份 ${t} 吗？`))try{await ma(t);const e=await oe();this.backups=e.backups}catch(e){alert("删除失败: "+(e instanceof Error?e.message:String(e)))}}_renderSimpleFields(t){return n`
       <div class="field-list">
         ${Object.entries(t.data).map(([e,a])=>n`
           <div class="field-item">
@@ -1442,7 +1442,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
           </div>
         </div>
       `:""}
-    `}};Ya(R,"styles",$`
+    `}};Qa(H,"styles",$`
     :host { display: block; }
     
     h2 {
@@ -1764,7 +1764,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
     }
     
     @keyframes spin { to { transform: rotate(360deg); } }
-  `);ot([l()],R.prototype,"configs",2);ot([l()],R.prototype,"backups",2);ot([l()],R.prototype,"showBackups",2);ot([l()],R.prototype,"loading",2);ot([l()],R.prototype,"saving",2);R=ot([_("ea-settings")],R);var _e=Object.defineProperty,Xa=Object.getOwnPropertyDescriptor,Za=(o,t,e)=>t in o?_e(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,it=(o,t,e,a)=>{for(var r=a>1?void 0:a?Xa(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&_e(t,e,r),r},Qa=(o,t,e)=>Za(o,t+"",e);let H=class extends m{constructor(){super(...arguments);d(this,"platform","amazon");d(this,"amazonData",{});d(this,"tiktokData",{});d(this,"loading",!1);d(this,"pinnedCategories",new Set)}connectedCallback(){super.connectedCallback(),this._loadPinned(),this.loadData()}_loadPinned(){const t=localStorage.getItem("pinned-categories");t&&(this.pinnedCategories=new Set(JSON.parse(t)))}_savePinned(){localStorage.setItem("pinned-categories",JSON.stringify([...this.pinnedCategories]))}_togglePin(t){this.pinnedCategories.has(t)?this.pinnedCategories.delete(t):this.pinnedCategories.add(t),this._savePinned(),this.requestUpdate()}async loadData(){this.loading=!0;try{this.platform==="amazon"&&Object.keys(this.amazonData).length===0?this.amazonData=await va():this.platform==="tiktok"&&Object.keys(this.tiktokData).length===0&&(this.tiktokData=await ba())}catch(t){console.error("Load top error:",t)}finally{this.loading=!1,this.requestUpdate()}}_switchPlatform(t){this.platform=t,this.loadData()}_truncate(t,e=20){return t?t.length>e?t.substring(0,e)+"...":t:"-"}_renderRankChange(t,e){return e?n`<span class="new-badge">新</span>`:t==null?null:t>0?n`<span class="rank-change up">↑${t}</span>`:t<0?n`<span class="rank-change down">↓${Math.abs(t)}</span>`:null}_sortCategories(t){const e=t.filter(r=>this.pinnedCategories.has(r)),a=t.filter(r=>!this.pinnedCategories.has(r));return[...e,...a]}render(){const t=this.platform==="amazon"?this.amazonData:this.tiktokData,e=this._sortCategories(Object.keys(t));return n`
+  `);st([l()],H.prototype,"configs",2);st([l()],H.prototype,"backups",2);st([l()],H.prototype,"showBackups",2);st([l()],H.prototype,"loading",2);st([l()],H.prototype,"saving",2);H=st([_("ea-settings")],H);var ke=Object.defineProperty,ar=Object.getOwnPropertyDescriptor,rr=(o,t,e)=>t in o?ke(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,nt=(o,t,e,a)=>{for(var r=a>1?void 0:a?ar(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&ke(t,e,r),r},or=(o,t,e)=>rr(o,t+"",e);let B=class extends f{constructor(){super(...arguments);d(this,"platform","amazon");d(this,"amazonData",{});d(this,"tiktokData",{});d(this,"loading",!1);d(this,"pinnedCategories",new Set)}connectedCallback(){super.connectedCallback(),this._loadPinned(),this.loadData()}_loadPinned(){const t=localStorage.getItem("pinned-categories");t&&(this.pinnedCategories=new Set(JSON.parse(t)))}_savePinned(){localStorage.setItem("pinned-categories",JSON.stringify([...this.pinnedCategories]))}_togglePin(t){this.pinnedCategories.has(t)?this.pinnedCategories.delete(t):this.pinnedCategories.add(t),this._savePinned(),this.requestUpdate()}async loadData(){this.loading=!0;try{this.platform==="amazon"&&Object.keys(this.amazonData).length===0?this.amazonData=await ya():this.platform==="tiktok"&&Object.keys(this.tiktokData).length===0&&(this.tiktokData=await $a())}catch(t){console.error("Load top error:",t)}finally{this.loading=!1,this.requestUpdate()}}_switchPlatform(t){this.platform=t,this.loadData()}_truncate(t,e=20){return t?t.length>e?t.substring(0,e)+"...":t:"-"}_renderRankChange(t,e){return e?n`<span class="new-badge">新</span>`:t==null?null:t>0?n`<span class="rank-change up">↑${t}</span>`:t<0?n`<span class="rank-change down">↓${Math.abs(t)}</span>`:null}_sortCategories(t){const e=t.filter(r=>this.pinnedCategories.has(r)),a=t.filter(r=>!this.pinnedCategories.has(r));return[...e,...a]}render(){const t=this.platform==="amazon"?this.amazonData:this.tiktokData,e=this._sortCategories(Object.keys(t));return n`
       <div class="tabs">
         <button class="tab-btn ${this.platform==="amazon"?"active":""}" @click=${()=>this._switchPlatform("amazon")}>Amazon</button>
         <button class="tab-btn ${this.platform==="tiktok"?"active":""}" @click=${()=>this._switchPlatform("tiktok")}>TikTok</button>
@@ -1807,7 +1807,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
                 `})}
             </div>
           `}
-    `}};Qa(H,"styles",$`
+    `}};or(B,"styles",$`
     :host { display: block; }
     
     .tabs {
@@ -1954,7 +1954,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
     @media (max-width: 768px) {
       .categories-grid { grid-template-columns: 1fr; }
     }
-  `);it([l()],H.prototype,"platform",2);it([l()],H.prototype,"amazonData",2);it([l()],H.prototype,"tiktokData",2);it([l()],H.prototype,"loading",2);it([l()],H.prototype,"pinnedCategories",2);H=it([_("ea-today-top")],H);var we=Object.defineProperty,tr=Object.getOwnPropertyDescriptor,er=(o,t,e)=>t in o?we(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,V=(o,t,e,a)=>{for(var r=a>1?void 0:a?tr(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&we(t,e,r),r},ar=(o,t,e)=>er(o,t+"",e);let D=class extends m{constructor(){super(...arguments);d(this,"platform","amazon");d(this,"products",[]);d(this,"loading",!1);d(this,"page",1);d(this,"pages",0);d(this,"search","");d(this,"category","")}connectedCallback(){super.connectedCallback(),this.loadData()}async loadData(){var t;this.loading=!0,console.log("=== RawData: Loading, platform:",this.platform);try{const e={page:this.page,limit:20,search:this.search,category:this.category},a=this.platform==="amazon"?await ma(e):await fa(e);console.log("=== RawData: Result:",a),this.products=a.data||[],this.pages=((t=a.pagination)==null?void 0:t.pages)||0}catch(e){console.error("=== RawData: Error:",e),this.products=[]}finally{this.loading=!1,this.requestUpdate()}}_switchPlatform(t){this.platform=t,this.page=1,this.loadData()}_onSearch(){this.page=1,this.loadData()}_onPageChange(t){this.page=t,this.loadData()}_renderPagination(){const t=[];let a=Math.max(1,this.page-Math.floor(2.5)),r=Math.min(this.pages,a+5-1);r-a<4&&(a=Math.max(1,r-5+1));for(let i=a;i<=r;i++)t.push(n`
+  `);nt([l()],B.prototype,"platform",2);nt([l()],B.prototype,"amazonData",2);nt([l()],B.prototype,"tiktokData",2);nt([l()],B.prototype,"loading",2);nt([l()],B.prototype,"pinnedCategories",2);B=nt([_("ea-today-top")],B);var Pe=Object.defineProperty,ir=Object.getOwnPropertyDescriptor,sr=(o,t,e)=>t in o?Pe(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,G=(o,t,e,a)=>{for(var r=a>1?void 0:a?ir(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&Pe(t,e,r),r},nr=(o,t,e)=>sr(o,t+"",e);let D=class extends f{constructor(){super(...arguments);d(this,"platform","amazon");d(this,"products",[]);d(this,"loading",!1);d(this,"page",1);d(this,"pages",0);d(this,"search","");d(this,"category","")}connectedCallback(){super.connectedCallback(),this.loadData()}async loadData(){var t;this.loading=!0,console.log("=== RawData: Loading, platform:",this.platform);try{const e={page:this.page,limit:20,search:this.search,category:this.category},a=this.platform==="amazon"?await _a(e):await wa(e);console.log("=== RawData: Result:",a),this.products=a.data||[],this.pages=((t=a.pagination)==null?void 0:t.pages)||0}catch(e){console.error("=== RawData: Error:",e),this.products=[]}finally{this.loading=!1,this.requestUpdate()}}_switchPlatform(t){this.platform=t,this.page=1,this.loadData()}_onSearch(){this.page=1,this.loadData()}_onPageChange(t){this.page=t,this.loadData()}_renderPagination(){const t=[];let a=Math.max(1,this.page-Math.floor(2.5)),r=Math.min(this.pages,a+5-1);r-a<4&&(a=Math.max(1,r-5+1));for(let i=a;i<=r;i++)t.push(n`
         <button class="page-btn ${i===this.page?"active":""}" @click=${()=>this._onPageChange(i)}>${i}</button>
       `);return n`<div class="pagination">${t}</div>`}render(){return n`
       <div class="tabs">
@@ -2017,7 +2017,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
             ${this.pages>1?this._renderPagination():""}
           </div>
         `}
-    `}};ar(D,"styles",$`
+    `}};nr(D,"styles",$`
     :host { display: block; }
     
     .tabs {
@@ -2191,7 +2191,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
     }
     
     @keyframes spin { to { transform: rotate(360deg); } }
-  `);V([l()],D.prototype,"platform",2);V([l()],D.prototype,"products",2);V([l()],D.prototype,"loading",2);V([l()],D.prototype,"page",2);V([l()],D.prototype,"pages",2);V([l()],D.prototype,"search",2);V([l()],D.prototype,"category",2);D=V([_("ea-raw-data")],D);var ke=Object.defineProperty,rr=Object.getOwnPropertyDescriptor,or=(o,t,e)=>t in o?ke(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,Pt=(o,t,e,a)=>{for(var r=a>1?void 0:a?rr(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&ke(t,e,r),r},ir=(o,t,e)=>or(o,t+"",e);let at=class extends m{constructor(){super(...arguments);d(this,"stats",{amazon_hot_tiktok_not:0,tiktok_hot_amazon_not:0,both_hot:0});d(this,"items",[]);d(this,"loading",!1)}connectedCallback(){super.connectedCallback(),this.loadData()}async loadData(){this.loading=!0;try{const t=await xa();this.stats=t.stats||this.stats,this.items=t.items||[]}catch(t){console.error("Load cross-platform error:",t)}finally{this.loading=!1}}render(){return n`
+  `);G([l()],D.prototype,"platform",2);G([l()],D.prototype,"products",2);G([l()],D.prototype,"loading",2);G([l()],D.prototype,"page",2);G([l()],D.prototype,"pages",2);G([l()],D.prototype,"search",2);G([l()],D.prototype,"category",2);D=G([_("ea-raw-data")],D);var Se=Object.defineProperty,dr=Object.getOwnPropertyDescriptor,lr=(o,t,e)=>t in o?Se(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,zt=(o,t,e,a)=>{for(var r=a>1?void 0:a?dr(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&Se(t,e,r),r},cr=(o,t,e)=>lr(o,t+"",e);let ot=class extends f{constructor(){super(...arguments);d(this,"stats",{amazon_hot_tiktok_not:0,tiktok_hot_amazon_not:0,both_hot:0});d(this,"items",[]);d(this,"loading",!1)}connectedCallback(){super.connectedCallback(),this.loadData()}async loadData(){this.loading=!0;try{const t=await ka();this.stats=t.stats||this.stats,this.items=t.items||[]}catch(t){console.error("Load cross-platform error:",t)}finally{this.loading=!1}}render(){return n`
       <div class="header">
         <h2 style="font-size:20px;font-weight:700;color:var(--text-strong)">跨平台分析</h2>
         <button class="refresh-btn" @click=${this.loadData}>刷新分析</button>
@@ -2250,7 +2250,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
             </table>
           </div>
         `}
-    `}};ir(at,"styles",$`
+    `}};cr(ot,"styles",$`
     :host { display: block; }
     
     .header {
@@ -2367,7 +2367,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
     @media (max-width: 768px) {
       .stats-grid { grid-template-columns: 1fr; }
     }
-  `);Pt([l()],at.prototype,"stats",2);Pt([l()],at.prototype,"items",2);Pt([l()],at.prototype,"loading",2);at=Pt([_("ea-cross-platform")],at);var Pe=Object.defineProperty,sr=Object.getOwnPropertyDescriptor,nr=(o,t,e)=>t in o?Pe(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,Bt=(o,t,e,a)=>{for(var r=a>1?void 0:a?sr(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&Pe(t,e,r),r},dr=(o,t,e)=>nr(o,t+"",e);let mt=class extends m{constructor(){super(...arguments);d(this,"format","csv");d(this,"dateRange","all")}_export(t){console.log("Export:",{platform:t,format:this.format,dateRange:this.dateRange}),alert(`导出功能开发中...
+  `);zt([l()],ot.prototype,"stats",2);zt([l()],ot.prototype,"items",2);zt([l()],ot.prototype,"loading",2);ot=zt([_("ea-cross-platform")],ot);var ze=Object.defineProperty,pr=Object.getOwnPropertyDescriptor,hr=(o,t,e)=>t in o?ze(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,Vt=(o,t,e,a)=>{for(var r=a>1?void 0:a?pr(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&ze(t,e,r),r},gr=(o,t,e)=>hr(o,t+"",e);let xt=class extends f{constructor(){super(...arguments);d(this,"format","csv");d(this,"dateRange","all")}_export(t){console.log("Export:",{platform:t,format:this.format,dateRange:this.dateRange}),alert(`导出功能开发中...
 平台: ${t}
 格式: ${this.format}
 时间范围: ${this.dateRange}`)}render(){return n`
@@ -2441,7 +2441,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
       <div style="margin-top:24px">
         <button class="export-btn" style="width:100%" @click=${()=>this._export("all")}>导出全部数据</button>
       </div>
-    `}};dr(mt,"styles",$`
+    `}};gr(xt,"styles",$`
     :host { display: block; }
     
     .export-grid {
@@ -2575,16 +2575,16 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
     @media (max-width: 768px) {
       .export-grid { grid-template-columns: 1fr; }
     }
-  `);Bt([l()],mt.prototype,"format",2);Bt([l()],mt.prototype,"dateRange",2);mt=Bt([_("ea-export")],mt);var Se=Object.defineProperty,lr=Object.getOwnPropertyDescriptor,cr=(o,t,e)=>t in o?Se(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,T=(o,t,e,a)=>{for(var r=a>1?void 0:a?lr(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&Se(t,e,r),r},pr=(o,t,e)=>cr(o,t+"",e);let C=class extends m{constructor(){super(...arguments);d(this,"ecomCode","");d(this,"loading",!0);d(this,"product",{});d(this,"trend",[]);d(this,"details",[]);d(this,"pagination",{page:1,limit:20,total:0,pages:1});d(this,"timePreset","7");d(this,"customStart","");d(this,"customEnd","");d(this,"metric","sales_count");d(this,"currentPage",1);d(this,"tooltipData",{show:!1,x:0,y:0,date:"",value:null,index:0})}connectedCallback(){super.connectedCallback(),this.loadData()}async loadData(){this.loading=!0;try{const t=new URLSearchParams;this.timePreset==="custom"&&this.customStart&&this.customEnd?(t.set("start_date",this.customStart),t.set("end_date",this.customEnd)):t.set("days",this.timePreset),t.set("page",String(this.currentPage));const e=await fetch(`/api/product-trend/${this.ecomCode}?${t}`);if(!e.ok)throw new Error("Failed to load");const a=await e.json();this.product=a.product,this.trend=a.trend,this.details=a.details,this.pagination=a.pagination}catch(t){console.error("Load trend error:",t)}finally{this.loading=!1,this.requestUpdate()}}_goBack(){const t=sessionStorage.getItem("trend-source-page")||"product-master";window.ecomagentNavigate(t);const e=sessionStorage.getItem("trend-source-state");e&&sessionStorage.setItem("restore-state",e)}_onTimePreset(t){this.timePreset=t,this.currentPage=1,this.loadData()}_onCustomDateChange(){this.customStart&&this.customEnd&&(this.timePreset="custom",this.currentPage=1,this.loadData())}_onMetricChange(t){this.metric=t,this.requestUpdate()}_onPageChange(t){this.currentPage=t,this.loadData()}_formatValue(t,e){if(t==null)return"-";if(e==="sales_count"){if(t>=1e4)return`${(t/1e3).toFixed(1)}K`;if(t>=1e3)return`${(t/1e3).toFixed(1)}K`}return e==="rating"?t.toFixed(1):e==="price"?`$${t.toFixed(2)}`:String(t)}_renderChart(){const t=this.trend;if(!t||t.length<1)return n`<div class="chart-empty">暂无数据</div>`;const e=t.map(v=>{const S=v[this.metric];return{...v,value:S??0,rawValue:S}}),a=800,r=320,i={top:20,right:40,bottom:50,left:70},s=a-i.left-i.right,p=r-i.top-i.bottom,c=e.map(v=>v.value),h=Math.min(...c),u=Math.max(...c)-h||1,g=v=>i.left+v/(t.length-1||1)*s,x=v=>i.top+p-(v-h)/u*p,O=e.map((v,S)=>`${g(S)},${x(v.value)}`).join(" L "),nt=`M ${O}`,Ae=`M ${i.left},${i.top+p} L ${O} L ${g(t.length-1)},${i.top+p} Z`,Ct=[],qt=5;for(let v=0;v<=qt;v++)Ct.push(h+u*v/qt);const Te=Math.ceil(t.length/7);let j="";return j+=`<defs>
+  `);Vt([l()],xt.prototype,"format",2);Vt([l()],xt.prototype,"dateRange",2);xt=Vt([_("ea-export")],xt);var Ce=Object.defineProperty,ur=Object.getOwnPropertyDescriptor,vr=(o,t,e)=>t in o?Ce(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,T=(o,t,e,a)=>{for(var r=a>1?void 0:a?ur(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&Ce(t,e,r),r},br=(o,t,e)=>vr(o,t+"",e);let z=class extends f{constructor(){super(...arguments);d(this,"ecomCode","");d(this,"loading",!0);d(this,"product",{});d(this,"trend",[]);d(this,"details",[]);d(this,"pagination",{page:1,limit:20,total:0,pages:1});d(this,"timePreset","7");d(this,"customStart","");d(this,"customEnd","");d(this,"metric","sales_count");d(this,"currentPage",1);d(this,"tooltipData",{show:!1,x:0,y:0,date:"",value:null,index:0})}connectedCallback(){super.connectedCallback(),this.loadData()}async loadData(){this.loading=!0;try{const t=new URLSearchParams;this.timePreset==="custom"&&this.customStart&&this.customEnd?(t.set("start_date",this.customStart),t.set("end_date",this.customEnd)):t.set("days",this.timePreset),t.set("page",String(this.currentPage));const e=await fetch(`/api/product-trend/${this.ecomCode}?${t}`);if(!e.ok)throw new Error("Failed to load");const a=await e.json();this.product=a.product,this.trend=a.trend,this.details=a.details,this.pagination=a.pagination}catch(t){console.error("Load trend error:",t)}finally{this.loading=!1,this.requestUpdate()}}_goBack(){const t=sessionStorage.getItem("trend-source-page")||"product-master";window.ecomagentNavigate(t);const e=sessionStorage.getItem("trend-source-state");e&&sessionStorage.setItem("restore-state",e)}_onTimePreset(t){this.timePreset=t,this.currentPage=1,this.loadData()}_onCustomDateChange(){this.customStart&&this.customEnd&&(this.timePreset="custom",this.currentPage=1,this.loadData())}_onMetricChange(t){this.metric=t,this.requestUpdate()}_onPageChange(t){this.currentPage=t,this.loadData()}_formatValue(t,e){if(t==null)return"-";if(e==="sales_count"){if(t>=1e4)return`${(t/1e3).toFixed(1)}K`;if(t>=1e3)return`${(t/1e3).toFixed(1)}K`}return e==="rating"?t.toFixed(1):e==="price"?`$${t.toFixed(2)}`:String(t)}_renderChart(){const t=this.trend;if(!t||t.length<1)return n`<div class="chart-empty">暂无数据</div>`;const e=t.map(v=>{const S=v[this.metric];return{...v,value:S??0,rawValue:S}}),a=800,r=320,i={top:20,right:40,bottom:50,left:70},s=a-i.left-i.right,p=r-i.top-i.bottom,c=e.map(v=>v.value),h=Math.min(...c),g=Math.max(...c)-h||1,u=v=>i.left+v/(t.length-1||1)*s,x=v=>i.top+p-(v-h)/g*p,O=e.map((v,S)=>`${u(S)},${x(v.value)}`).join(" L "),lt=`M ${O}`,De=`M ${i.left},${i.top+p} L ${O} L ${u(t.length-1)},${i.top+p} Z`,At=[],Gt=5;for(let v=0;v<=Gt;v++)At.push(h+g*v/Gt);const Ie=Math.ceil(t.length/7);let L="";return L+=`<defs>
       <linearGradient id="areaGradient" x1="0" x2="0" y1="0" y2="1">
         <stop offset="0%" stop-color="#ff5c5c" stop-opacity="0.3" />
         <stop offset="100%" stop-color="#ff5c5c" stop-opacity="0.05" />
       </linearGradient>
-    </defs>`,Ct.forEach(v=>{j+=`<line x1="${i.left}" y1="${x(v)}" x2="${a-i.right}" y2="${x(v)}" stroke="#444" stroke-width="1" stroke-dasharray="4,4"/>`}),j+=`<path d="${Ae}" fill="url(#areaGradient)"/>`,j+=`<path d="${nt}" fill="none" stroke="#ff5c5c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`,e.forEach((v,S)=>{j+=`<circle cx="${g(S)}" cy="${x(v.value)}" r="4" fill="#ff5c5c" stroke="#1a1a1a" stroke-width="1"/>`}),Ct.forEach(v=>{const S=this._formatValue(v,this.metric);j+=`<text x="${i.left-6}" y="${x(v)+2}" text-anchor="end" fill="#888" font-size="8" font-family="system-ui, -apple-system, sans-serif" font-weight="400">${S}</text>`}),e.forEach((v,S)=>{if(S%Te!==0&&S!==t.length-1)return;const zt=v.date.slice(5);j+=`<text x="${g(S)}" y="${r-8}" text-anchor="middle" fill="#888" font-size="8" font-family="system-ui, -apple-system, sans-serif" font-weight="400">${zt}</text>`}),n`
+    </defs>`,At.forEach(v=>{L+=`<line x1="${i.left}" y1="${x(v)}" x2="${a-i.right}" y2="${x(v)}" stroke="#444" stroke-width="1" stroke-dasharray="4,4"/>`}),L+=`<path d="${De}" fill="url(#areaGradient)"/>`,L+=`<path d="${lt}" fill="none" stroke="#ff5c5c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`,e.forEach((v,S)=>{L+=`<circle cx="${u(S)}" cy="${x(v.value)}" r="4" fill="#ff5c5c" stroke="#1a1a1a" stroke-width="1"/>`}),At.forEach(v=>{const S=this._formatValue(v,this.metric);L+=`<text x="${i.left-6}" y="${x(v)+2}" text-anchor="end" fill="#888" font-size="8" font-family="system-ui, -apple-system, sans-serif" font-weight="400">${S}</text>`}),e.forEach((v,S)=>{if(S%Ie!==0&&S!==t.length-1)return;const Tt=v.date.slice(5);L+=`<text x="${u(S)}" y="${r-8}" text-anchor="middle" fill="#888" font-size="8" font-family="system-ui, -apple-system, sans-serif" font-weight="400">${Tt}</text>`}),n`
       <svg class="chart-svg" viewBox="0 0 ${a} ${r}" preserveAspectRatio="xMidYMid meet"
-        @mousemove=${v=>{const S=v.currentTarget.getBoundingClientRect(),zt=v.clientX-S.left,Ee=S.width/a,Oe=zt/Ee-i.left,dt=Math.round(Oe/s*(t.length-1));if(dt>=0&&dt<t.length){const At=e[dt];this.tooltipData={show:!0,x:g(dt),y:x(At.value),date:At.date,value:At.rawValue,index:dt}}}} @mouseleave=${()=>{this.tooltipData={...this.tooltipData,show:!1}}}>
-        ${Nt(j)}
-        ${this.tooltipData.show?Nt(`<line class="tooltip-line" x1="${this.tooltipData.x}" y1="0" x2="${this.tooltipData.x}" y2="${r}" stroke="#ff5c5c" stroke-width="1" stroke-dasharray="4,4" opacity="0.6"/><circle class="tooltip-point" cx="${this.tooltipData.x}" cy="${this.tooltipData.y}" r="8" fill="#ff5c5c" stroke="#fff" stroke-width="3"/>`):null}
+        @mousemove=${v=>{const S=v.currentTarget.getBoundingClientRect(),Tt=v.clientX-S.left,je=S.width/a,Ne=Tt/je-i.left,ct=Math.round(Ne/s*(t.length-1));if(ct>=0&&ct<t.length){const Et=e[ct];this.tooltipData={show:!0,x:u(ct),y:x(Et.value),date:Et.date,value:Et.rawValue,index:ct}}}} @mouseleave=${()=>{this.tooltipData={...this.tooltipData,show:!1}}}>
+        ${Lt(L)}
+        ${this.tooltipData.show?Lt(`<line class="tooltip-line" x1="${this.tooltipData.x}" y1="0" x2="${this.tooltipData.x}" y2="${r}" stroke="#ff5c5c" stroke-width="1" stroke-dasharray="4,4" opacity="0.6"/><circle class="tooltip-point" cx="${this.tooltipData.x}" cy="${this.tooltipData.y}" r="8" fill="#ff5c5c" stroke="#fff" stroke-width="3"/>`):null}
       </svg>
       
       <!-- Tooltip 浮框 -->
@@ -2676,7 +2676,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
         </table>
         ${this.pagination.pages>1?this._renderPagination():""}
       </div>
-    `}};pr(C,"styles",$`
+    `}};br(z,"styles",$`
     :host { display: block; }
     
     /* 头部 */
@@ -2977,7 +2977,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
       margin: 0 auto 12px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-  `);T([A({type:String})],C.prototype,"ecomCode",2);T([l()],C.prototype,"loading",2);T([l()],C.prototype,"product",2);T([l()],C.prototype,"trend",2);T([l()],C.prototype,"details",2);T([l()],C.prototype,"pagination",2);T([l()],C.prototype,"timePreset",2);T([l()],C.prototype,"customStart",2);T([l()],C.prototype,"customEnd",2);T([l()],C.prototype,"metric",2);T([l()],C.prototype,"currentPage",2);T([l()],C.prototype,"tooltipData",2);C=T([_("ea-product-trend-page")],C);var Ce=Object.defineProperty,hr=Object.getOwnPropertyDescriptor,ur=(o,t,e)=>t in o?Ce(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,E=(o,t,e,a)=>{for(var r=a>1?void 0:a?hr(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&Ce(t,e,r),r},gr=(o,t,e)=>ur(o,t+"",e);let z=class extends m{constructor(){super(...arguments);d(this,"ecomCode","");d(this,"sourcingList",[]);d(this,"loading",!0);d(this,"search","");d(this,"page",1);d(this,"pages",0);d(this,"total",0);d(this,"stats",{total:0,products_linked:0,today_count:0,last_updated:null});d(this,"showModal",!1);d(this,"modalType","");d(this,"modalItem",null)}connectedCallback(){super.connectedCallback(),this.loadStats(),this.loadSourcing()}async loadStats(){try{const t=await fetch("/api/sourcing/stats");this.stats=await t.json(),console.log("[Sourcing] stats:",this.stats)}catch(t){console.error("加载统计失败:",t)}}async loadSourcing(){var t,e;try{const a=new URLSearchParams;a.set("page",String(this.page)),a.set("limit","20"),this.search&&a.set("search",this.search),this.ecomCode&&a.set("ecom_code",this.ecomCode),console.log("[Sourcing] 请求:",`/api/sourcing/list?${a}`);const i=await(await fetch(`/api/sourcing/list?${a}`)).json();console.log("[Sourcing] 响应:",i),this.sourcingList=i.data||[],this.total=((t=i.pagination)==null?void 0:t.total)||0,this.pages=((e=i.pagination)==null?void 0:e.pages)||0,this.loading=!1,console.log("[Sourcing] loading 设为 false, 触发 requestUpdate"),this.requestUpdate()}catch(a){console.error("加载货源失败:",a),this.sourcingList=[],this.loading=!1,this.requestUpdate()}}_onSearch(t){t.key==="Enter"&&(this.page=1,this.loadSourcing())}_onPageChange(t){this.page=t,this.loadSourcing(),window.scrollTo({top:0,behavior:"smooth"})}_formatPrice(t){return t?`¥${t.toFixed(2)}`:"-"}_formatDate(t){if(!t)return"-";const e=new Date(t);return`${e.getMonth()+1}/${e.getDate()} ${e.getHours()}:${String(e.getMinutes()).padStart(2,"0")}`}async _deleteSourcing(t,e){if(confirm("确定删除此货源记录？"))try{await fetch(`/api/sourcing/${t}/${e}`,{method:"DELETE"}),await Promise.all([this.loadStats(),this.loadSourcing()])}catch(a){console.error("删除失败:",a)}}_openProduct(t){t&&window.open(t,"_blank")}_showModal(t,e){console.log("[Sourcing] _showModal called:",t,e),this.modalType=t,this.modalItem=e,this.showModal=!0,this.requestUpdate()}_closeModal(){console.log("[Sourcing] _closeModal called"),this.showModal=!1,this.modalType="",this.modalItem=null,this.requestUpdate()}_confirmModal(){console.log(`[Sourcing] 确认生成: ${this.modalType}`,this.modalItem),this._closeModal(),alert(this.modalType==="video"?"视频生成功能开发中...":"详情图生成功能开发中...")}_renderModal(){var r,i;if(!this.showModal)return null;const t=this.modalType==="video"?"🎬":"🖼️",e=this.modalType==="video"?"生成宣传视频":"生成详情图",a=this.modalType==="video"?"将使用货源商品信息自动生成宣传视频，用于社交平台推广":"将使用货源商品详情自动生成电商详情图，用于商品上架";return n`
+  `);T([A({type:String})],z.prototype,"ecomCode",2);T([l()],z.prototype,"loading",2);T([l()],z.prototype,"product",2);T([l()],z.prototype,"trend",2);T([l()],z.prototype,"details",2);T([l()],z.prototype,"pagination",2);T([l()],z.prototype,"timePreset",2);T([l()],z.prototype,"customStart",2);T([l()],z.prototype,"customEnd",2);T([l()],z.prototype,"metric",2);T([l()],z.prototype,"currentPage",2);T([l()],z.prototype,"tooltipData",2);z=T([_("ea-product-trend-page")],z);var Ae=Object.defineProperty,fr=Object.getOwnPropertyDescriptor,mr=(o,t,e)=>t in o?Ae(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,E=(o,t,e,a)=>{for(var r=a>1?void 0:a?fr(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&Ae(t,e,r),r},xr=(o,t,e)=>mr(o,t+"",e);let C=class extends f{constructor(){super(...arguments);d(this,"ecomCode","");d(this,"sourcingList",[]);d(this,"loading",!0);d(this,"search","");d(this,"page",1);d(this,"pages",0);d(this,"total",0);d(this,"stats",{total:0,products_linked:0,today_count:0,last_updated:null});d(this,"showModal",!1);d(this,"modalType","");d(this,"modalItem",null)}connectedCallback(){super.connectedCallback(),this.loadStats(),this.loadSourcing()}async loadStats(){try{const t=await fetch("/api/sourcing/stats");this.stats=await t.json(),console.log("[Sourcing] stats:",this.stats)}catch(t){console.error("加载统计失败:",t)}}async loadSourcing(){var t,e;try{const a=new URLSearchParams;a.set("page",String(this.page)),a.set("limit","20"),this.search&&a.set("search",this.search),this.ecomCode&&a.set("ecom_code",this.ecomCode),console.log("[Sourcing] 请求:",`/api/sourcing/list?${a}`);const i=await(await fetch(`/api/sourcing/list?${a}`)).json();console.log("[Sourcing] 响应:",i),this.sourcingList=i.data||[],this.total=((t=i.pagination)==null?void 0:t.total)||0,this.pages=((e=i.pagination)==null?void 0:e.pages)||0,this.loading=!1,console.log("[Sourcing] loading 设为 false, 触发 requestUpdate"),this.requestUpdate()}catch(a){console.error("加载货源失败:",a),this.sourcingList=[],this.loading=!1,this.requestUpdate()}}_onSearch(t){t.key==="Enter"&&(this.page=1,this.loadSourcing())}_onPageChange(t){this.page=t,this.loadSourcing(),window.scrollTo({top:0,behavior:"smooth"})}_formatPrice(t){return t?`¥${t.toFixed(2)}`:"-"}_formatDate(t){if(!t)return"-";const e=new Date(t);return`${e.getMonth()+1}/${e.getDate()} ${e.getHours()}:${String(e.getMinutes()).padStart(2,"0")}`}async _deleteSourcing(t,e){if(confirm("确定删除此货源记录？"))try{await fetch(`/api/sourcing/${t}/${e}`,{method:"DELETE"}),await Promise.all([this.loadStats(),this.loadSourcing()])}catch(a){console.error("删除失败:",a)}}_openProduct(t){t&&window.open(t,"_blank")}_showModal(t,e){console.log("[Sourcing] _showModal called:",t,e),this.modalType=t,this.modalItem=e,this.showModal=!0,this.requestUpdate()}_closeModal(){console.log("[Sourcing] _closeModal called"),this.showModal=!1,this.modalType="",this.modalItem=null,this.requestUpdate()}_confirmModal(){console.log(`[Sourcing] 确认生成: ${this.modalType}`,this.modalItem),this._closeModal(),alert(this.modalType==="video"?"视频生成功能开发中...":"详情图生成功能开发中...")}_renderModal(){var r,i;if(!this.showModal)return null;const t=this.modalType==="video"?"🎬":"🖼️",e=this.modalType==="video"?"生成宣传视频":"生成详情图",a=this.modalType==="video"?"将使用货源商品信息自动生成宣传视频，用于社交平台推广":"将使用货源商品详情自动生成电商详情图，用于商品上架";return n`
       <div class="modal-overlay" @click=${s=>{s.target===s.currentTarget&&this._closeModal()}}>
         <div class="modal-content">
           <div class="modal-icon">${t}</div>
@@ -3117,7 +3117,7 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
       `}
       
       ${this._renderModal()}
-    `}};gr(z,"styles",$`
+    `}};xr(C,"styles",$`
     :host {
       display: block;
     }
@@ -3530,7 +3530,349 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
       padding: 60px;
       color: var(--muted);
     }
-  `);E([A({type:String})],z.prototype,"ecomCode",2);E([l()],z.prototype,"sourcingList",2);E([l()],z.prototype,"loading",2);E([l()],z.prototype,"search",2);E([l()],z.prototype,"page",2);E([l()],z.prototype,"pages",2);E([l()],z.prototype,"total",2);E([l()],z.prototype,"stats",2);E([l()],z.prototype,"showModal",2);E([l()],z.prototype,"modalType",2);E([l()],z.prototype,"modalItem",2);z=E([_("ea-sourcing")],z);var ze=Object.defineProperty,vr=Object.getOwnPropertyDescriptor,br=(o,t,e)=>t in o?ze(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,St=(o,t,e,a)=>{for(var r=a>1?void 0:a?vr(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&ze(t,e,r),r},mr=(o,t,e)=>br(o,t+"",e);const st=new Set;let X="dashboard";window.ecomagentNavigate=o=>{X=o,st.forEach(t=>t(o))};window.ecomagentGetCurrentPage=()=>X;window.ecomagentOnPageChange=o=>{st.add(o)};window.ecomagentOpenTrend=(o,t="product-master")=>{sessionStorage.setItem("trend-source-page",t),sessionStorage.setItem("trend-source-state",JSON.stringify({page:X,scrollY:window.scrollY})),X="product-trend",sessionStorage.setItem("trend-ecom-code",o),st.forEach(e=>e("product-trend"))};window.ecomagentNavigateToSourcing=o=>{X="sourcing",o?sessionStorage.setItem("sourcing-ecom-code",o):sessionStorage.removeItem("sourcing-ecom-code"),st.forEach(t=>t("sourcing"))};window.ecomagentNavigateDirectToSourcing=()=>{sessionStorage.removeItem("sourcing-ecom-code"),X="sourcing",st.forEach(o=>o("sourcing"))};let rt=class extends m{constructor(){super();d(this,"_page",X);d(this,"_trendCode","");d(this,"_sourcingCode","");st.add(t=>{this._page=t,t==="product-trend"&&(this._trendCode=sessionStorage.getItem("trend-ecom-code")||""),t==="sourcing"&&(this._sourcingCode=sessionStorage.getItem("sourcing-ecom-code")||""),this.requestUpdate()})}connectedCallback(){super.connectedCallback();const t=localStorage.getItem("theme")||"dark";document.body.setAttribute("data-theme-mode",t)}_renderPage(){switch(this._page){case"dashboard":return n`<ea-dashboard></ea-dashboard>`;case"settings":return n`<ea-settings></ea-settings>`;case"product-master":return n`<ea-product-master></ea-product-master>`;case"tracking":return n`<ea-tracking></ea-tracking>`;case"cross-platform":return n`<ea-cross-platform></ea-cross-platform>`;case"today-top":return n`<ea-today-top></ea-today-top>`;case"raw-data":return n`<ea-raw-data></ea-raw-data>`;case"export":return n`<ea-export></ea-export>`;case"product-trend":return n`<ea-product-trend-page ecomCode=${this._trendCode}></ea-product-trend-page>`;case"sourcing":return n`<ea-sourcing ecomCode=${this._sourcingCode}></ea-sourcing>`;default:return n`<div style="padding:24px;color:var(--muted)">未知页面</div>`}}render(){return this._page==="product-trend"?n`
+  `);E([A({type:String})],C.prototype,"ecomCode",2);E([l()],C.prototype,"sourcingList",2);E([l()],C.prototype,"loading",2);E([l()],C.prototype,"search",2);E([l()],C.prototype,"page",2);E([l()],C.prototype,"pages",2);E([l()],C.prototype,"total",2);E([l()],C.prototype,"stats",2);E([l()],C.prototype,"showModal",2);E([l()],C.prototype,"modalType",2);E([l()],C.prototype,"modalItem",2);C=E([_("ea-sourcing")],C);var Te=Object.defineProperty,yr=Object.getOwnPropertyDescriptor,$r=(o,t,e)=>t in o?Te(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,et=(o,t,e,a)=>{for(var r=a>1?void 0:a?yr(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&Te(t,e,r),r},_r=(o,t,e)=>$r(o,t+"",e);const Ee="/api";async function Oe(o,t){const e=await fetch(o,t);if(!e.ok){const a=await e.json().catch(()=>({detail:"Request failed"}));throw new Error(a.detail||`HTTP ${e.status}`)}return e.json()}async function wr(o){const t=new URLSearchParams(Object.entries(o).filter(([,e])=>e!==void 0&&e!=="").map(([e,a])=>[e,String(a)]));return Oe(`${Ee}/translation-logs?${t}`)}async function kr(){return Oe(`${Ee}/translation-logs/stats`)}let N=class extends f{constructor(){super(...arguments);d(this,"logs",[]);d(this,"stats",null);d(this,"loading",!0);d(this,"page",1);d(this,"pages",0);d(this,"statusFilter","")}async connectedCallback(){super.connectedCallback(),await this.loadData()}async loadData(){this.loading=!0;try{const[t,e]=await Promise.all([wr({page:this.page,limit:20,status:this.statusFilter||void 0}),kr()]);this.logs=t.data,this.pages=t.pagination.pages,this.stats=e}catch(t){console.error("Failed to load translation logs:",t)}finally{this.loading=!1,this.requestUpdate()}}_onStatusFilter(t){this.statusFilter=t.target.value,this.page=1,this.loadData()}_onPageChange(t){this.page=t,this.loadData()}_formatDateTime(t){return t?new Date(t).toLocaleString("zh-CN",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}):"-"}_renderStatusBadge(t){return n`
+      <span class="status-badge ${t}">
+        <span class="status-dot"></span>
+        ${{pending:"等待中",running:"运行中",completed:"已完成",failed:"失败"}[t]||t}
+      </span>
+    `}_renderPagination(){const t=[];let a=Math.max(1,this.page-Math.floor(2.5)),r=Math.min(this.pages,a+5-1);r-a<4&&(a=Math.max(1,r-5+1)),a>1&&t.push(n`
+        <button class="page-btn" @click=${()=>this._onPageChange(1)}>1</button>
+        ${a>2?n`<span style="color:var(--muted)">...</span>`:""}
+      `);for(let i=a;i<=r;i++)t.push(n`
+        <button class="page-btn ${i===this.page?"active":""}" @click=${()=>this._onPageChange(i)}>${i}</button>
+      `);return r<this.pages&&t.push(n`
+        ${r<this.pages-1?n`<span style="color:var(--muted)">...</span>`:""}
+        <button class="page-btn" @click=${()=>this._onPageChange(this.pages)}>${this.pages}</button>
+      `),n`<div class="pagination">${t}</div>`}render(){return n`
+      <h2>翻译日志</h2>
+      
+      ${this.stats?n`
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon total">📋</div>
+            <div class="stat-content">
+              <div class="stat-value">${this.stats.total_tasks}</div>
+              <div class="stat-label">总任务数</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon success">✅</div>
+            <div class="stat-content">
+              <div class="stat-value">${this.stats.success_count}</div>
+              <div class="stat-label">翻译成功</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon failed">❌</div>
+            <div class="stat-content">
+              <div class="stat-value">${this.stats.failed_count}</div>
+              <div class="stat-label">翻译失败</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon pending">⏳</div>
+            <div class="stat-content">
+              <div class="stat-value">${this.stats.status_counts.pending||0}</div>
+              <div class="stat-label">等待中</div>
+            </div>
+          </div>
+        </div>
+      `:""}
+      
+      <div class="toolbar">
+        <select class="select" @change=${this._onStatusFilter}>
+          <option value="">全部状态</option>
+          <option value="pending" ?selected=${this.statusFilter==="pending"}>等待中</option>
+          <option value="running" ?selected=${this.statusFilter==="running"}>运行中</option>
+          <option value="completed" ?selected=${this.statusFilter==="completed"}>已完成</option>
+          <option value="failed" ?selected=${this.statusFilter==="failed"}>失败</option>
+        </select>
+        <button class="btn btn-secondary" @click=${()=>this.loadData()}>刷新</button>
+      </div>
+      
+      ${this.loading?n`
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>加载中...</p>
+        </div>
+      `:this.logs.length===0?n`
+        <div class="table-container">
+          <div class="empty-state">
+            <div class="empty-icon">📝</div>
+            <p>暂无翻译日志</p>
+          </div>
+        </div>
+      `:n`
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>批次ID</th>
+                <th>状态</th>
+                <th>总数</th>
+                <th>成功</th>
+                <th>失败</th>
+                <th>开始时间</th>
+                <th>完成时间</th>
+                <th>错误信息</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${this.logs.map(t=>n`
+                <tr>
+                  <td style="font-family:var(--mono);font-size:12px">${t.batch_id}</td>
+                  <td>${this._renderStatusBadge(t.status)}</td>
+                  <td>${t.total_count}</td>
+                  <td style="color:var(--ok)">${t.success_count}</td>
+                  <td style="color:var(--danger)">${t.failed_count}</td>
+                  <td>${this._formatDateTime(t.started_at)}</td>
+                  <td>${this._formatDateTime(t.completed_at)}</td>
+                  <td style="color:var(--danger);font-size:12px">${t.error_message||"-"}</td>
+                </tr>
+              `)}
+            </tbody>
+          </table>
+          ${this.pages>1?this._renderPagination():""}
+        </div>
+      `}
+    `}};_r(N,"styles",$`
+    :host { display: block; }
+    
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-strong);
+      margin-bottom: 24px;
+    }
+    
+    /* 统计卡片 */
+    .stats-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .stat-card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 16px 20px;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    
+    .stat-icon.total { background: var(--accent-subtle); color: var(--accent); }
+    .stat-icon.success { background: var(--ok-subtle); color: var(--ok); }
+    .stat-icon.failed { background: var(--danger-subtle); color: var(--danger); }
+    .stat-icon.pending { background: var(--warning-subtle); color: var(--warning); }
+    
+    .stat-content { flex: 1; }
+    
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-strong);
+    }
+    
+    .stat-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    
+    /* 工具栏 */
+    .toolbar {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .select {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      background: var(--bg-elevated);
+      color: var(--text);
+    }
+    
+    .select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    
+    .btn {
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--duration-fast) ease;
+      border: none;
+    }
+    
+    .btn-secondary {
+      background: var(--bg-elevated);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    
+    .btn-secondary:hover { background: var(--bg-hover); }
+    
+    /* 表格 */
+    .table-container {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    
+    table { width: 100%; border-collapse: collapse; }
+    
+    th {
+      background: var(--bg-accent);
+      padding: 12px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    
+    td {
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--card-highlight); }
+    
+    /* 状态标签 */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .status-badge.pending {
+      background: var(--warning-subtle);
+      color: var(--warning);
+    }
+    
+    .status-badge.running {
+      background: var(--accent-subtle);
+      color: var(--accent);
+    }
+    
+    .status-badge.completed {
+      background: var(--ok-subtle);
+      color: var(--ok);
+    }
+    
+    .status-badge.failed {
+      background: var(--danger-subtle);
+      color: var(--danger);
+    }
+    
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    
+    .status-badge.running .status-dot {
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    
+    /* 分页 */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px;
+    }
+    
+    .page-btn {
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg-elevated);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 13px;
+    }
+    
+    .page-btn:hover { background: var(--bg-hover); }
+    
+    .page-btn.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    
+    /* 空状态 */
+    .empty-state {
+      text-align: center;
+      padding: 48px;
+      color: var(--muted);
+    }
+    
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    
+    /* 加载状态 */
+    .loading {
+      text-align: center;
+      padding: 48px;
+      color: var(--muted);
+    }
+    
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--accent);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 12px;
+    }
+    
+    @keyframes spin { to { transform: rotate(360deg); } }
+  `);et([l()],N.prototype,"logs",2);et([l()],N.prototype,"stats",2);et([l()],N.prototype,"loading",2);et([l()],N.prototype,"page",2);et([l()],N.prototype,"pages",2);et([l()],N.prototype,"statusFilter",2);N=et([_("ea-translation-logs")],N);var Me=Object.defineProperty,Pr=Object.getOwnPropertyDescriptor,Sr=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,Ct=(o,t,e,a)=>{for(var r=a>1?void 0:a?Pr(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&Me(t,e,r),r},zr=(o,t,e)=>Sr(o,t+"",e);const dt=new Set;let Z="dashboard";window.ecomagentNavigate=o=>{Z=o,dt.forEach(t=>t(o))};window.ecomagentGetCurrentPage=()=>Z;window.ecomagentOnPageChange=o=>{dt.add(o)};window.ecomagentOpenTrend=(o,t="product-master")=>{sessionStorage.setItem("trend-source-page",t),sessionStorage.setItem("trend-source-state",JSON.stringify({page:Z,scrollY:window.scrollY})),Z="product-trend",sessionStorage.setItem("trend-ecom-code",o),dt.forEach(e=>e("product-trend"))};window.ecomagentNavigateToSourcing=o=>{Z="sourcing",o?sessionStorage.setItem("sourcing-ecom-code",o):sessionStorage.removeItem("sourcing-ecom-code"),dt.forEach(t=>t("sourcing"))};window.ecomagentNavigateDirectToSourcing=()=>{sessionStorage.removeItem("sourcing-ecom-code"),Z="sourcing",dt.forEach(o=>o("sourcing"))};let it=class extends f{constructor(){super();d(this,"_page",Z);d(this,"_trendCode","");d(this,"_sourcingCode","");dt.add(t=>{this._page=t,t==="product-trend"&&(this._trendCode=sessionStorage.getItem("trend-ecom-code")||""),t==="sourcing"&&(this._sourcingCode=sessionStorage.getItem("sourcing-ecom-code")||""),this.requestUpdate()})}connectedCallback(){super.connectedCallback();const t=localStorage.getItem("theme")||"dark";document.body.setAttribute("data-theme-mode",t)}_renderPage(){switch(this._page){case"dashboard":return n`<ea-dashboard></ea-dashboard>`;case"settings":return n`<ea-settings></ea-settings>`;case"product-master":return n`<ea-product-master></ea-product-master>`;case"tracking":return n`<ea-tracking></ea-tracking>`;case"cross-platform":return n`<ea-cross-platform></ea-cross-platform>`;case"today-top":return n`<ea-today-top></ea-today-top>`;case"raw-data":return n`<ea-raw-data></ea-raw-data>`;case"export":return n`<ea-export></ea-export>`;case"product-trend":return n`<ea-product-trend-page ecomCode=${this._trendCode}></ea-product-trend-page>`;case"sourcing":return n`<ea-sourcing ecomCode=${this._sourcingCode}></ea-sourcing>`;case"translation-logs":return n`<ea-translation-logs></ea-translation-logs>`;default:return n`<div style="padding:24px;color:var(--muted)">未知页面</div>`}}render(){return this._page==="product-trend"?n`
         <ea-layout currentPage=${this._page}>
           <div style="padding:24px">${this._renderPage()}</div>
         </ea-layout>
@@ -3538,4 +3880,4 @@ var Me=Object.defineProperty;var De=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,config
       <ea-layout currentPage=${this._page}>
         ${this._renderPage()}
       </ea-layout>
-    `}};mr(rt,"styles",$`:host { display: block; min-height: 100vh; }`);St([l()],rt.prototype,"_page",2);St([l()],rt.prototype,"_trendCode",2);St([l()],rt.prototype,"_sourcingCode",2);rt=St([_("ecomagent-app")],rt);console.log("EcomAgent UI loaded");
+    `}};zr(it,"styles",$`:host { display: block; min-height: 100vh; }`);Ct([l()],it.prototype,"_page",2);Ct([l()],it.prototype,"_trendCode",2);Ct([l()],it.prototype,"_sourcingCode",2);it=Ct([_("ecomagent-app")],it);console.log("EcomAgent UI loaded");

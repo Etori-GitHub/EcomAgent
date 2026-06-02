@@ -13,6 +13,7 @@ import './pages/export';
 import './pages/product-trend';
 import './pages/product-trend-page';
 import './pages/sourcing';
+import './pages/translation-logs';
 
 // 全局状态
 const _listeners: Set<(page: PageName) => void> = new Set();
@@ -103,6 +104,7 @@ export class EcomagentApp extends LitElement {
       case 'export': return html`<ea-export></ea-export>`;
       case 'product-trend': return html`<ea-product-trend-page ecomCode=${this._trendCode}></ea-product-trend-page>`;
       case 'sourcing': return html`<ea-sourcing ecomCode=${this._sourcingCode}></ea-sourcing>`;
+      case 'translation-logs': return html`<ea-translation-logs></ea-translation-logs>`;
       default: return html`<div style="padding:24px;color:var(--muted)">未知页面</div>`;
     }
   }

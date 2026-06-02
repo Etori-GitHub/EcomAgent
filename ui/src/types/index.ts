@@ -38,6 +38,7 @@ export interface Product {
   tiktokshop_id?: string;
   image_url?: string;
   local_image_path?: string;
+  translation_status?: 'pending' | 'translated';
 }
 
 export interface PaginatedResponse<T> {
@@ -78,6 +79,7 @@ export type PageName =
   | 'raw-data' 
   | 'export' 
   | 'settings'
+  | 'translation-logs'
   | 'product-trend';
 
 export interface AppState {

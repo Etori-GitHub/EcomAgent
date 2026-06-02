@@ -288,7 +288,7 @@ export class EaProductMaster extends LitElement {
   @state() private platform = 'amazon';
   @state() private category = '';
   @state() private categories: { amazon: string[]; tiktok: string[]; all: Array<{ platform: string; category: string }> } = { amazon: [], tiktok: [], all: [] };
-  @state() private sortBy = 'sales_count';
+  @state() private sortBy = 'total_sales';
   @state() private sortOrder: 'asc' | 'desc' = 'desc';
   @state() private trackedIds: Set<string> = new Set();
   @state() private showTrend = false;
@@ -676,7 +676,7 @@ export class EaProductMaster extends LitElement {
                       ${p.product_url 
                         ? html`<a class="product-name product-link" href=${p.product_url} target="_blank" title=${p.name}>${p.short_name || p.name || '无名称'}</a>`
                         : html`<span class="product-name" title=${p.name}>${p.short_name || p.name || '无名称'}</span>`}
-                      ${p.short_name ? html`<button class="retranslate-btn" @click=${() => this._resetTranslation(p.ecom_code)} title="重新翻译">🔄</button>` : ''}
+                      ${p.translation_status === 'translated' ? html`<button class="retranslate-btn" @click=${() => this._resetTranslation(p.ecom_code)} title="重新翻译">🔄</button>` : ''}
                     </div>
                     <div class="product-code">
                       <button class="track-btn ${this.trackedIds.has(p.ecom_code) ? 'active' : ''}"

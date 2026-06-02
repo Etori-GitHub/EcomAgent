@@ -13,6 +13,364 @@ items = data['items']
 def translate_name(name):
     name = name.strip()
     
+    # ===== 新增规则 (2026-06-02) =====
+    # INSIGNIA 电视
+    if 'INSIGNIA' in name and 'Fire TV' in name: return 'INSIGNIA Fire TV 4K'
+    if 'INSIGNIA' in name and 'TV' in name: return 'INSIGNIA智能电视'
+    
+    # Ring 配件
+    if 'Ring Rechargeable Quick Release Battery' in name: return 'Ring可充电电池包'
+    
+    # iPhone 翻新版
+    if 'iPhone (Renewed Premium) 16 Pro Max' in name: return '苹果iPhone 16 Pro Max翻新版'
+    if 'iPhone (Renewed Premium) 16 Pro' in name: return '苹果iPhone 16 Pro翻新版'
+    if 'iPhone (Renewed' in name: return '苹果iPhone翻新版'
+    
+    # 制冰机
+    if 'Portable Countertop Ice Maker' in name: return '便携式制冰机'
+    if 'Countertop Ice Maker' in name: return '台面制冰机'
+    if 'Ice Maker' in name: return '制冰机'
+    
+    # 除湿机
+    if 'NineSky Dehumidifiers' in name: return 'NineSky除湿机'
+    if 'Dehumidifier' in name: return '除湿机'
+    
+    # 游戏
+    if 'Magic Tiles 3 PRO' in name: return 'Magic Tiles 3 PRO'
+    if 'Challenge: Runway Wars' in name: return 'Runway Wars游戏'
+    if 'Dream Chaser' in name: return 'Dream Chaser游戏'
+    
+    # 工艺用品
+    if 'Pagather' in name and 'Acrylic Paint' in name: return 'Pagather丙烯马克笔'
+    if 'Acrylic Paint Markers' in name: return '丙烯马克笔'
+    
+    # 首饰配件
+    if 'Ring Sizer Adjuster' in name: return '戒指尺寸调节器'
+    
+    # 书籍
+    if 'Project Hail Mary' in name: return 'Project Hail Mary'
+    if 'Contend:' in name: return 'Contend基督教书籍'
+    if 'Revolution:' in name and 'Nation' in name: return 'Revolution历史书籍'
+    if 'Take Me to Your Leader' in name: return 'Take Me to Your Leader'
+    if 'Carry The Light' in name: return 'Carry The Light'
+    
+    # 音乐
+    if "BTS The 5th Album" in name: return 'BTS ARIRANG专辑'
+    if 'ARIRANG' in name: return 'BTS ARIRANG专辑'
+    
+    # 望远镜
+    if 'Vortex Optics Crossfire HD' in name: return 'Vortex Crossfire HD望远镜'
+    if 'Vortex Optics Diamondback HD' in name: return 'Vortex Diamondback HD望远镜'
+    if 'Vortex Optics Triumph HD' in name: return 'Vortex Triumph HD望远镜'
+    if 'Vortex' in name: return 'Vortex望远镜'
+    
+    # 家居清洁
+    if 'All-Purpose Stainless Steel Shower Squeegee' in name: return '不锈钢浴室刮水器'
+    if 'Shower Squeegee' in name: return '浴室刮水器'
+    
+    # 亚马逊基础
+    if 'Amazon Basics Microfiber Cleaning Cloths' in name: return '亚马逊超细纤维清洁布'
+    if 'Amazon Basics Microfiber' in name: return '亚马逊超细纤维布'
+    
+    # 手机配件
+    if 'Lamicall Bike Phone Holder' in name: return 'Lamicall自行车手机支架'
+    if 'Phone Holder' in name: return '手机支架'
+    
+    # 婴儿用品
+    if "Dr. Brown's Natural Flow" in name: return "Dr. Brown's奶瓶奶嘴"
+    if "Dr. Brown's" in name: return "Dr. Brown's婴儿用品"
+    if 'Huggies Size 4 Diapers' in name: return 'Huggies 4号纸尿裤'
+    if 'Huggies' in name: return 'Huggies纸尿裤'
+    
+    # 服装
+    if 'OEAK' in name and 'Bra' in name: return 'OEAK文胸'
+    if 'Zeagoo' in name: return 'Zeagoo女装'
+    
+    # 纪念币
+    if '250 Anniversary' in name: return '250周年纪念币'
+    if 'Lincoln Wheat' in name: return '林肯小麦便士'
+    if 'DD-214 Veteran' in name: return '退伍军人纪念品'
+    
+    # 电子产品
+    if 'havit HV-F2056' in name: return 'havit笔记本散热垫'
+    if 'havit' in name: return 'havit散热器'
+    if 'Apple' in name and 'Computer' in name: return '苹果电脑'
+    if 'Fujifilm' in name: return '富士相机'
+    if 'Instax' in name: return 'Instax相机'
+    if 'Oura' in name: return 'Oura智能戒指'
+    
+    # 收藏卡
+    if '2026 Topps Disney' in name: return '2026迪士尼卡片'
+    if '2021 Topps Garbage' in name: return 'Garbage Pail Kids卡'
+    if 'JLA/Avengers' in name: return 'JLA/Avengers漫画'
+    
+    # 饮料
+    if 'Monster' in name and 'Tea' in name: return 'Monster茶饮'
+    if 'Monster Energy' in name: return 'Monster能量饮料'
+    
+    # 电影/蓝光
+    if 'The People vs. Larry Flynt' in name: return 'Larry Flynt 4K限量版'
+    if 'Billy Joel: The 100th' in name: return 'Billy Joel演唱会蓝光'
+    if 'Ju-On: The Grudge' in name: return '咒怨4K限量版'
+    if 'Avatar: Fire And Ash' in name: return '阿凡达：火与灰烬'
+    if 'Cartoon Network: Over the Garden Wall' in name: return '花园墙外蓝光'
+    if 'Troy [Limited' in name: return '特洛伊限量版蓝光'
+    if 'Identity [Limit' in name: return '身份之谜限量版'
+    if 'Frozen Heart' in name: return '冰冻之心'
+    if 'Wish You Were H' in name: return 'Wish You Were Here'
+    if 'Limited Edition' in name and '4K' in name: return '4K限量版蓝光'
+    if 'Limited Edition' in name: return '限量版蓝光'
+    if '[Blu-ray]' in name: return name.split('[')[0].strip()[:10] + '蓝光'
+    
+    # 音频设备
+    if 'Hollyland Lark A1' in name: return 'Hollyland无线麦克风'
+    if 'OneOdio Wired Over Ear' in name: return 'OneOdio有线监听耳机'
+    if 'Amazon Basics XLR' in name: return '亚马逊XLR麦克风线'
+    if 'MAYBESTA Wireless Mini' in name: return 'MAYBESTA无线麦克风'
+    if 'Wireless Mini Microphone' in name: return '无线迷你麦克风'
+    if 'DJI Mic Mini' in name: return 'DJI Mic Mini麦克风'
+    if 'FIFINE USB/XLR' in name: return 'FIFINE播客麦克风'
+    if 'Karaoke Machine' in name: return '卡拉OK机'
+    if 'Bubble Machine' in name: return '泡泡机'
+    
+    # 音乐设备
+    if 'Amazon Basics Portable Adjustable Folding Guitar' in name: return '亚马逊折叠吉他架'
+    if 'UGREEN USB B to USB C' in name: return 'UGREEN打印机线'
+    if 'WINGO Guitar Capo' in name: return 'WINGO吉他变调夹'
+    
+    # 办公用品
+    if 'Amazon Basics Multipurpose Copy Printer Paper' in name: return '亚马逊打印纸'
+    if 'HP 67 Black/Tri-Color' in name: return 'HP 67墨盒套装'
+    if 'HP Printer Paper' in name: return 'HP打印纸'
+    if 'HP 64 Black & Tri-Color' in name: return 'HP 64墨盒套装'
+    if 'Sharpie Permanent Markers' in name: return 'Sharpie记号笔'
+    if 'Scotch Heavy Duty Shipping Packing Tape, Clear' in name: return 'Scotch透明封箱胶带'
+    if 'Amazon Basics Sheet Protectors' in name: return '亚马逊文件保护套'
+    if 'Amazon Basics Clear Thermal Laminating' in name: return '亚马逊塑封膜'
+    if 'EZlifego Double Sided Tape' in name: return 'EZlifego双面胶'
+    if 'Scotch Heavy Duty Shipping Packing Tape' in name: return 'Scotch封箱胶带'
+    if 'Scotch Magic Tape' in name: return 'Scotch隐形胶带'
+    if 'Amazon Basics Sturdy File Folders' in name: return '亚马逊文件夹'
+    if 'Aothia Non-Slip' in name: return 'Aothia桌垫'
+    if 'Hammermill Printer Paper' in name: return 'Hammermill打印纸'
+    if 'HP 67XL Black' in name: return 'HP 67XL墨盒'
+    if 'BIC Round Stic' in name: return 'BIC圆珠笔'
+    if 'Ddaowanx Gel Pens' in name: return 'Ddaowanx中性笔'
+    if 'HP 62 Black Ink' in name: return 'HP 62墨盒'
+    if 'Amazon Basics Wide Ruled' in name: return '亚马逊记事本'
+    
+    # 园艺/宠物
+    if "Wagner's 53002" in name: return "Wagner鸟食"
+    if 'Ortho Home Defense' in name: return 'Ortho杀虫剂'
+    if "Bonide Captain Jack's Neem Oil" in name: return 'Bonide印楝油'
+    if 'Kaytee Hummingbird' in name: return 'Kaytee蜂鸟花蜜'
+    if 'UDC Parts' in name: return 'John Deere配件'
+    if 'Miracle-Gro Water Soluble' in name: return 'Miracle-Gro肥料'
+    if 'First Saturday Lime' in name: return '石灰杀虫剂'
+    if 'AUTOMAN-Garden-Hose' in name: return '花园水管喷嘴'
+    if "Roundup Weed and Grass" in name: return 'Roundup除草剂套装'
+    if 'Zevo 2 Flying Insect' in name: return 'Zevo飞虫诱捕器'
+    if 'Spruce Weed Killer' in name: return '除草剂补充装'
+    if 'HTH 52036R Pool Care' in name: return 'HTH泳池消毒剂'
+    if "Dr. Elsey's Ultra" in name: return "Dr. Elsey's猫砂"
+    if 'Purina Fancy Feast' in name: return 'Purina猫粮'
+    
+    # 宠物用品
+    if 'Amazon Basics Leak-Proof Dog' in name: return '亚马逊狗狗尿垫'
+    if 'Earth Rated Poop Bags' in name: return 'Earth Rated狗屎袋'
+    if 'Greenies Pill Pockets' in name: return 'Greenies药片零食'
+    if 'Fresh Step Odor Shield' in name: return 'Fresh Step猫砂'
+    if 'INABA Churu Cat Treats' in name: return 'INABA猫零食'
+    if 'Purina Pro Plan' in name: return 'Purina专业猫粮'
+    if 'Blue Buffalo Life Protection' in name: return 'Blue Buffalo狗粮'
+    if 'HONEY CARE All-Absorb' in name: return 'Honey Care狗狗尿垫'
+    if 'Sheba Perfect Portions' in name: return 'Sheba猫粮'
+    if 'Pur Luv Chicken Jerky' in name: return 'Pur Luv狗零食'
+    if 'Earth Rated Pet Wipes' in name: return 'Earth Rated宠物湿巾'
+    if 'Temptations Cat Treats' in name: return 'Temptations猫零食'
+    if 'ARM & HAMMER Clump' in name: return 'ARM & HAMMER猫砂'
+    if 'Milk-Bone Original' in name: return 'Milk-Bone狗饼干'
+    if 'Blue Buffalo Health Bars' in name: return 'Blue Buffalo狗零食'
+    if 'Pedigree Dentastix' in name: return 'Pedigree狗零食'
+    if 'Amazon Basics Dog Poop' in name: return '亚马逊狗屎袋'
+    if 'Milk-Bone Soft & Chewy' in name: return 'Milk-Bone软狗零食'
+    
+    # 软件
+    if 'TurboTax Deluxe' in name: return 'TurboTax报税软件'
+    if 'Microsoft Office Home' in name: return '微软Office家庭版'
+    if 'Microsoft Office Home & Business' in name: return '微软Office家庭商务版'
+    if 'Norton 360 Deluxe' in name: return 'Norton 360安全软件'
+    if 'Norton 360 Premium' in name: return 'Norton 360高级版'
+    if 'H&R Block Tax Software' in name: return 'H&R Block报税软件'
+    if 'McAfee Total Protection' in name: return 'McAfee安全软件'
+    if 'Bitdefender Total Security' in name: return 'Bitdefender安全软件'
+    if 'Microsoft System Builder' in name: return '微软系统安装版'
+    if 'Mullvad VPN' in name: return 'Mullvad VPN'
+    if 'Windows 11 Pro Upgrade' in name: return 'Windows 11专业版'
+    if 'NordVPN' in name: return 'NordVPN'
+    if 'Wyze Security Plan' in name: return 'Wyze安全订阅'
+    if 'Malwarebytes Premium' in name: return 'Malwarebytes安全软件'
+    if 'Quicken Classic' in name: return 'Quicken财务软件'
+    if 'Laplink PCmover' in name: return 'Laplink电脑迁移软件'
+    
+    # 运动器材
+    if 'Seago Swim Goggles' in name: return 'Seago泳镜'
+    if 'Amazon Basics Neoprene Dumbbell' in name: return '亚马逊哑铃'
+    if 'Google Fitbit Air' in name: return 'Fitbit Air手表'
+    if 'Zeerun Weighted Vest' in name: return 'Zeerun负重背心'
+    if 'ZELUS Weighted Vest' in name: return 'ZELUS负重背心'
+    if 'BAND-AID Brand Travel' in name: return 'Band-Aid便携急救包'
+    if 'Rainleaf Microfiber Towel' in name: return 'Rainleaf速干毛巾'
+    if 'Callaway Golf Supersoft' in name: return 'Callaway高尔夫球'
+    if 'Speedo Kids\' Swim Goggles' in name: return 'Speedo儿童泳镜'
+    if 'HEETA Dry Bag' in name: return 'HEETA防水袋'
+    if 'Fit Simplify Resistance' in name: return 'Fit Simplify弹力带'
+    if 'AEOCOO Puddle Float' in name: return 'AEOCOO儿童浮力背心'
+    if 'IDAODAN Electric Balloon' in name: return 'IDAODAN电动充气泵'
+    
+    # 收藏卡
+    if '2025-26 Topps Signature' in name: return '25-26 Topps签名篮球卡'
+    if '2025-26 Topps Hoops' in name: return '25-26 Topps篮球卡'
+    if '100 Vintage Baseball' in name: return '100张复古棒球卡'
+    if '2024-25 Topps Chrome Basketball' in name: return '24-25 Topps篮球卡'
+    if '2026 Topps Baseball' in name: return '2026 Topps棒球卡'
+    if 'Jalen Brunson' in name: return 'Jalen Brunson球星卡'
+    if '2025 Panini SCORE' in name: return '2025 Panini橄榄球卡'
+    if '2025/26 Topps Match' in name: return '25-26 Topps足球卡'
+    if 'High Cheese Baseball' in name: return '棒球神秘卡包'
+    if '100 Vintage Football' in name: return '100张复古橄榄球卡'
+    if '2023 Topps Series' in name: return '2023 Topps棒球卡'
+    if '2025 Panini Donruss' in name: return '2025 Panini橄榄球卡'
+    if 'Topps, Upper deck' in name: return '复古体育卡套装'
+    if 'Upper Deck Series One Hockey' in name: return 'Upper Deck冰球卡'
+    if '2025–26 Panini Absolute' in name: return '25-26 Panini橄榄球卡'
+    if 'Upper Deck Hockey' in name: return 'Upper Deck冰球卡'
+    if '2026 Soccer Trading' in name: return '2026足球卡'
+    if 'Premier League 2026' in name: return '2026英超卡'
+    if '2026 Bowman Baseball' in name: return '2026 Bowman棒球卡'
+    if 'Pokemon Cards Collection' in name: return '宝可梦卡片套装'
+    if 'Bicycle Standard Playing Cards' in name: return 'Bicycle扑克牌'
+    
+    # 滤芯
+    if 'GE XWFE Refrigerator Water' in name: return 'GE冰箱滤芯'
+    if 'Brita Plus Water Filter' in name: return 'Brita滤芯'
+    if 'everydrop by Whirlpool' in name: return 'Whirlpool冰箱滤芯'
+    if 'Samsung HAF-QIN' in name: return 'Samsung冰箱滤芯'
+    if 'Brita Filter Replacements' in name: return 'Brita替换滤芯'
+    if 'GE RPWFE Refrigerator' in name: return 'GE冰箱滤芯'
+    if 'ZeroWater Official Replacement' in name: return 'ZeroWater滤芯'
+    
+    # 气球/派对用品
+    if 'Bezente Assorted Rainbow' in name: return '彩虹气球套装'
+    if 'PartyWoo Black Balloons' in name: return 'PartyWoo黑色气球'
+    if 'PartySticks Glow Sticks' in name: return '荧光棒100支'
+    
+    # 玩具
+    if 'Midou Slow Rising' in name: return '饺子捏捏乐'
+    if 'Dumpling Squishy' in name: return '饺子捏捏乐'
+    if 'CUPKIN Animals Habitat' in name: return 'CUPKIN儿童贴纸书'
+    if 'Play Doh Modeling' in name: return 'Play-Doh彩泥10色'
+    if 'SEREED Baby Balance' in name: return 'SEREED儿童平衡车'
+    if 'Infinno Baby Wrist' in name: return 'Infinno婴儿手摇铃'
+    if 'Bright Starts Oball' in name: return 'Bright Starts球'
+    if 'Horizon Group USA Bluey' in name: return 'Bluey水画套装'
+    if 'Step2 Rain Showers' in name: return 'Step2儿童水桌'
+    if 'SkaterTrainers' in name: return '滑板训练器'
+    if 'Joking Hazard' in name: return 'Joking Hazard卡牌游戏'
+    if 'Kinsa Smart' in name: return 'Kinsa智能体温计'
+    if '1MORE Triple Driver' in name: return '1MORE三单元耳机'
+    if 'The Door Balancer' in name: return '门支撑器'
+    if 'Promixx FORM Protein' in name: return 'Promixx摇摇杯'
+    if 'KiddyCare Diaper Caddy' in name: return 'KiddyCare尿布收纳盒'
+    if 'White Leaf Organic' in name: return 'White Leaf有机婴儿食品'
+    if 'Supa Ant Canning' in name: return '罐头制作套装'
+    if 'Fire Blanket' in name: return '灭火毯'
+    if 'Inflatable Tanning Pool' in name: return '充气泳池浮床'
+    
+    # 食品
+    if 'Rhythm Superfoods Beet' in name: return 'Rhythm有机薯片'
+    
+    # 游戏主机/配件
+    if 'Nintendo Switch 2 System' in name: return 'Nintendo Switch 2主机'
+    if 'PlayStation DualSense Edge' in name: return 'PlayStation Edge手柄'
+    if 'PlayStation DualSense' in name: return 'PlayStation手柄'
+    if 'XBOX Wireless Gaming' in name: return 'XBOX无线手柄'
+    if 'XBOX Game Pass Ultimate' in name: return 'XBOX Game Pass'
+    if 'Logitech G Driving Force' in name: return 'Logitech方向盘换挡器'
+    if 'Logitech G502 Hero' in name: return 'Logitech G502鼠标'
+    if 'Logitech G305 Lightspeed' in name: return 'Logitech G305鼠标'
+    if 'Razer BlackShark V2 X' in name: return 'Razer BlackShark耳机'
+    if 'Turtle Beach Stealth 500' in name: return 'Turtle Beach耳机'
+    if 'amFilm Auto-Alignment' in name: return 'amFilm自动贴膜'
+    
+    # 游戏
+    if 'Tomodachi Life' in name: return 'Tomodachi Life游戏'
+    if 'Star Fox' in name: return 'Star Fox游戏'
+    if '007 First Light' in name: return '007 First Light游戏'
+    if 'Luna Premium' in name: return 'Luna Premium订阅'
+    
+    # 礼品卡
+    if 'Nintendo eShop Gift' in name: return 'Nintendo礼品卡$10'
+    if 'Xbox Gift Card' in name: return 'Xbox礼品卡$10'
+    if 'PlayStation Store Gift' in name: return 'PlayStation礼品卡$10'
+    if 'Roblox Digital Gift' in name: return 'Roblox礼品卡'
+    
+    # 家居装饰
+    if 'RIVER OF GOODS' in name: return 'RIVER OF GOODS灯具'
+    if 'Stained Glass Bird' in name: return '彩绘玻璃鸟灯'
+    if 'Supa Ant 6x8ft' in name: return 'Supa Ant桌旗'
+    
+    # 喷漆
+    if 'Rust-Oleum' in name: return 'Rust-Oleum喷漆'
+    
+    # TikTok 商品 (ECTK)
+    if 'Punk Style Ripped Gloves' in name: return '朋克破洞手套'
+    if '50Pcs Little Jesus Figures' in name: return '50件迷你耶稣摆件'
+    if 'Pukomc Motion Sensor Trash' in name: return 'Pukomc感应垃圾桶'
+    if 'Rechargeable Portable Mini Washing' in name: return '可充电迷你洗衣机'
+    if 'Sweetcrispy 9QT Dual Basket Air Fryer' in name: return 'Sweetcrispy双篮炸锅'
+    if 'Elite Cuisine 3-Cup Electric Citrus' in name: return 'Elite橙汁机'
+    if 'Vacuum Duo Bundle' in name: return '吸尘器套装'
+    if 'Cordless Blender' in name: return '无线搅拌机'
+    if 'DREAME Aero Wet Dry' in name: return 'DREAME洗地机'
+    if 'Faucet Leak-Proof Sealing' in name: return '防漏水龙头密封垫'
+    if 'TADEKERU Mist Cooling' in name: return 'TADEKERU喷雾风扇'
+    if 'Adjustable car fan' in name: return '车载风扇'
+    if 'Morrerfresh Odor Eliminator' in name: return 'Morrerfresh除味器'
+    if 'VEVOR Electric Roaster' in name: return 'VEVOR电烤炉'
+    if 'USB Portable Blender' in name: return 'USB便携搅拌机'
+    if 'Indoor Smokeless Electric Korean BBQ' in name: return '室内无烟韩式烧烤炉'
+    if 'Floral Print Bed Skirt' in name: return '碎花床裙套装'
+    if 'Clothing Label Gun' in name: return '服装标签枪套装'
+    if 'Leaf Elastic Print Sofa' in name: return '树叶弹性沙发套'
+    if 'Portable Handheld Sewing' in name: return '便携手持缝纫机'
+    if 'Fluffy Queen Comforter' in name: return '蓬松四件套'
+    if 'Egyptian Conform' in name: return '埃及棉四件套'
+    if 'Marble Patterned Corridor' in name: return '大理石纹走廊地毯'
+    if 'Lush Decor Cottage' in name: return 'Lush Decor床单'
+    if 'Stitch Gun for Clothes' in name: return '缝纫枪'
+    if 'Mosquito Repellent Sticks' in name: return '驱蚊香'
+    if 'Portable Pressure Washer' in name: return '便携高压清洗机'
+    if 'RGB Touch Table Lamp' in name: return 'RGB触摸台灯'
+    if 'Magnetic Wind Chime' in name: return '磁性风铃'
+    
+    # 3D打印耗材
+    if 'SUNLU PLA' in name: return 'SUNLU PLA耗材'
+    if 'PLA' in name: return 'PLA打印耗材'
+    
+    # 厨房用品
+    if 'Cisily Sponge Holder' in name: return 'Cisily海绵架'
+    if 'Sponge Holder' in name: return '海绵架'
+    
+    # 亚马逊基础
+    if 'Amazon Basics 4' in name: return '亚马逊电池'
+    
+    # 魔术贴
+    if 'VELCRO Brand' in name: return 'VELCRO魔术贴'
+    
+    # 首饰
+    if 'Small Gold or S' in name: return '小号金银首饰'
+    
     # 亚马逊设备
     if 'Fire TV Stick 4K Plus' in name: return '亚马逊Fire TV 4K Plus'
     if 'Fire TV Stick 4K Max' in name: return '亚马逊Fire TV 4K Max'
@@ -514,4 +872,31 @@ def translate_name(name):
     if 'Mini Mic Pro' in name: return 'Mini Mic Pro'
     if "D'Addario Acoustic" in name: return "D'Addario琴弦"
     if "D'Addario Guitar" in name: return "D'Addario琴弦"
-    if "D'Addario Eclipse" in name: return "D'Addari
+    if "D'Addario Eclipse" in name: return "D'Addario调音器"
+    
+    # 默认返回截取后的名称
+    if len(name) > 15:
+        return name[:15]
+    return name
+
+# 翻译所有项目
+translated_items = []
+for item in items:
+    short_name = translate_name(item['name'])
+    translated_items.append({
+        'id': item['id'],
+        'short_name': short_name
+    })
+
+# 保存结果
+result = {
+    'batch_id': batch_id,
+    'items': translated_items
+}
+
+output_path = r'C:\Users\Etroi\.openclaw\workspace\code\EcomAgent\data\name_processing\processed_names.json'
+with open(output_path, 'w', encoding='utf-8') as f:
+    json.dump(result, f, ensure_ascii=False, indent=2)
+
+print(f'Translated {len(translated_items)} items')
+print(f'Saved to {output_path}')

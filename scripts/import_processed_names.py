@@ -74,13 +74,13 @@ def import_processed_names():
                 continue
             cursor.execute("""
                 UPDATE product_master 
-                SET short_name = ?, last_updated_at = ?
+                SET short_name = ?, last_updated_at = ?, translation_status = 'translated'
                 WHERE platform_id = ?
             """, (short_name, datetime.now().isoformat(), ecom_code))
         else:
             cursor.execute("""
                 UPDATE product_master 
-                SET short_name = ?, last_updated_at = ?
+                SET short_name = ?, last_updated_at = ?, translation_status = 'translated'
                 WHERE ecom_code = ?
             """, (short_name, datetime.now().isoformat(), ecom_code))
         
