@@ -19,12 +19,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 DATA_DIR = BASE_DIR / "data"
 STATIC_DIR = BASE_DIR / "src" / "data_viewer" / "static"
 
+# 导入 TikTok 上传模块
+import sys
+sys.path.insert(0, str(BASE_DIR / "src"))
+from tiktok_uploader import router as tiktok_router
+
 # 创建 FastAPI 应用
 app = FastAPI(
     title="EcomAgent Data Viewer API",
     description="电商数据抓取与分析平台 - 数据展示 API",
     version="0.1.0"
 )
+
+# 注册 TikTok 上传路由
+app.include_router(tiktok_router)
 
 # 添加 CORS 中间件
 app.add_middleware(

@@ -352,6 +352,16 @@ export class EcomAgentSourcing extends LitElement {
       border-color: var(--primary);
     }
     
+    .action-btn-tiktok {
+      background: #ff0050;
+      color: white;
+      border: none;
+    }
+    
+    .action-btn-tiktok:hover {
+      opacity: 0.9;
+    }
+    
     .action-btn-delete {
       background: transparent;
       color: #f5222d;
@@ -537,6 +547,56 @@ export class EcomAgentSourcing extends LitElement {
     alert(this.modalType === 'video' ? '视频生成功能开发中...' : '详情图生成功能开发中...');
   }
 
+  // tiktokUploading and tiktokResult used for future UI enhancement
+  // @state() private tiktokUploading = false;
+  // @state() private tiktokResult: any = null;
+
+  private async _uploadToTikTok(item: any) {
+    console.log('[Sourcing] _uploadToTikTok 被调用, item:', item);
+    
+    // 检查连接状态
+    try {
+      console.log('[Sourcing] 检查 TikTok 连接状态...');
+      const statusRes = await fetch('/api/tiktok/status');
+      const status = await statusRes.json();
+      console.log('[Sourcing] TikTok 状态:', status);
+      
+      if (!status.connected) {
+        alert('未连接到 TikTok Shop\n请确保 Chrome 已启动并使用 --remote-debugging-port=9222 参数');
+        return;
+      }
+    } catch (e) {
+      console.error('[Sourcing] 检查状态失败:', e);
+      alert('无法连接到服务器');
+      return;
+    }
+
+    // 直接上传，不使用 confirm
+    console.log('[Sourcing] 开始上传到 TikTok:', item.ecom_code);
+    // this.tiktokUploading = true;
+    // this.requestUpdate();
+    
+    try {
+      const response = await fetch(`/api/tiktok/upload/${item.ecom_code}`, { method: 'POST' });
+      const result = await response.json();
+      console.log('[Sourcing] 上传结果:', result);
+      
+      // this.tiktokUploading = false;
+      // this.requestUpdate();
+      
+      if (result.success) {
+        alert(`上传成功!\n请在 TikTok Shop 后台检查草稿商品`);
+      } else {
+        alert(`上传失败: ${result.message}`);
+      }
+    } catch (e) {
+      console.error('[Sourcing] 上传失败:', e);
+      // this.tiktokUploading = false;
+      // this.requestUpdate();
+      alert('上传失败，请检查服务器连接');
+    }
+  }
+
   private _renderModal() {
     if (!this.showModal) return null;
     
@@ -701,6 +761,9 @@ export class EcomAgentSourcing extends LitElement {
                   <td class="ecom-code-cell">${item.ecom_code}</td>
                   <td>${this._formatDate(item.collected_at)}</td>
                   <td>
+                    <button class="action-btn action-btn-tiktok" @click=${() => { console.log('[Sourcing] TikTok button clicked!'); this._uploadToTikTok(item); }}>
+                      TikTok
+                    </button>
                     <button class="action-btn action-btn-video" @click=${() => this._showModal('video', item)}>
                       视频
                     </button>
