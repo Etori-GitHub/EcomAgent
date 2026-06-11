@@ -16,6 +16,9 @@ __pycache__/
 env/
 venv/
 
+# Embedded Python environment
+python/
+
 # Logs
 logs/*.log
 
@@ -37,7 +40,6 @@ temp/
 # Backup files
 *.bak
 *.backup
-README_副本.md
 
 # IDE
 .vscode/

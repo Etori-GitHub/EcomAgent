@@ -26,14 +26,23 @@
 
 ### Windows
 
-双击 `start.bat` 即可启动，无需安装 Python。
+**首次运行**：双击 `setup.bat`（自动下载 Python + 安装依赖）
+
+**后续运行**：双击 `start.bat`
 
 ### macOS
 
-1. 首次运行：双击 `setup-mac.sh`（解压 Python + 安装依赖）
-2. 后续运行：双击 `start.sh`
+**首次运行**：
+```bash
+chmod +x setup.sh
+./setup.sh
+```
 
-访问 http://localhost:8000
+**后续运行**：双击 `start.sh`
+
+---
+
+启动后会自动打开浏览器访问 http://127.0.0.1:8000
 
 ---
 
