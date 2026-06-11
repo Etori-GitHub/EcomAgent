@@ -26,23 +26,38 @@
 
 ### Windows
 
-**首次运行**：双击 `setup.bat`（自动下载 Python + 安装依赖）
+**首次安装**：双击 `setup.bat`
+- 自动下载 Python 3.11.9
+- 自动安装所有依赖
+- 启动服务并打开浏览器
 
-**后续运行**：双击 `start.bat`
+**后续启动**：双击 `start.bat`
+- 直接启动服务
 
-### macOS
+### macOS / Linux
 
-**首次运行**：
+**首次安装**：
 ```bash
 chmod +x setup.sh
 ./setup.sh
 ```
 
-**后续运行**：双击 `start.sh`
+**后续启动**：
+```bash
+./start.sh
+```
 
 ---
 
 启动后会自动打开浏览器访问 http://127.0.0.1:8000
+
+### TikTok 上传功能
+
+首次使用 TikTok 上传功能时：
+1. 点击货源库的「TikTok」按钮
+2. 系统会自动启动调试 Chrome 并打开登录页
+3. 登录 TikTok Shop 后台
+4. 再次点击「TikTok」按钮即可上传
 
 ---
 
