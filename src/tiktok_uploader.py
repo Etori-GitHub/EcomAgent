@@ -6,6 +6,8 @@ TikTok Shop 商品上传自动化模块
 import asyncio
 import sqlite3
 import logging
+import subprocess
+import socket
 from pathlib import Path
 from typing import Optional, List, Dict, Any
 from dataclasses import dataclass
@@ -19,6 +21,33 @@ SCREENSHOT_DIR = BASE_DIR / "scripts" / "screenshots"
 
 # TikTok Shop URL
 PRODUCT_CREATE_URL = "https://seller.tiktokshopglobalselling.com/product/create?shop_region=VN"
+
+# Chrome 配置
+import platform
+
+SYSTEM = platform.system()  # Windows / Darwin / Linux
+
+if SYSTEM == "Windows":
+    CHROME_PATHS = [
+        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+        Path.home() / "AppData\\Local\\Google\\Chrome\\Application\\chrome.exe",
+    ]
+    TIKTOK_CHROME_DIR = Path("C:\\chrome-tiktok")
+elif SYSTEM == "Darwin":  # macOS
+    CHROME_PATHS = [
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    ]
+    TIKTOK_CHROME_DIR = Path.home() / ".chrome-tiktok"
+else:  # Linux
+    CHROME_PATHS = [
+        "/usr/bin/google-chrome",
+        "/usr/bin/chromium-browser",
+    ]
+    TIKTOK_CHROME_DIR = Path.home() / ".chrome-tiktok"
+
+WEBUI_URL = "http://127.0.0.1:8000"
+TIKTOK_LOGIN_URL = "https://seller.tiktokshopglobalselling.com/"
 
 # 日志
 logging.basicConfig(level=logging.INFO)
@@ -38,6 +67,69 @@ class SourcingItem:
     description: Optional[str] = None
 
 
+def check_port_in_use(port: int) -> bool:
+    """检查端口是否在监听"""
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(1)
+        result = sock.connect_ex(('127.0.0.1', port))
+        sock.close()
+        return result == 0
+    except:
+        return False
+
+
+def find_chrome_path() -> Optional[Path]:
+    """查找 Chrome 安装路径"""
+    for path in CHROME_PATHS:
+        p = Path(path) if isinstance(path, str) else path
+        if p.exists():
+            return p
+    return None
+
+
+def start_debug_chrome(port: int = 9222, open_webui: bool = True) -> bool:
+    """启动调试 Chrome"""
+    if check_port_in_use(port):
+        logger.info(f"[TikTok] Chrome already running on port {port}")
+        return True
+    
+    chrome_path = find_chrome_path()
+    if not chrome_path:
+        logger.error("[TikTok] Chrome not found")
+        return False
+    
+    # 创建数据目录
+    TIKTOK_CHROME_DIR.mkdir(parents=True, exist_ok=True)
+    
+    # 启动 Chrome，同时打开 WebUI
+    try:
+        args = [
+            str(chrome_path),
+            f"--remote-debugging-port={port}",
+            f"--user-data-dir={TIKTOK_CHROME_DIR}",
+        ]
+        if open_webui:
+            args.append(WEBUI_URL)
+        
+        subprocess.Popen(
+            args,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        logger.info(f"[TikTok] Chrome started on port {port}, opened {WEBUI_URL}")
+        # 等待启动
+        import time
+        for _ in range(10):
+            if check_port_in_use(port):
+                return True
+            time.sleep(1)
+        return False
+    except Exception as e:
+        logger.error(f"[TikTok] Failed to start Chrome: {e}")
+        return False
+
+
 class TikTokUploader:
     """TikTok Shop 商品上传器"""
     
@@ -47,20 +139,29 @@ class TikTokUploader:
         self.context: Optional[BrowserContext] = None
         self.page: Optional[Page] = None
     
-    async def connect(self) -> bool:
-        """连接到 Chrome"""
+    async def connect(self, auto_start: bool = True) -> bool:
+        """连接到 Chrome，可选自动启动"""
+        # 先检测端口
+        if not check_port_in_use(self.cdp_port):
+            if auto_start:
+                logger.info(f"[TikTok] Port {self.cdp_port} not in use, starting Chrome...")
+                if not start_debug_chrome(self.cdp_port):
+                    return False
+            else:
+                return False
+        
+        # 连接
         try:
-            from playwright.async_api import async_playwright
             p = await async_playwright().start()
             self.browser = await p.chromium.connect_over_cdp(
                 f"http://localhost:{self.cdp_port}",
                 timeout=10000
             )
             self.context = self.browser.contexts[0]
-            logger.info(f"[TikTok] 已连接到 Chrome (端口 {self.cdp_port})")
+            logger.info(f"[TikTok] Connected to Chrome (port {self.cdp_port})")
             return True
         except Exception as e:
-            logger.error(f"[TikTok] 连接失败: {e}")
+            logger.error(f"[TikTok] Connection failed: {e}")
             return False
     
     async def get_or_create_page(self) -> Optional[Page]:
@@ -241,11 +342,38 @@ router = APIRouter(prefix="/api/tiktok", tags=["tiktok"])
 async def get_tiktok_status():
     """获取 TikTok Shop 连接状态"""
     uploader = TikTokUploader()
-    connected = await uploader.connect()
+    connected = await uploader.connect(auto_start=True)
     return {
         "connected": connected,
         "cdp_port": uploader.cdp_port
     }
+
+
+@router.post("/ensure-chrome")
+async def ensure_chrome_running():
+    """确保 Chrome 调试浏览器已启动"""
+    if check_port_in_use(9222):
+        return {"status": "already_running", "port": 9222}
+    
+    if start_debug_chrome(9222):
+        return {"status": "started", "port": 9222}
+    
+    raise HTTPException(500, "Failed to start Chrome")
+
+
+@router.post("/open-login")
+async def open_tiktok_login():
+    """打开 TikTok Shop 登录页面"""
+    uploader = TikTokUploader()
+    
+    if not await uploader.connect(auto_start=True):
+        raise HTTPException(500, "无法启动或连接 Chrome")
+    
+    # 打开登录页面
+    page = await uploader.context.new_page()
+    await page.goto("https://seller.tiktokshopglobalselling.com/", wait_until="domcontentloaded")
+    
+    return {"status": "opened", "url": "https://seller.tiktokshopglobalselling.com/"}
 
 
 @router.get("/sourcing")

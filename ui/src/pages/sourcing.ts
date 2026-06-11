@@ -552,22 +552,40 @@ export class EcomAgentSourcing extends LitElement {
   // @state() private tiktokResult: any = null;
 
   private async _uploadToTikTok(item: any) {
-    console.log('[Sourcing] _uploadToTikTok 被调用, item:', item);
+    console.log('[Sourcing] _uploadToTikTok called, item:', item);
     
-    // 检查连接状态
+    // 检查并自动启动 Chrome
     try {
-      console.log('[Sourcing] 检查 TikTok 连接状态...');
+      console.log('[Sourcing] Checking TikTok connection...');
       const statusRes = await fetch('/api/tiktok/status');
       const status = await statusRes.json();
-      console.log('[Sourcing] TikTok 状态:', status);
+      console.log('[Sourcing] TikTok status:', status);
       
       if (!status.connected) {
-        alert('未连接到 TikTok Shop\n请确保 Chrome 已启动并使用 --remote-debugging-port=9222 参数');
-        return;
+        // 尝试启动 Chrome
+        console.log('[Sourcing] Chrome not running, starting...');
+        const ensureRes = await fetch('/api/tiktok/ensure-chrome', { method: 'POST' });
+        const ensureData = await ensureRes.json();
+        console.log('[Sourcing] Ensure Chrome result:', ensureData);
+        
+        if (!ensureRes.ok) {
+          alert('Failed to start Chrome. Please start manually.');
+          return;
+        }
+        
+        // 等待 Chrome 启动
+        await new Promise(r => setTimeout(r, 2000));
+        
+        // 打开登录页面
+        const loginRes = await fetch('/api/tiktok/open-login', { method: 'POST' });
+        if (loginRes.ok) {
+          alert('Chrome started!\nPlease login to TikTok Shop, then click TikTok button again.');
+          return;
+        }
       }
     } catch (e) {
-      console.error('[Sourcing] 检查状态失败:', e);
-      alert('无法连接到服务器');
+      console.error('[Sourcing] Status check failed:', e);
+      alert('Server connection failed');
       return;
     }
 

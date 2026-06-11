@@ -1,19 +1,25 @@
 import sqlite3
 
-db_path = r'C:\Users\Etroi\.openclaw\workspace\code\EcomAgent\data\product_master.db'
-conn = sqlite3.connect(db_path)
+conn = sqlite3.connect(r'C:\Users\Etroi\.openclaw\workspace\code\EcomAgent\data\product_master.db')
+c = conn.cursor()
 
-cursor = conn.execute('SELECT COUNT(*) FROM product_master')
-print(f'Total products: {cursor.fetchone()[0]}')
+# 检查是否有short_name为空但name不为空的商品
+c.execute('''
+    SELECT COUNT(*) FROM product_master 
+    WHERE (short_name IS NULL OR short_name = "") 
+    AND name IS NOT NULL AND name != ""
+''')
+print(f'Items with name but no short_name: {c.fetchone()[0]}')
 
-cursor = conn.execute('SELECT COUNT(*) FROM product_master WHERE short_name IS NOT NULL AND short_name != ""')
-print(f'With short_name: {cursor.fetchone()[0]}')
+# 检查最近更新的商品
+c.execute('''
+    SELECT ecom_code, name, short_name, translation_status 
+    FROM product_master 
+    ORDER BY rowid DESC LIMIT 5
+''')
+print('\nRecent items:')
+for row in c.fetchall():
+    name_preview = row[1][:30] if row[1] else "NULL"
+    print(f'  {row[0]}: name={name_preview}..., short_name={row[2]}, status={row[3]}')
 
-cursor = conn.execute('SELECT COUNT(*) FROM product_master WHERE short_name IS NULL OR short_name = ""')
-print(f'Without short_name: {cursor.fetchone()[0]}')
-
-# 显示一些样例
-cursor = conn.execute('SELECT id, ecom_code, name, short_name FROM product_master LIMIT 5')
-print("\nSample products:")
-for row in cursor.fetchall():
-    print(f"  [{row[1]}] {row[2][:50]}... -> {row[3]}")
+conn.close()
