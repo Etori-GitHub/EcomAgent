@@ -34,6 +34,11 @@ echo "安装依赖..."
 pip install --upgrade pip
 pip install -r requirements.txt
 
+# 安装 Playwright 浏览器
+echo ""
+echo "安装 Playwright 浏览器..."
+playwright install chromium
+
 # 设置权限
 chmod +x start.sh
 
