@@ -1,26 +1,47 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 
-echo "=== EcomAgent macOS Setup ==="
+echo "============================================================"
+echo "EcomAgent macOS Setup"
+echo "============================================================"
+echo ""
 
-# 1. 解压 Python
-if [ -f "python-mac/python-macos.tar.gz" ]; then
-    echo "Extracting Python..."
-    mkdir -p python
-    tar -xzf python-mac/python-macos.tar.gz -C python --strip-components=1
-    rm -rf python-mac
-else
-    echo "Python archive not found. Please download it first."
+# 检查系统 Python
+if ! command -v python3 &> /dev/null; then
+    echo "[ERROR] 未找到 Python 3，请先安装"
+    echo "推荐使用 Homebrew: brew install python@3.11"
     exit 1
 fi
 
-# 2. 安装依赖
-echo "Installing dependencies..."
-./python/bin/pip3 install fastapi uvicorn sqlalchemy click pydantic playwright
+PYTHON_VERSION=$(python3 --version 2>&1)
+echo "检测到: $PYTHON_VERSION"
 
-# 3. 设置权限
+# 删除旧的损坏的 Python 目录
+if [ -d "python" ]; then
+    echo "清理旧的 Python 环境..."
+    rm -rf python
+fi
+
+# 创建新的虚拟环境
+echo "创建虚拟环境..."
+python3 -m venv python
+
+# 激活虚拟环境
+source python/bin/activate
+
+# 安装依赖
+echo "安装依赖..."
+pip install --upgrade pip
+pip install -r requirements.txt
+
+# 设置权限
 chmod +x start.sh
 
 echo ""
-echo "=== Setup Complete ==="
-echo "Double-click 'start.sh' or run: ./start.sh"
+echo "============================================================"
+echo "[OK] 设置完成！"
+echo "============================================================"
+echo ""
+echo "运行方式："
+echo "  ./start.sh"
+echo ""
