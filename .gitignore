@@ -7,6 +7,9 @@ config/backups/
 data/*.db
 !data/.gitkeep
 
+# Images
+data/images/
+
 # Python
 __pycache__/
 *.py[cod]

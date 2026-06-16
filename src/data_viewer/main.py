@@ -753,12 +753,12 @@ async def get_product_trend(
             acursor = aconn.cursor()
 
             # 查询平台产品ID
-            acursor.execute("SELECT id, name, search_keyword FROM products WHERE master_id = ?", (product_id,))
+            acursor.execute("SELECT id, name FROM products WHERE master_id = ?", (product_id,))
             p_row = acursor.fetchone()
             if p_row:
                 platform_product_id = p_row['id']
                 platform_name = p_row['name']
-                platform_keyword = p_row['search_keyword']
+                platform_keyword = None
 
                 # 获取趋势数据(图表用)
                 acursor.execute("""
@@ -780,7 +780,7 @@ async def get_product_trend(
                 # 获取详细数据(分页)
                 offset = (page - 1) * limit
                 acursor.execute("""
-                    SELECT date, timestamp, price, rating, rank
+                    SELECT date, created_at as timestamp, price, rating, rank
                     FROM daily_sales
                     WHERE product_id = ? AND date >= ? AND date <= ?
                     ORDER BY date DESC
@@ -802,12 +802,12 @@ async def get_product_trend(
             tcursor = tconn.cursor()
 
             # 查询平台产品ID
-            tcursor.execute("SELECT id, name, search_keyword FROM tiktok_products WHERE master_id = ?", (product_id,))
+            tcursor.execute("SELECT id, name FROM tiktok_products WHERE master_id = ?", (product_id,))
             p_row = tcursor.fetchone()
             if p_row:
                 platform_product_id = p_row['id']
                 platform_name = p_row['name']
-                platform_keyword = p_row['search_keyword']
+                platform_keyword = None
 
                 # 获取趋势数据(图表用)
                 tcursor.execute("""
@@ -835,7 +835,7 @@ async def get_product_trend(
                 # 获取详细数据(分页)
                 offset = (page - 1) * limit
                 tcursor.execute("""
-                    SELECT date, timestamp, price, rating, sales_count
+                    SELECT date, created_at as timestamp, price, rating, sales_count
                     FROM tiktok_daily_sales
                     WHERE product_id = ? AND date >= ? AND date <= ?
                     ORDER BY date DESC

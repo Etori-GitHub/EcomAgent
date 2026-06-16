@@ -400,13 +400,13 @@ def fetch_and_save_category(category, page, pages=2):
     raise last_error
 
 
-def fetch_all_categories(pages=2):
+def fetch_all_categories(pages=2, headless=True):
     """抓取所有 Amazon Best Sellers 分类的热销数据"""
 
     print(f"[INFO] 开始抓取 Amazon Best Sellers 所有分类...")
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False, slow_mo=500)
+        browser = p.chromium.launch(headless=headless, slow_mo=500)
         page = browser.new_page()
 
         # 模拟真实用户

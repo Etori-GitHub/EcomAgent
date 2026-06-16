@@ -203,7 +203,6 @@ export class EaProductTrendPage extends LitElement {
     /* Tooltip 浮框 */
     .tooltip {
       position: absolute;
-      transform: translate(-50%, -100%);
       background: rgba(26, 26, 30, 0.95);
       backdrop-filter: blur(8px);
       border: 1px solid rgba(255, 92, 92, 0.2);
@@ -212,7 +211,7 @@ export class EaProductTrendPage extends LitElement {
       font-size: 12px;
       pointer-events: none;
       white-space: nowrap;
-      z-index: 10;
+      z-index: 100;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
     }
     .tooltip-date {
@@ -338,7 +337,7 @@ export class EaProductTrendPage extends LitElement {
   @state() private timePreset = '7';
   @state() private customStart = '';
   @state() private customEnd = '';
-  @state() private metric = 'sales_count';
+  @state() private metric = '';
   @state() private currentPage = 1;
   @state() private tooltipData: { show: boolean; x: number; y: number; date: string; value: number | null; index: number } = { show: false, x: 0, y: 0, date: '', value: null, index: 0 };
 
@@ -367,6 +366,16 @@ export class EaProductTrendPage extends LitElement {
       this.trend = data.trend;
       this.details = data.details;
       this.pagination = data.pagination;
+
+      // 根据平台设置默认指标
+      if (!this.metric) {
+        if (this.product.platform === 'amazon') {
+          // Amazon 有 rank，没有 sales_count，默认显示评分
+          this.metric = 'rating';
+        } else {
+          this.metric = 'sales_count';
+        }
+      }
     } catch (e) {
       console.error('Load trend error:', e);
     } finally {
@@ -496,14 +505,14 @@ export class EaProductTrendPage extends LitElement {
     // Y 轴标签
     yTicks.forEach(t => {
       const label = this._formatValue(t, this.metric);
-      svgContent += `<text x="${padding.left - 6}" y="${yScale(t) + 2}" text-anchor="end" fill="#888" font-size="8" font-family="system-ui, -apple-system, sans-serif" font-weight="400">${label}</text>`;
+      svgContent += `<text x="${padding.left - 10}" y="${yScale(t) + 4}" text-anchor="end" fill="#aaa" font-size="11" font-family="system-ui, -apple-system, sans-serif" font-weight="500">${label}</text>`;
     });
     
     // X 轴标签
     processedData.forEach((d, i) => {
       if (i % xTickInterval !== 0 && i !== data.length - 1) return;
       const label = d.date.slice(5);
-      svgContent += `<text x="${xScale(i)}" y="${height - 8}" text-anchor="middle" fill="#888" font-size="8" font-family="system-ui, -apple-system, sans-serif" font-weight="400">${label}</text>`;
+      svgContent += `<text x="${xScale(i)}" y="${height - 20}" text-anchor="middle" fill="#aaa" font-size="11" font-family="system-ui, -apple-system, sans-serif" font-weight="500">${label}</text>`;
     });
 
     // 鼠标移动处理
@@ -527,11 +536,13 @@ export class EaProductTrendPage extends LitElement {
           value: d.rawValue,
           index
         };
+        this.requestUpdate();
       }
     };
 
     const handleMouseLeave = () => {
       this.tooltipData = { ...this.tooltipData, show: false };
+      this.requestUpdate();
     };
 
     return html`
@@ -543,11 +554,11 @@ export class EaProductTrendPage extends LitElement {
       
       <!-- Tooltip 浮框 -->
       ${this.tooltipData.show ? html`
-        <div class="tooltip" style="left:calc(${(this.tooltipData.x / 800) * 100}%);top:calc(${(this.tooltipData.y / 320) * 100}%)">
+        <div class="tooltip" style="left:${(this.tooltipData.x / 800) * 100}%;top:${(this.tooltipData.y / 320) * 100}%;transform:translate(-50%,-130%)">
           <div class="tooltip-date">${this.tooltipData.date}</div>
           <div class="tooltip-value">
-            <span class="tooltip-label">${this._getMetricLabel()}</span>
-            ${this._formatValue(this.tooltipData.value, this.metric)}
+            <span class="tooltip-label">${this._getMetricLabel()}:</span>
+            <span>${this._formatValue(this.tooltipData.value, this.metric)}</span>
           </div>
         </div>
       ` : ''}
@@ -557,6 +568,7 @@ export class EaProductTrendPage extends LitElement {
   private _getMetricLabel(): string {
     switch (this.metric) {
       case 'sales_count': return '销量';
+      case 'rank': return '排名';
       case 'rating': return '评分';
       case 'price': return '价格';
       default: return '';
@@ -566,6 +578,7 @@ export class EaProductTrendPage extends LitElement {
   private _getMetricHint(): string {
     switch (this.metric) {
       case 'sales_count': return '显示商品每日销量变化趋势';
+      case 'rank': return '显示商品排名变化趋势';
       case 'rating': return '显示商品评分变化趋势';
       case 'price': return '显示商品价格变化趋势';
       default: return '';
@@ -602,11 +615,18 @@ export class EaProductTrendPage extends LitElement {
       return html`<div class="loading"><div class="spinner"></div><p>加载中...</p></div>`;
     }
 
-    const metricTabs = [
-      { key: 'sales_count', label: '销量' },
-      { key: 'rating', label: '评分' },
-      { key: 'price', label: '价格' },
-    ];
+    // 根据平台设置指标选项
+    const metricTabs = this.product.platform === 'amazon'
+      ? [
+          { key: 'rank', label: '排名' },
+          { key: 'rating', label: '评分' },
+          { key: 'price', label: '价格' },
+        ]
+      : [
+          { key: 'sales_count', label: '销量' },
+          { key: 'rating', label: '评分' },
+          { key: 'price', label: '价格' },
+        ];
 
     const timePresets = [
       { key: '7', label: '近7天' },

@@ -235,6 +235,18 @@ EcomAgent/
 
 ## 更新日志
 
+### 2026-06-16
+- ✅ **趋势图表修复**
+  - 修复 XY 轴标签不显示问题（字体增大、颜色调整）
+  - 修复鼠标悬停 Tooltip 不显示问题
+  - Amazon/TikTok 默认指标适配（Amazon 显示排名，TikTok 显示销量）
+  - API 字段兼容性修复（timestamp → created_at）
+- 🔄 开发规划调整
+  - Phase 1：修复已知 Bug ✅ 已完成
+  - Phase 2：生图/生视频/详情页功能 ⏳ 待开发
+  - Phase 3：TikTok 商品自动填充 ⏳ 待开发
+  - Phase 4：Mac/Windows 跨平台兼容 ⏳ 待开发
+
 ### 2026-06-10
 - ✅ 嵌入式 Python 配置（跨平台免安装）
   - Windows: python/ 目录（已配置好）
