@@ -1,46 +1,46 @@
-var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e;var d=(o,t,e)=>Ue(o,typeof t!="symbol"?t+"":t,e);(function(){const t=document.createElement("link").relList;if(t&&t.supports&&t.supports("modulepreload"))return;for(const r of document.querySelectorAll('link[rel="modulepreload"]'))a(r);new MutationObserver(r=>{for(const i of r)if(i.type==="childList")for(const s of i.addedNodes)s.tagName==="LINK"&&s.rel==="modulepreload"&&a(s)}).observe(document,{childList:!0,subtree:!0});function e(r){const i={};return r.integrity&&(i.integrity=r.integrity),r.referrerPolicy&&(i.referrerPolicy=r.referrerPolicy),r.crossOrigin==="use-credentials"?i.credentials="include":r.crossOrigin==="anonymous"?i.credentials="omit":i.credentials="same-origin",i}function a(r){if(r.ep)return;r.ep=!0;const i=e(r);fetch(r.href,i)}})();/**
+var Ge=Object.defineProperty;var Be=(o,t,e)=>t in o?Ge(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e;var d=(o,t,e)=>Be(o,typeof t!="symbol"?t+"":t,e);(function(){const t=document.createElement("link").relList;if(t&&t.supports&&t.supports("modulepreload"))return;for(const r of document.querySelectorAll('link[rel="modulepreload"]'))a(r);new MutationObserver(r=>{for(const s of r)if(s.type==="childList")for(const i of s.addedNodes)i.tagName==="LINK"&&i.rel==="modulepreload"&&a(i)}).observe(document,{childList:!0,subtree:!0});function e(r){const s={};return r.integrity&&(s.integrity=r.integrity),r.referrerPolicy&&(s.referrerPolicy=r.referrerPolicy),r.crossOrigin==="use-credentials"?s.credentials="include":r.crossOrigin==="anonymous"?s.credentials="omit":s.credentials="same-origin",s}function a(r){if(r.ep)return;r.ep=!0;const s=e(r);fetch(r.href,s)}})();/**
  * @license
  * Copyright 2019 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */const $t=globalThis,Ut=$t.ShadowRoot&&($t.ShadyCSS===void 0||$t.ShadyCSS.nativeShadow)&&"adoptedStyleSheets"in Document.prototype&&"replace"in CSSStyleSheet.prototype,Ft=Symbol(),Jt=new WeakMap;let se=class{constructor(t,e,a){if(this._$cssResult$=!0,a!==Ft)throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");this.cssText=t,this.t=e}get styleSheet(){let t=this.o;const e=this.t;if(Ut&&t===void 0){const a=e!==void 0&&e.length===1;a&&(t=Jt.get(e)),t===void 0&&((this.o=t=new CSSStyleSheet).replaceSync(this.cssText),a&&Jt.set(e,t))}return t}toString(){return this.cssText}};const Fe=o=>new se(typeof o=="string"?o:o+"",void 0,Ft),$=(o,...t)=>{const e=o.length===1?o[0]:t.reduce((a,r,i)=>a+(s=>{if(s._$cssResult$===!0)return s.cssText;if(typeof s=="number")return s;throw Error("Value passed to 'css' function must be a 'css' function result: "+s+". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.")})(r)+o[i+1],o[0]);return new se(e,o,Ft)},Re=(o,t)=>{if(Ut)o.adoptedStyleSheets=t.map(e=>e instanceof CSSStyleSheet?e:e.styleSheet);else for(const e of t){const a=document.createElement("style"),r=$t.litNonce;r!==void 0&&a.setAttribute("nonce",r),a.textContent=e.cssText,o.appendChild(a)}},Yt=Ut?o=>o:o=>o instanceof CSSStyleSheet?(t=>{let e="";for(const a of t.cssRules)e+=a.cssText;return Fe(e)})(o):o;/**
+ */const St=globalThis,Gt=St.ShadowRoot&&(St.ShadyCSS===void 0||St.ShadyCSS.nativeShadow)&&"adoptedStyleSheets"in Document.prototype&&"replace"in CSSStyleSheet.prototype,Bt=Symbol(),Zt=new WeakMap;let pe=class{constructor(t,e,a){if(this._$cssResult$=!0,a!==Bt)throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");this.cssText=t,this.t=e}get styleSheet(){let t=this.o;const e=this.t;if(Gt&&t===void 0){const a=e!==void 0&&e.length===1;a&&(t=Zt.get(e)),t===void 0&&((this.o=t=new CSSStyleSheet).replaceSync(this.cssText),a&&Zt.set(e,t))}return t}toString(){return this.cssText}};const Ke=o=>new pe(typeof o=="string"?o:o+"",void 0,Bt),f=(o,...t)=>{const e=o.length===1?o[0]:t.reduce((a,r,s)=>a+(i=>{if(i._$cssResult$===!0)return i.cssText;if(typeof i=="number")return i;throw Error("Value passed to 'css' function must be a 'css' function result: "+i+". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.")})(r)+o[s+1],o[0]);return new pe(e,o,Bt)},Je=(o,t)=>{if(Gt)o.adoptedStyleSheets=t.map(e=>e instanceof CSSStyleSheet?e:e.styleSheet);else for(const e of t){const a=document.createElement("style"),r=St.litNonce;r!==void 0&&a.setAttribute("nonce",r),a.textContent=e.cssText,o.appendChild(a)}},te=Gt?o=>o:o=>o instanceof CSSStyleSheet?(t=>{let e="";for(const a of t.cssRules)e+=a.cssText;return Ke(e)})(o):o;/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */const{is:He,defineProperty:qe,getOwnPropertyDescriptor:Be,getOwnPropertyNames:Ve,getOwnPropertySymbols:Ge,getPrototypeOf:Je}=Object,F=globalThis,Wt=F.trustedTypes,Ye=Wt?Wt.emptyScript:"",Ot=F.reactiveElementPolyfillSupport,ht=(o,t)=>o,_t={toAttribute(o,t){switch(t){case Boolean:o=o?Ye:null;break;case Object:case Array:o=o==null?o:JSON.stringify(o)}return o},fromAttribute(o,t){let e=o;switch(t){case Boolean:e=o!==null;break;case Number:e=o===null?null:Number(o);break;case Object:case Array:try{e=JSON.parse(o)}catch{e=null}}return e}},Rt=(o,t)=>!He(o,t),Kt={attribute:!0,type:String,converter:_t,reflect:!1,useDefault:!1,hasChanged:Rt};Symbol.metadata??(Symbol.metadata=Symbol("metadata")),F.litPropertyMetadata??(F.litPropertyMetadata=new WeakMap);let at=class extends HTMLElement{static addInitializer(t){this._$Ei(),(this.l??(this.l=[])).push(t)}static get observedAttributes(){return this.finalize(),this._$Eh&&[...this._$Eh.keys()]}static createProperty(t,e=Kt){if(e.state&&(e.attribute=!1),this._$Ei(),this.prototype.hasOwnProperty(t)&&((e=Object.create(e)).wrapped=!0),this.elementProperties.set(t,e),!e.noAccessor){const a=Symbol(),r=this.getPropertyDescriptor(t,a,e);r!==void 0&&qe(this.prototype,t,r)}}static getPropertyDescriptor(t,e,a){const{get:r,set:i}=Be(this.prototype,t)??{get(){return this[e]},set(s){this[e]=s}};return{get:r,set(s){const p=r==null?void 0:r.call(this);i==null||i.call(this,s),this.requestUpdate(t,p,a)},configurable:!0,enumerable:!0}}static getPropertyOptions(t){return this.elementProperties.get(t)??Kt}static _$Ei(){if(this.hasOwnProperty(ht("elementProperties")))return;const t=Je(this);t.finalize(),t.l!==void 0&&(this.l=[...t.l]),this.elementProperties=new Map(t.elementProperties)}static finalize(){if(this.hasOwnProperty(ht("finalized")))return;if(this.finalized=!0,this._$Ei(),this.hasOwnProperty(ht("properties"))){const e=this.properties,a=[...Ve(e),...Ge(e)];for(const r of a)this.createProperty(r,e[r])}const t=this[Symbol.metadata];if(t!==null){const e=litPropertyMetadata.get(t);if(e!==void 0)for(const[a,r]of e)this.elementProperties.set(a,r)}this._$Eh=new Map;for(const[e,a]of this.elementProperties){const r=this._$Eu(e,a);r!==void 0&&this._$Eh.set(r,e)}this.elementStyles=this.finalizeStyles(this.styles)}static finalizeStyles(t){const e=[];if(Array.isArray(t)){const a=new Set(t.flat(1/0).reverse());for(const r of a)e.unshift(Yt(r))}else t!==void 0&&e.push(Yt(t));return e}static _$Eu(t,e){const a=e.attribute;return a===!1?void 0:typeof a=="string"?a:typeof t=="string"?t.toLowerCase():void 0}constructor(){super(),this._$Ep=void 0,this.isUpdatePending=!1,this.hasUpdated=!1,this._$Em=null,this._$Ev()}_$Ev(){var t;this._$ES=new Promise(e=>this.enableUpdating=e),this._$AL=new Map,this._$E_(),this.requestUpdate(),(t=this.constructor.l)==null||t.forEach(e=>e(this))}addController(t){var e;(this._$EO??(this._$EO=new Set)).add(t),this.renderRoot!==void 0&&this.isConnected&&((e=t.hostConnected)==null||e.call(t))}removeController(t){var e;(e=this._$EO)==null||e.delete(t)}_$E_(){const t=new Map,e=this.constructor.elementProperties;for(const a of e.keys())this.hasOwnProperty(a)&&(t.set(a,this[a]),delete this[a]);t.size>0&&(this._$Ep=t)}createRenderRoot(){const t=this.shadowRoot??this.attachShadow(this.constructor.shadowRootOptions);return Re(t,this.constructor.elementStyles),t}connectedCallback(){var t;this.renderRoot??(this.renderRoot=this.createRenderRoot()),this.enableUpdating(!0),(t=this._$EO)==null||t.forEach(e=>{var a;return(a=e.hostConnected)==null?void 0:a.call(e)})}enableUpdating(t){}disconnectedCallback(){var t;(t=this._$EO)==null||t.forEach(e=>{var a;return(a=e.hostDisconnected)==null?void 0:a.call(e)})}attributeChangedCallback(t,e,a){this._$AK(t,a)}_$ET(t,e){var i;const a=this.constructor.elementProperties.get(t),r=this.constructor._$Eu(t,a);if(r!==void 0&&a.reflect===!0){const s=(((i=a.converter)==null?void 0:i.toAttribute)!==void 0?a.converter:_t).toAttribute(e,a.type);this._$Em=t,s==null?this.removeAttribute(r):this.setAttribute(r,s),this._$Em=null}}_$AK(t,e){var i,s;const a=this.constructor,r=a._$Eh.get(t);if(r!==void 0&&this._$Em!==r){const p=a.getPropertyOptions(r),c=typeof p.converter=="function"?{fromAttribute:p.converter}:((i=p.converter)==null?void 0:i.fromAttribute)!==void 0?p.converter:_t;this._$Em=r;const h=c.fromAttribute(e,p.type);this[r]=h??((s=this._$Ej)==null?void 0:s.get(r))??h,this._$Em=null}}requestUpdate(t,e,a,r=!1,i){var s;if(t!==void 0){const p=this.constructor;if(r===!1&&(i=this[t]),a??(a=p.getPropertyOptions(t)),!((a.hasChanged??Rt)(i,e)||a.useDefault&&a.reflect&&i===((s=this._$Ej)==null?void 0:s.get(t))&&!this.hasAttribute(p._$Eu(t,a))))return;this.C(t,e,a)}this.isUpdatePending===!1&&(this._$ES=this._$EP())}C(t,e,{useDefault:a,reflect:r,wrapped:i},s){a&&!(this._$Ej??(this._$Ej=new Map)).has(t)&&(this._$Ej.set(t,s??e??this[t]),i!==!0||s!==void 0)||(this._$AL.has(t)||(this.hasUpdated||a||(e=void 0),this._$AL.set(t,e)),r===!0&&this._$Em!==t&&(this._$Eq??(this._$Eq=new Set)).add(t))}async _$EP(){this.isUpdatePending=!0;try{await this._$ES}catch(e){Promise.reject(e)}const t=this.scheduleUpdate();return t!=null&&await t,!this.isUpdatePending}scheduleUpdate(){return this.performUpdate()}performUpdate(){var a;if(!this.isUpdatePending)return;if(!this.hasUpdated){if(this.renderRoot??(this.renderRoot=this.createRenderRoot()),this._$Ep){for(const[i,s]of this._$Ep)this[i]=s;this._$Ep=void 0}const r=this.constructor.elementProperties;if(r.size>0)for(const[i,s]of r){const{wrapped:p}=s,c=this[i];p!==!0||this._$AL.has(i)||c===void 0||this.C(i,void 0,s,c)}}let t=!1;const e=this._$AL;try{t=this.shouldUpdate(e),t?(this.willUpdate(e),(a=this._$EO)==null||a.forEach(r=>{var i;return(i=r.hostUpdate)==null?void 0:i.call(r)}),this.update(e)):this._$EM()}catch(r){throw t=!1,this._$EM(),r}t&&this._$AE(e)}willUpdate(t){}_$AE(t){var e;(e=this._$EO)==null||e.forEach(a=>{var r;return(r=a.hostUpdated)==null?void 0:r.call(a)}),this.hasUpdated||(this.hasUpdated=!0,this.firstUpdated(t)),this.updated(t)}_$EM(){this._$AL=new Map,this.isUpdatePending=!1}get updateComplete(){return this.getUpdateComplete()}getUpdateComplete(){return this._$ES}shouldUpdate(t){return!0}update(t){this._$Eq&&(this._$Eq=this._$Eq.forEach(e=>this._$ET(e,this[e]))),this._$EM()}updated(t){}firstUpdated(t){}};at.elementStyles=[],at.shadowRootOptions={mode:"open"},at[ht("elementProperties")]=new Map,at[ht("finalized")]=new Map,Ot==null||Ot({ReactiveElement:at}),(F.reactiveElementVersions??(F.reactiveElementVersions=[])).push("2.1.2");/**
+ */const{is:Ye,defineProperty:We,getOwnPropertyDescriptor:Qe,getOwnPropertyNames:Xe,getOwnPropertySymbols:Ze,getPrototypeOf:ta}=Object,K=globalThis,ee=K.trustedTypes,ea=ee?ee.emptyScript:"",Ut=K.reactiveElementPolyfillSupport,ft=(o,t)=>o,Ct={toAttribute(o,t){switch(t){case Boolean:o=o?ea:null;break;case Object:case Array:o=o==null?o:JSON.stringify(o)}return o},fromAttribute(o,t){let e=o;switch(t){case Boolean:e=o!==null;break;case Number:e=o===null?null:Number(o);break;case Object:case Array:try{e=JSON.parse(o)}catch{e=null}}return e}},Kt=(o,t)=>!Ye(o,t),ae={attribute:!0,type:String,converter:Ct,reflect:!1,useDefault:!1,hasChanged:Kt};Symbol.metadata??(Symbol.metadata=Symbol("metadata")),K.litPropertyMetadata??(K.litPropertyMetadata=new WeakMap);let lt=class extends HTMLElement{static addInitializer(t){this._$Ei(),(this.l??(this.l=[])).push(t)}static get observedAttributes(){return this.finalize(),this._$Eh&&[...this._$Eh.keys()]}static createProperty(t,e=ae){if(e.state&&(e.attribute=!1),this._$Ei(),this.prototype.hasOwnProperty(t)&&((e=Object.create(e)).wrapped=!0),this.elementProperties.set(t,e),!e.noAccessor){const a=Symbol(),r=this.getPropertyDescriptor(t,a,e);r!==void 0&&We(this.prototype,t,r)}}static getPropertyDescriptor(t,e,a){const{get:r,set:s}=Qe(this.prototype,t)??{get(){return this[e]},set(i){this[e]=i}};return{get:r,set(i){const p=r==null?void 0:r.call(this);s==null||s.call(this,i),this.requestUpdate(t,p,a)},configurable:!0,enumerable:!0}}static getPropertyOptions(t){return this.elementProperties.get(t)??ae}static _$Ei(){if(this.hasOwnProperty(ft("elementProperties")))return;const t=ta(this);t.finalize(),t.l!==void 0&&(this.l=[...t.l]),this.elementProperties=new Map(t.elementProperties)}static finalize(){if(this.hasOwnProperty(ft("finalized")))return;if(this.finalized=!0,this._$Ei(),this.hasOwnProperty(ft("properties"))){const e=this.properties,a=[...Xe(e),...Ze(e)];for(const r of a)this.createProperty(r,e[r])}const t=this[Symbol.metadata];if(t!==null){const e=litPropertyMetadata.get(t);if(e!==void 0)for(const[a,r]of e)this.elementProperties.set(a,r)}this._$Eh=new Map;for(const[e,a]of this.elementProperties){const r=this._$Eu(e,a);r!==void 0&&this._$Eh.set(r,e)}this.elementStyles=this.finalizeStyles(this.styles)}static finalizeStyles(t){const e=[];if(Array.isArray(t)){const a=new Set(t.flat(1/0).reverse());for(const r of a)e.unshift(te(r))}else t!==void 0&&e.push(te(t));return e}static _$Eu(t,e){const a=e.attribute;return a===!1?void 0:typeof a=="string"?a:typeof t=="string"?t.toLowerCase():void 0}constructor(){super(),this._$Ep=void 0,this.isUpdatePending=!1,this.hasUpdated=!1,this._$Em=null,this._$Ev()}_$Ev(){var t;this._$ES=new Promise(e=>this.enableUpdating=e),this._$AL=new Map,this._$E_(),this.requestUpdate(),(t=this.constructor.l)==null||t.forEach(e=>e(this))}addController(t){var e;(this._$EO??(this._$EO=new Set)).add(t),this.renderRoot!==void 0&&this.isConnected&&((e=t.hostConnected)==null||e.call(t))}removeController(t){var e;(e=this._$EO)==null||e.delete(t)}_$E_(){const t=new Map,e=this.constructor.elementProperties;for(const a of e.keys())this.hasOwnProperty(a)&&(t.set(a,this[a]),delete this[a]);t.size>0&&(this._$Ep=t)}createRenderRoot(){const t=this.shadowRoot??this.attachShadow(this.constructor.shadowRootOptions);return Je(t,this.constructor.elementStyles),t}connectedCallback(){var t;this.renderRoot??(this.renderRoot=this.createRenderRoot()),this.enableUpdating(!0),(t=this._$EO)==null||t.forEach(e=>{var a;return(a=e.hostConnected)==null?void 0:a.call(e)})}enableUpdating(t){}disconnectedCallback(){var t;(t=this._$EO)==null||t.forEach(e=>{var a;return(a=e.hostDisconnected)==null?void 0:a.call(e)})}attributeChangedCallback(t,e,a){this._$AK(t,a)}_$ET(t,e){var s;const a=this.constructor.elementProperties.get(t),r=this.constructor._$Eu(t,a);if(r!==void 0&&a.reflect===!0){const i=(((s=a.converter)==null?void 0:s.toAttribute)!==void 0?a.converter:Ct).toAttribute(e,a.type);this._$Em=t,i==null?this.removeAttribute(r):this.setAttribute(r,i),this._$Em=null}}_$AK(t,e){var s,i;const a=this.constructor,r=a._$Eh.get(t);if(r!==void 0&&this._$Em!==r){const p=a.getPropertyOptions(r),c=typeof p.converter=="function"?{fromAttribute:p.converter}:((s=p.converter)==null?void 0:s.fromAttribute)!==void 0?p.converter:Ct;this._$Em=r;const h=c.fromAttribute(e,p.type);this[r]=h??((i=this._$Ej)==null?void 0:i.get(r))??h,this._$Em=null}}requestUpdate(t,e,a,r=!1,s){var i;if(t!==void 0){const p=this.constructor;if(r===!1&&(s=this[t]),a??(a=p.getPropertyOptions(t)),!((a.hasChanged??Kt)(s,e)||a.useDefault&&a.reflect&&s===((i=this._$Ej)==null?void 0:i.get(t))&&!this.hasAttribute(p._$Eu(t,a))))return;this.C(t,e,a)}this.isUpdatePending===!1&&(this._$ES=this._$EP())}C(t,e,{useDefault:a,reflect:r,wrapped:s},i){a&&!(this._$Ej??(this._$Ej=new Map)).has(t)&&(this._$Ej.set(t,i??e??this[t]),s!==!0||i!==void 0)||(this._$AL.has(t)||(this.hasUpdated||a||(e=void 0),this._$AL.set(t,e)),r===!0&&this._$Em!==t&&(this._$Eq??(this._$Eq=new Set)).add(t))}async _$EP(){this.isUpdatePending=!0;try{await this._$ES}catch(e){Promise.reject(e)}const t=this.scheduleUpdate();return t!=null&&await t,!this.isUpdatePending}scheduleUpdate(){return this.performUpdate()}performUpdate(){var a;if(!this.isUpdatePending)return;if(!this.hasUpdated){if(this.renderRoot??(this.renderRoot=this.createRenderRoot()),this._$Ep){for(const[s,i]of this._$Ep)this[s]=i;this._$Ep=void 0}const r=this.constructor.elementProperties;if(r.size>0)for(const[s,i]of r){const{wrapped:p}=i,c=this[s];p!==!0||this._$AL.has(s)||c===void 0||this.C(s,void 0,i,c)}}let t=!1;const e=this._$AL;try{t=this.shouldUpdate(e),t?(this.willUpdate(e),(a=this._$EO)==null||a.forEach(r=>{var s;return(s=r.hostUpdate)==null?void 0:s.call(r)}),this.update(e)):this._$EM()}catch(r){throw t=!1,this._$EM(),r}t&&this._$AE(e)}willUpdate(t){}_$AE(t){var e;(e=this._$EO)==null||e.forEach(a=>{var r;return(r=a.hostUpdated)==null?void 0:r.call(a)}),this.hasUpdated||(this.hasUpdated=!0,this.firstUpdated(t)),this.updated(t)}_$EM(){this._$AL=new Map,this.isUpdatePending=!1}get updateComplete(){return this.getUpdateComplete()}getUpdateComplete(){return this._$ES}shouldUpdate(t){return!0}update(t){this._$Eq&&(this._$Eq=this._$Eq.forEach(e=>this._$ET(e,this[e]))),this._$EM()}updated(t){}firstUpdated(t){}};lt.elementStyles=[],lt.shadowRootOptions={mode:"open"},lt[ft("elementProperties")]=new Map,lt[ft("finalized")]=new Map,Ut==null||Ut({ReactiveElement:lt}),(K.reactiveElementVersions??(K.reactiveElementVersions=[])).push("2.1.2");/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */const ut=globalThis,Xt=o=>o,wt=ut.trustedTypes,Zt=wt?wt.createPolicy("lit-html",{createHTML:o=>o}):void 0,ne="$lit$",U=`lit$${Math.random().toFixed(9).slice(2)}$`,de="?"+U,We=`<${de}>`,K=document,gt=()=>K.createComment(""),vt=o=>o===null||typeof o!="object"&&typeof o!="function",Ht=Array.isArray,Ke=o=>Ht(o)||typeof(o==null?void 0:o[Symbol.iterator])=="function",Mt=`[ 	
-\f\r]`,pt=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,Qt=/-->/g,te=/>/g,J=RegExp(`>|${Mt}(?:([^\\s"'>=/]+)(${Mt}*=${Mt}*(?:[^ 	
-\f\r"'\`<>=]|("|')|))|$)`,"g"),ee=/'/g,ae=/"/g,le=/^(?:script|style|textarea|title)$/i,Xe=o=>(t,...e)=>({_$litType$:o,strings:t,values:e}),n=Xe(1),X=Symbol.for("lit-noChange"),f=Symbol.for("lit-nothing"),re=new WeakMap,Y=K.createTreeWalker(K,129);function ce(o,t){if(!Ht(o)||!o.hasOwnProperty("raw"))throw Error("invalid template strings array");return Zt!==void 0?Zt.createHTML(t):t}const Ze=(o,t)=>{const e=o.length-1,a=[];let r,i=t===2?"<svg>":t===3?"<math>":"",s=pt;for(let p=0;p<e;p++){const c=o[p];let h,b,u=-1,g=0;for(;g<c.length&&(s.lastIndex=g,b=s.exec(c),b!==null);)g=s.lastIndex,s===pt?b[1]==="!--"?s=Qt:b[1]!==void 0?s=te:b[2]!==void 0?(le.test(b[2])&&(r=RegExp("</"+b[2],"g")),s=J):b[3]!==void 0&&(s=J):s===J?b[0]===">"?(s=r??pt,u=-1):b[1]===void 0?u=-2:(u=s.lastIndex-b[2].length,h=b[1],s=b[3]===void 0?J:b[3]==='"'?ae:ee):s===ae||s===ee?s=J:s===Qt||s===te?s=pt:(s=J,r=void 0);const x=s===J&&o[p+1].startsWith("/>")?" ":"";i+=s===pt?c+We:u>=0?(a.push(h),c.slice(0,u)+ne+c.slice(u)+U+x):c+U+(u===-2?p:x)}return[ce(o,i+(o[e]||"<?>")+(t===2?"</svg>":t===3?"</math>":"")),a]};class bt{constructor({strings:t,_$litType$:e},a){let r;this.parts=[];let i=0,s=0;const p=t.length-1,c=this.parts,[h,b]=Ze(t,e);if(this.el=bt.createElement(h,a),Y.currentNode=this.el.content,e===2||e===3){const u=this.el.content.firstChild;u.replaceWith(...u.childNodes)}for(;(r=Y.nextNode())!==null&&c.length<p;){if(r.nodeType===1){if(r.hasAttributes())for(const u of r.getAttributeNames())if(u.endsWith(ne)){const g=b[s++],x=r.getAttribute(u).split(U),O=/([.?@])?(.*)/.exec(g);c.push({type:1,index:i,name:O[2],strings:x,ctor:O[1]==="."?ta:O[1]==="?"?ea:O[1]==="@"?aa:St}),r.removeAttribute(u)}else u.startsWith(U)&&(c.push({type:6,index:i}),r.removeAttribute(u));if(le.test(r.tagName)){const u=r.textContent.split(U),g=u.length-1;if(g>0){r.textContent=wt?wt.emptyScript:"";for(let x=0;x<g;x++)r.append(u[x],gt()),Y.nextNode(),c.push({type:2,index:++i});r.append(u[g],gt())}}}else if(r.nodeType===8)if(r.data===de)c.push({type:2,index:i});else{let u=-1;for(;(u=r.data.indexOf(U,u+1))!==-1;)c.push({type:7,index:i}),u+=U.length-1}i++}}static createElement(t,e){const a=K.createElement("template");return a.innerHTML=t,a}}function rt(o,t,e=o,a){var s,p;if(t===X)return t;let r=a!==void 0?(s=e._$Co)==null?void 0:s[a]:e._$Cl;const i=vt(t)?void 0:t._$litDirective$;return(r==null?void 0:r.constructor)!==i&&((p=r==null?void 0:r._$AO)==null||p.call(r,!1),i===void 0?r=void 0:(r=new i(o),r._$AT(o,e,a)),a!==void 0?(e._$Co??(e._$Co=[]))[a]=r:e._$Cl=r),r!==void 0&&(t=rt(o,r._$AS(o,t.values),r,a)),t}class Qe{constructor(t,e){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=e}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){const{el:{content:e},parts:a}=this._$AD,r=((t==null?void 0:t.creationScope)??K).importNode(e,!0);Y.currentNode=r;let i=Y.nextNode(),s=0,p=0,c=a[0];for(;c!==void 0;){if(s===c.index){let h;c.type===2?h=new yt(i,i.nextSibling,this,t):c.type===1?h=new c.ctor(i,c.name,c.strings,this,t):c.type===6&&(h=new ra(i,this,t)),this._$AV.push(h),c=a[++p]}s!==(c==null?void 0:c.index)&&(i=Y.nextNode(),s++)}return Y.currentNode=K,r}p(t){let e=0;for(const a of this._$AV)a!==void 0&&(a.strings!==void 0?(a._$AI(t,a,e),e+=a.strings.length-2):a._$AI(t[e])),e++}}class yt{get _$AU(){var t;return((t=this._$AM)==null?void 0:t._$AU)??this._$Cv}constructor(t,e,a,r){this.type=2,this._$AH=f,this._$AN=void 0,this._$AA=t,this._$AB=e,this._$AM=a,this.options=r,this._$Cv=(r==null?void 0:r.isConnected)??!0}get parentNode(){let t=this._$AA.parentNode;const e=this._$AM;return e!==void 0&&(t==null?void 0:t.nodeType)===11&&(t=e.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,e=this){t=rt(this,t,e),vt(t)?t===f||t==null||t===""?(this._$AH!==f&&this._$AR(),this._$AH=f):t!==this._$AH&&t!==X&&this._(t):t._$litType$!==void 0?this.$(t):t.nodeType!==void 0?this.T(t):Ke(t)?this.k(t):this._(t)}O(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}T(t){this._$AH!==t&&(this._$AR(),this._$AH=this.O(t))}_(t){this._$AH!==f&&vt(this._$AH)?this._$AA.nextSibling.data=t:this.T(K.createTextNode(t)),this._$AH=t}$(t){var i;const{values:e,_$litType$:a}=t,r=typeof a=="number"?this._$AC(t):(a.el===void 0&&(a.el=bt.createElement(ce(a.h,a.h[0]),this.options)),a);if(((i=this._$AH)==null?void 0:i._$AD)===r)this._$AH.p(e);else{const s=new Qe(r,this),p=s.u(this.options);s.p(e),this.T(p),this._$AH=s}}_$AC(t){let e=re.get(t.strings);return e===void 0&&re.set(t.strings,e=new bt(t)),e}k(t){Ht(this._$AH)||(this._$AH=[],this._$AR());const e=this._$AH;let a,r=0;for(const i of t)r===e.length?e.push(a=new yt(this.O(gt()),this.O(gt()),this,this.options)):a=e[r],a._$AI(i),r++;r<e.length&&(this._$AR(a&&a._$AB.nextSibling,r),e.length=r)}_$AR(t=this._$AA.nextSibling,e){var a;for((a=this._$AP)==null?void 0:a.call(this,!1,!0,e);t!==this._$AB;){const r=Xt(t).nextSibling;Xt(t).remove(),t=r}}setConnected(t){var e;this._$AM===void 0&&(this._$Cv=t,(e=this._$AP)==null||e.call(this,t))}}class St{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(t,e,a,r,i){this.type=1,this._$AH=f,this._$AN=void 0,this.element=t,this.name=e,this._$AM=r,this.options=i,a.length>2||a[0]!==""||a[1]!==""?(this._$AH=Array(a.length-1).fill(new String),this.strings=a):this._$AH=f}_$AI(t,e=this,a,r){const i=this.strings;let s=!1;if(i===void 0)t=rt(this,t,e,0),s=!vt(t)||t!==this._$AH&&t!==X,s&&(this._$AH=t);else{const p=t;let c,h;for(t=i[0],c=0;c<i.length-1;c++)h=rt(this,p[a+c],e,c),h===X&&(h=this._$AH[c]),s||(s=!vt(h)||h!==this._$AH[c]),h===f?t=f:t!==f&&(t+=(h??"")+i[c+1]),this._$AH[c]=h}s&&!r&&this.j(t)}j(t){t===f?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,t??"")}}class ta extends St{constructor(){super(...arguments),this.type=3}j(t){this.element[this.name]=t===f?void 0:t}}class ea extends St{constructor(){super(...arguments),this.type=4}j(t){this.element.toggleAttribute(this.name,!!t&&t!==f)}}class aa extends St{constructor(t,e,a,r,i){super(t,e,a,r,i),this.type=5}_$AI(t,e=this){if((t=rt(this,t,e,0)??f)===X)return;const a=this._$AH,r=t===f&&a!==f||t.capture!==a.capture||t.once!==a.once||t.passive!==a.passive,i=t!==f&&(a===f||r);r&&this.element.removeEventListener(this.name,this,a),i&&this.element.addEventListener(this.name,this,t),this._$AH=t}handleEvent(t){var e;typeof this._$AH=="function"?this._$AH.call(((e=this.options)==null?void 0:e.host)??this.element,t):this._$AH.handleEvent(t)}}class ra{constructor(t,e,a){this.element=t,this.type=6,this._$AN=void 0,this._$AM=e,this.options=a}get _$AU(){return this._$AM._$AU}_$AI(t){rt(this,t)}}const Dt=ut.litHtmlPolyfillSupport;Dt==null||Dt(bt,yt),(ut.litHtmlVersions??(ut.litHtmlVersions=[])).push("3.3.2");const oa=(o,t,e)=>{const a=(e==null?void 0:e.renderBefore)??t;let r=a._$litPart$;if(r===void 0){const i=(e==null?void 0:e.renderBefore)??null;a._$litPart$=r=new yt(t.insertBefore(gt(),i),i,void 0,e??{})}return r._$AI(o),r};/**
+ */const xt=globalThis,re=o=>o,Tt=xt.trustedTypes,oe=Tt?Tt.createPolicy("lit-html",{createHTML:o=>o}):void 0,he="$lit$",B=`lit$${Math.random().toFixed(9).slice(2)}$`,ge="?"+B,aa=`<${ge}>`,at=document,yt=()=>at.createComment(""),$t=o=>o===null||typeof o!="object"&&typeof o!="function",Jt=Array.isArray,ra=o=>Jt(o)||typeof(o==null?void 0:o[Symbol.iterator])=="function",Ft=`[ 	
+\f\r]`,mt=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,se=/-->/g,ie=/>/g,Z=RegExp(`>|${Ft}(?:([^\\s"'>=/]+)(${Ft}*=${Ft}*(?:[^ 	
+\f\r"'\`<>=]|("|')|))|$)`,"g"),ne=/'/g,de=/"/g,ue=/^(?:script|style|textarea|title)$/i,oa=o=>(t,...e)=>({_$litType$:o,strings:t,values:e}),n=oa(1),rt=Symbol.for("lit-noChange"),y=Symbol.for("lit-nothing"),le=new WeakMap,tt=at.createTreeWalker(at,129);function ve(o,t){if(!Jt(o)||!o.hasOwnProperty("raw"))throw Error("invalid template strings array");return oe!==void 0?oe.createHTML(t):t}const sa=(o,t)=>{const e=o.length-1,a=[];let r,s=t===2?"<svg>":t===3?"<math>":"",i=mt;for(let p=0;p<e;p++){const c=o[p];let h,m,g=-1,u=0;for(;u<c.length&&(i.lastIndex=u,m=i.exec(c),m!==null);)u=i.lastIndex,i===mt?m[1]==="!--"?i=se:m[1]!==void 0?i=ie:m[2]!==void 0?(ue.test(m[2])&&(r=RegExp("</"+m[2],"g")),i=Z):m[3]!==void 0&&(i=Z):i===Z?m[0]===">"?(i=r??mt,g=-1):m[1]===void 0?g=-2:(g=i.lastIndex-m[2].length,h=m[1],i=m[3]===void 0?Z:m[3]==='"'?de:ne):i===de||i===ne?i=Z:i===se||i===ie?i=mt:(i=Z,r=void 0);const $=i===Z&&o[p+1].startsWith("/>")?" ":"";s+=i===mt?c+aa:g>=0?(a.push(h),c.slice(0,g)+he+c.slice(g)+B+$):c+B+(g===-2?p:$)}return[ve(o,s+(o[e]||"<?>")+(t===2?"</svg>":t===3?"</math>":"")),a]};class _t{constructor({strings:t,_$litType$:e},a){let r;this.parts=[];let s=0,i=0;const p=t.length-1,c=this.parts,[h,m]=sa(t,e);if(this.el=_t.createElement(h,a),tt.currentNode=this.el.content,e===2||e===3){const g=this.el.content.firstChild;g.replaceWith(...g.childNodes)}for(;(r=tt.nextNode())!==null&&c.length<p;){if(r.nodeType===1){if(r.hasAttributes())for(const g of r.getAttributeNames())if(g.endsWith(he)){const u=m[i++],$=r.getAttribute(g).split(B),D=/([.?@])?(.*)/.exec(u);c.push({type:1,index:s,name:D[2],strings:$,ctor:D[1]==="."?na:D[1]==="?"?da:D[1]==="@"?la:Et}),r.removeAttribute(g)}else g.startsWith(B)&&(c.push({type:6,index:s}),r.removeAttribute(g));if(ue.test(r.tagName)){const g=r.textContent.split(B),u=g.length-1;if(u>0){r.textContent=Tt?Tt.emptyScript:"";for(let $=0;$<u;$++)r.append(g[$],yt()),tt.nextNode(),c.push({type:2,index:++s});r.append(g[u],yt())}}}else if(r.nodeType===8)if(r.data===ge)c.push({type:2,index:s});else{let g=-1;for(;(g=r.data.indexOf(B,g+1))!==-1;)c.push({type:7,index:s}),g+=B.length-1}s++}}static createElement(t,e){const a=at.createElement("template");return a.innerHTML=t,a}}function ct(o,t,e=o,a){var i,p;if(t===rt)return t;let r=a!==void 0?(i=e._$Co)==null?void 0:i[a]:e._$Cl;const s=$t(t)?void 0:t._$litDirective$;return(r==null?void 0:r.constructor)!==s&&((p=r==null?void 0:r._$AO)==null||p.call(r,!1),s===void 0?r=void 0:(r=new s(o),r._$AT(o,e,a)),a!==void 0?(e._$Co??(e._$Co=[]))[a]=r:e._$Cl=r),r!==void 0&&(t=ct(o,r._$AS(o,t.values),r,a)),t}class ia{constructor(t,e){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=e}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){const{el:{content:e},parts:a}=this._$AD,r=((t==null?void 0:t.creationScope)??at).importNode(e,!0);tt.currentNode=r;let s=tt.nextNode(),i=0,p=0,c=a[0];for(;c!==void 0;){if(i===c.index){let h;c.type===2?h=new zt(s,s.nextSibling,this,t):c.type===1?h=new c.ctor(s,c.name,c.strings,this,t):c.type===6&&(h=new ca(s,this,t)),this._$AV.push(h),c=a[++p]}i!==(c==null?void 0:c.index)&&(s=tt.nextNode(),i++)}return tt.currentNode=at,r}p(t){let e=0;for(const a of this._$AV)a!==void 0&&(a.strings!==void 0?(a._$AI(t,a,e),e+=a.strings.length-2):a._$AI(t[e])),e++}}class zt{get _$AU(){var t;return((t=this._$AM)==null?void 0:t._$AU)??this._$Cv}constructor(t,e,a,r){this.type=2,this._$AH=y,this._$AN=void 0,this._$AA=t,this._$AB=e,this._$AM=a,this.options=r,this._$Cv=(r==null?void 0:r.isConnected)??!0}get parentNode(){let t=this._$AA.parentNode;const e=this._$AM;return e!==void 0&&(t==null?void 0:t.nodeType)===11&&(t=e.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,e=this){t=ct(this,t,e),$t(t)?t===y||t==null||t===""?(this._$AH!==y&&this._$AR(),this._$AH=y):t!==this._$AH&&t!==rt&&this._(t):t._$litType$!==void 0?this.$(t):t.nodeType!==void 0?this.T(t):ra(t)?this.k(t):this._(t)}O(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}T(t){this._$AH!==t&&(this._$AR(),this._$AH=this.O(t))}_(t){this._$AH!==y&&$t(this._$AH)?this._$AA.nextSibling.data=t:this.T(at.createTextNode(t)),this._$AH=t}$(t){var s;const{values:e,_$litType$:a}=t,r=typeof a=="number"?this._$AC(t):(a.el===void 0&&(a.el=_t.createElement(ve(a.h,a.h[0]),this.options)),a);if(((s=this._$AH)==null?void 0:s._$AD)===r)this._$AH.p(e);else{const i=new ia(r,this),p=i.u(this.options);i.p(e),this.T(p),this._$AH=i}}_$AC(t){let e=le.get(t.strings);return e===void 0&&le.set(t.strings,e=new _t(t)),e}k(t){Jt(this._$AH)||(this._$AH=[],this._$AR());const e=this._$AH;let a,r=0;for(const s of t)r===e.length?e.push(a=new zt(this.O(yt()),this.O(yt()),this,this.options)):a=e[r],a._$AI(s),r++;r<e.length&&(this._$AR(a&&a._$AB.nextSibling,r),e.length=r)}_$AR(t=this._$AA.nextSibling,e){var a;for((a=this._$AP)==null?void 0:a.call(this,!1,!0,e);t!==this._$AB;){const r=re(t).nextSibling;re(t).remove(),t=r}}setConnected(t){var e;this._$AM===void 0&&(this._$Cv=t,(e=this._$AP)==null||e.call(this,t))}}class Et{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(t,e,a,r,s){this.type=1,this._$AH=y,this._$AN=void 0,this.element=t,this.name=e,this._$AM=r,this.options=s,a.length>2||a[0]!==""||a[1]!==""?(this._$AH=Array(a.length-1).fill(new String),this.strings=a):this._$AH=y}_$AI(t,e=this,a,r){const s=this.strings;let i=!1;if(s===void 0)t=ct(this,t,e,0),i=!$t(t)||t!==this._$AH&&t!==rt,i&&(this._$AH=t);else{const p=t;let c,h;for(t=s[0],c=0;c<s.length-1;c++)h=ct(this,p[a+c],e,c),h===rt&&(h=this._$AH[c]),i||(i=!$t(h)||h!==this._$AH[c]),h===y?t=y:t!==y&&(t+=(h??"")+s[c+1]),this._$AH[c]=h}i&&!r&&this.j(t)}j(t){t===y?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,t??"")}}class na extends Et{constructor(){super(...arguments),this.type=3}j(t){this.element[this.name]=t===y?void 0:t}}class da extends Et{constructor(){super(...arguments),this.type=4}j(t){this.element.toggleAttribute(this.name,!!t&&t!==y)}}class la extends Et{constructor(t,e,a,r,s){super(t,e,a,r,s),this.type=5}_$AI(t,e=this){if((t=ct(this,t,e,0)??y)===rt)return;const a=this._$AH,r=t===y&&a!==y||t.capture!==a.capture||t.once!==a.once||t.passive!==a.passive,s=t!==y&&(a===y||r);r&&this.element.removeEventListener(this.name,this,a),s&&this.element.addEventListener(this.name,this,t),this._$AH=t}handleEvent(t){var e;typeof this._$AH=="function"?this._$AH.call(((e=this.options)==null?void 0:e.host)??this.element,t):this._$AH.handleEvent(t)}}class ca{constructor(t,e,a){this.element=t,this.type=6,this._$AN=void 0,this._$AM=e,this.options=a}get _$AU(){return this._$AM._$AU}_$AI(t){ct(this,t)}}const Lt=xt.litHtmlPolyfillSupport;Lt==null||Lt(_t,zt),(xt.litHtmlVersions??(xt.litHtmlVersions=[])).push("3.3.2");const pa=(o,t,e)=>{const a=(e==null?void 0:e.renderBefore)??t;let r=a._$litPart$;if(r===void 0){const s=(e==null?void 0:e.renderBefore)??null;a._$litPart$=r=new zt(t.insertBefore(yt(),s),s,void 0,e??{})}return r._$AI(o),r};/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */const W=globalThis;let m=class extends at{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0}createRenderRoot(){var e;const t=super.createRenderRoot();return(e=this.renderOptions).renderBefore??(e.renderBefore=t.firstChild),t}update(t){const e=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=oa(e,this.renderRoot,this.renderOptions)}connectedCallback(){var t;super.connectedCallback(),(t=this._$Do)==null||t.setConnected(!0)}disconnectedCallback(){var t;super.disconnectedCallback(),(t=this._$Do)==null||t.setConnected(!1)}render(){return X}};var ie;m._$litElement$=!0,m.finalized=!0,(ie=W.litElementHydrateSupport)==null||ie.call(W,{LitElement:m});const It=W.litElementPolyfillSupport;It==null||It({LitElement:m});(W.litElementVersions??(W.litElementVersions=[])).push("4.2.2");/**
+ */const et=globalThis;let b=class extends lt{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0}createRenderRoot(){var e;const t=super.createRenderRoot();return(e=this.renderOptions).renderBefore??(e.renderBefore=t.firstChild),t}update(t){const e=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=pa(e,this.renderRoot,this.renderOptions)}connectedCallback(){var t;super.connectedCallback(),(t=this._$Do)==null||t.setConnected(!0)}disconnectedCallback(){var t;super.disconnectedCallback(),(t=this._$Do)==null||t.setConnected(!1)}render(){return rt}};var ce;b._$litElement$=!0,b.finalized=!0,(ce=et.litElementHydrateSupport)==null||ce.call(et,{LitElement:b});const Vt=et.litElementPolyfillSupport;Vt==null||Vt({LitElement:b});(et.litElementVersions??(et.litElementVersions=[])).push("4.2.2");/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */const _=o=>(t,e)=>{e!==void 0?e.addInitializer(()=>{customElements.define(o,t)}):customElements.define(o,t)};/**
+ */const x=o=>(t,e)=>{e!==void 0?e.addInitializer(()=>{customElements.define(o,t)}):customElements.define(o,t)};/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */const ia={attribute:!0,type:String,converter:_t,reflect:!1,hasChanged:Rt},sa=(o=ia,t,e)=>{const{kind:a,metadata:r}=e;let i=globalThis.litPropertyMetadata.get(r);if(i===void 0&&globalThis.litPropertyMetadata.set(r,i=new Map),a==="setter"&&((o=Object.create(o)).wrapped=!0),i.set(e.name,o),a==="accessor"){const{name:s}=e;return{set(p){const c=t.get.call(this);t.set.call(this,p),this.requestUpdate(s,c,o,!0,p)},init(p){return p!==void 0&&this.C(s,void 0,o,p),p}}}if(a==="setter"){const{name:s}=e;return function(p){const c=this[s];t.call(this,p),this.requestUpdate(s,c,o,!0,p)}}throw Error("Unsupported decorator location: "+a)};function T(o){return(t,e)=>typeof e=="object"?sa(o,t,e):((a,r,i)=>{const s=r.hasOwnProperty(i);return r.constructor.createProperty(i,a),s?Object.getOwnPropertyDescriptor(r,i):void 0})(o,t,e)}/**
+ */const ha={attribute:!0,type:String,converter:Ct,reflect:!1,hasChanged:Kt},ga=(o=ha,t,e)=>{const{kind:a,metadata:r}=e;let s=globalThis.litPropertyMetadata.get(r);if(s===void 0&&globalThis.litPropertyMetadata.set(r,s=new Map),a==="setter"&&((o=Object.create(o)).wrapped=!0),s.set(e.name,o),a==="accessor"){const{name:i}=e;return{set(p){const c=t.get.call(this);t.set.call(this,p),this.requestUpdate(i,c,o,!0,p)},init(p){return p!==void 0&&this.C(i,void 0,o,p),p}}}if(a==="setter"){const{name:i}=e;return function(p){const c=this[i];t.call(this,p),this.requestUpdate(i,c,o,!0,p)}}throw Error("Unsupported decorator location: "+a)};function w(o){return(t,e)=>typeof e=="object"?ga(o,t,e):((a,r,s)=>{const i=r.hasOwnProperty(s);return r.constructor.createProperty(s,a),i?Object.getOwnPropertyDescriptor(r,s):void 0})(o,t,e)}/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */function l(o){return T({...o,state:!0,attribute:!1})}/**
+ */function l(o){return w({...o,state:!0,attribute:!1})}/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */const na={CHILD:2},da=o=>(...t)=>({_$litDirective$:o,values:t});class la{constructor(t){}get _$AU(){return this._$AM._$AU}_$AT(t,e,a){this._$Ct=t,this._$AM=e,this._$Ci=a}_$AS(t,e){return this.update(t,e)}update(t,e){return this.render(...e)}}/**
+ */const ua={CHILD:2},va=o=>(...t)=>({_$litDirective$:o,values:t});class ba{constructor(t){}get _$AU(){return this._$AM._$AU}_$AT(t,e,a){this._$Ct=t,this._$AM=e,this._$Ci=a}_$AS(t,e){return this.update(t,e)}update(t,e){return this.render(...e)}}/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */class jt extends la{constructor(t){if(super(t),this.it=f,t.type!==na.CHILD)throw Error(this.constructor.directiveName+"() can only be used in child bindings")}render(t){if(t===f||t==null)return this._t=void 0,this.it=t;if(t===X)return t;if(typeof t!="string")throw Error(this.constructor.directiveName+"() called with a non-string value");if(t===this.it)return this._t;this.it=t;const e=[t];return e.raw=e,this._t={_$litType$:this.constructor.resultType,strings:e,values:[]}}}jt.directiveName="unsafeHTML",jt.resultType=1;/**
+ */class Rt extends ba{constructor(t){if(super(t),this.it=y,t.type!==ua.CHILD)throw Error(this.constructor.directiveName+"() can only be used in child bindings")}render(t){if(t===y||t==null)return this._t=void 0,this.it=t;if(t===rt)return t;if(typeof t!="string")throw Error(this.constructor.directiveName+"() called with a non-string value");if(t===this.it)return this._t;this.it=t;const e=[t];return e.raw=e,this._t={_$litType$:this.constructor.resultType,strings:e,values:[]}}}Rt.directiveName="unsafeHTML",Rt.resultType=1;/**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
- */class Nt extends jt{}Nt.directiveName="unsafeSVG",Nt.resultType=2;const Lt=da(Nt),w="/api";async function k(o,t){const e=await fetch(o,t);if(!e.ok){const a=await e.json().catch(()=>({detail:"Request failed"}));throw new Error(a.detail||`HTTP ${e.status}`)}return e.json()}async function ca(){return k(`${w}/stats`)}async function pa(o){return k(`${w}/categories`)}async function ha(o){const t=new URLSearchParams(Object.entries(o).filter(([,e])=>e!==void 0&&e!=="").map(([e,a])=>[e,String(a)]));return k(`${w}/product-master?${t}`)}async function pe(o,t=7){return k(`${w}/sales-trend/${o}?days=${t}`)}async function ua(o){return k(`${w}/tracked-products?ids=${o.join(",")}`)}async function ga(){return k(`${w}/config/list`)}async function he(o){return k(`${w}/config/${o}`)}async function va(){return{app_name:(await he("settings")).data.app_name||"EcomAgent"}}async function ba(o,t){return k(`${w}/config/${o}`,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({content:t})})}async function oe(){return k(`${w}/config/backups/list`)}async function ma(o){return k(`${w}/config/backups/${o}/restore`,{method:"POST"})}async function fa(o){return k(`${w}/config/backups/${o}`,{method:"DELETE"})}async function xa(o,t=7){return k(`${w}/product-trend/${o}?days=${t}`)}async function ya(){return k(`${w}/amazon/top-by-category`)}async function $a(){return k(`${w}/tiktok/top-by-category`)}async function _a(o){const t=new URLSearchParams(Object.entries(o).filter(([,e])=>e!==void 0&&e!=="").map(([e,a])=>[e,String(a)]));return k(`${w}/amazon/products?${t}`)}async function wa(o){const t=new URLSearchParams(Object.entries(o).filter(([,e])=>e!==void 0&&e!=="").map(([e,a])=>[e,String(a)]));return k(`${w}/tiktok/products?${t}`)}async function ka(){return k(`${w}/cross-platform-analysis`)}var ue=Object.defineProperty,Pa=Object.getOwnPropertyDescriptor,Sa=(o,t,e)=>t in o?ue(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,qt=(o,t,e,a)=>{for(var r=a>1?void 0:a?Pa(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&ue(t,e,r),r},za=(o,t,e)=>Sa(o,t+"",e);const Ca=[{group:"Main",items:[{id:"dashboard",icon:"grid",label:"数据概览"},{id:"product-master",icon:"box",label:"商品总库"},{id:"sourcing",icon:"package",label:"货源库"},{id:"tracking",icon:"target",label:"商品追踪"},{id:"cross-platform",icon:"sync",label:"跨平台分析"}]},{group:"平台数据",items:[{id:"today-top",icon:"star",label:"今日TOP榜"},{id:"raw-data",icon:"database",label:"原始数据"}]},{group:"系统",items:[{id:"export",icon:"download",label:"数据导出"},{id:"translation-logs",icon:"file-text",label:"翻译日志"},{id:"settings",icon:"settings",label:"系统设置"}]}],Ta={grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',box:'<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',package:'<line x1="16.5" y1="9.4" x2="7.5" y1="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/><line x1="12" y1="12" x2="7.5" y1="9.4"/>',target:'<circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>',sync:'<path d="M16 3h5v5M8 21H3v-5M21 3l-7 7M3 21l7-7"/>',star:'<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>',database:'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>',download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>',"file-text":'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>'};let mt=class extends m{constructor(){super();d(this,"collapsed",!1);d(this,"appName",window.ecomagentAppName||"EcomAgent");d(this,"_currentPage","dashboard");this._loadAppName(),window.ecomagentOnPageChange&&window.ecomagentOnPageChange(t=>{this._currentPage=t,this.requestUpdate()}),window.ecomagentGetCurrentPage&&(this._currentPage=window.ecomagentGetCurrentPage())}async _loadAppName(){if(window.ecomagentAppName){this.appName=window.ecomagentAppName;return}try{const t=await va();this.appName=t.app_name,window.ecomagentAppName=t.app_name}catch(t){console.error("Failed to load app name:",t)}}_onNavClick(t){if(t==="sourcing"&&window.ecomagentNavigateDirectToSourcing){window.ecomagentNavigateDirectToSourcing();return}window.ecomagentNavigate&&window.ecomagentNavigate(t)}_onToggle(){this.collapsed=!this.collapsed,this.requestUpdate("collapsed")}render(){const t=this._currentPage,e=this.appName.charAt(0);return n`
+ */class qt extends Rt{}qt.directiveName="unsafeSVG",qt.resultType=2;const Ht=va(qt),M="/api";async function E(o,t){const e=await fetch(o,t);if(!e.ok){const a=await e.json().catch(()=>({detail:"Request failed"}));throw new Error(a.detail||`HTTP ${e.status}`)}return e.json()}async function ma(){return E(`${M}/stats`)}async function fa(o){return E(`${M}/categories`)}async function xa(o){const t=new URLSearchParams(Object.entries(o).filter(([,e])=>e!==void 0&&e!=="").map(([e,a])=>[e,String(a)]));return E(`${M}/product-master?${t}`)}async function be(o,t=7){return E(`${M}/sales-trend/${o}?days=${t}`)}async function ya(o){return E(`${M}/tracked-products?ids=${o.join(",")}`)}async function $a(o){return E(`${M}/config/${o}`)}async function _a(){return{app_name:(await $a("settings")).data.app_name||"EcomAgent"}}async function wa(o,t=7){return E(`${M}/product-trend/${o}?days=${t}`)}async function ka(){return E(`${M}/amazon/top-by-category`)}async function Pa(){return E(`${M}/tiktok/top-by-category`)}async function za(o){const t=new URLSearchParams(Object.entries(o).filter(([,e])=>e!==void 0&&e!=="").map(([e,a])=>[e,String(a)]));return E(`${M}/amazon/products?${t}`)}async function Sa(o){const t=new URLSearchParams(Object.entries(o).filter(([,e])=>e!==void 0&&e!=="").map(([e,a])=>[e,String(a)]));return E(`${M}/tiktok/products?${t}`)}async function Ca(){return E(`${M}/cross-platform-analysis`)}var me=Object.defineProperty,Ta=Object.getOwnPropertyDescriptor,Aa=(o,t,e)=>t in o?me(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,Yt=(o,t,e,a)=>{for(var r=a>1?void 0:a?Ta(t,e):t,s=o.length-1,i;s>=0;s--)(i=o[s])&&(r=(a?i(t,e,r):i(r))||r);return a&&r&&me(t,e,r),r},Ma=(o,t,e)=>Aa(o,t+"",e);const Ea=[{group:"Main",items:[{id:"dashboard",icon:"grid",label:"数据概览"},{id:"product-master",icon:"box",label:"商品总库"},{id:"sourcing",icon:"package",label:"货源库"},{id:"assets",icon:"folder",label:"素材管理"},{id:"tracking",icon:"target",label:"商品追踪"},{id:"cross-platform",icon:"sync",label:"跨平台分析"}]},{group:"平台数据",items:[{id:"today-top",icon:"star",label:"今日TOP榜"},{id:"raw-data",icon:"database",label:"原始数据"}]},{group:"系统",items:[{id:"export",icon:"download",label:"数据导出"},{id:"translation-logs",icon:"file-text",label:"翻译日志"},{id:"settings",icon:"settings",label:"系统设置"}]}],Oa={grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',box:'<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',package:'<line x1="16.5" y1="9.4" x2="7.5" y1="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/><line x1="12" y1="12" x2="7.5" y1="9.4"/>',target:'<circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>',sync:'<path d="M16 3h5v5M8 21H3v-5M21 3l-7 7M3 21l7-7"/>',star:'<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>',database:'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>',download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>',"file-text":'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>',folder:'<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>'};let wt=class extends b{constructor(){super();d(this,"collapsed",!1);d(this,"appName",window.ecomagentAppName||"EcomAgent");d(this,"_currentPage","dashboard");this._loadAppName(),window.ecomagentOnPageChange&&window.ecomagentOnPageChange(t=>{this._currentPage=t,this.requestUpdate()}),window.ecomagentGetCurrentPage&&(this._currentPage=window.ecomagentGetCurrentPage())}async _loadAppName(){if(window.ecomagentAppName){this.appName=window.ecomagentAppName;return}try{const t=await _a();this.appName=t.app_name,window.ecomagentAppName=t.app_name}catch(t){console.error("Failed to load app name:",t)}}_onNavClick(t){if(t==="sourcing"&&window.ecomagentNavigateDirectToSourcing){window.ecomagentNavigateDirectToSourcing();return}window.ecomagentNavigate&&window.ecomagentNavigate(t)}_onToggle(){this.collapsed=!this.collapsed,this.requestUpdate("collapsed")}render(){const t=this._currentPage,e=this.appName.charAt(0);return n`
       <div class="header">
         <div class="brand">
           <div class="logo">${e}</div>
@@ -54,13 +54,13 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
         </button>
       </div>
       <div class="nav-content">
-        ${Ca.map(a=>n`
+        ${Ea.map(a=>n`
           <div class="nav-group">
             <div class="nav-group-header"><span class="nav-group-title">${a.group}</span></div>
             <ul class="nav-items">
               ${a.items.map(r=>n`
                 <li class="nav-item ${t===r.id?"active":""}" @click=${()=>this._onNavClick(r.id)}>
-                  <svg class="nav-icon" viewBox="0 0 24 24">${Lt(Ta[r.icon])}</svg>
+                  <svg class="nav-icon" viewBox="0 0 24 24">${Ht(Oa[r.icon])}</svg>
                   <span class="nav-label">${r.label}</span>
                 </li>
               `)}
@@ -68,7 +68,7 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
           </div>
         `)}
       </div>
-    `}};za(mt,"styles",$`
+    `}};Ma(wt,"styles",f`
     :host { width: 258px; background: var(--panel); color: var(--text); padding: 14px 10px 12px; flex-shrink: 0; border-right: 1px solid var(--border); transition: width 0.2s ease; overflow: hidden; display: flex; flex-direction: column; }
     :host([collapsed]) { width: 60px; padding: 14px 6px 12px; }
     .header { display: flex; align-items: center; justify-content: space-between; padding: 14px 10px; border-bottom: 1px solid var(--border); margin-bottom: 12px; flex-shrink: 0; }
@@ -96,7 +96,7 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
     .nav-icon { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
     :host([collapsed]) .nav-icon { display: block; }
     :host([collapsed]) .nav-label { display: none; }
-  `);qt([T({type:Boolean,reflect:!0})],mt.prototype,"collapsed",2);qt([l()],mt.prototype,"appName",2);mt=qt([_("ea-sidebar")],mt);var ge=Object.defineProperty,Aa=Object.getOwnPropertyDescriptor,Ea=(o,t,e)=>t in o?ge(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,ve=(o,t,e,a)=>{for(var r=a>1?void 0:a?Aa(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&ge(t,e,r),r},Oa=(o,t,e)=>Ea(o,t+"",e);const Ma={dashboard:{title:"数据概览",subtitle:"查看数据统计和概览"},"product-master":{title:"商品总库",subtitle:"统一管理所有平台商品"},sourcing:{title:"货源库",subtitle:"1688货源采集与管理"},tracking:{title:"商品追踪",subtitle:"追踪特定商品的价格、销量变化"},"cross-platform":{title:"跨平台分析",subtitle:"对比分析不同平台数据"},"today-top":{title:"今日TOP榜",subtitle:"各平台热销产品排行"},"raw-data":{title:"原始数据",subtitle:"查看和搜索原始数据"},export:{title:"数据导出",subtitle:"导出数据为 CSV 或 Excel"},"translation-logs":{title:"翻译日志",subtitle:"翻译任务执行记录"},settings:{title:"系统设置",subtitle:"配置数据源和其他选项"},"product-trend":{title:"商品趋势",subtitle:"查看商品各维度数据随时间变化"}};let kt=class extends m{constructor(){super(...arguments);d(this,"currentPage","dashboard")}toggleTheme(){const t=document.body,a=t.getAttribute("data-theme-mode")==="dark"?"light":"dark";t.setAttribute("data-theme-mode",a),localStorage.setItem("theme",a),this.requestUpdate()}render(){const{title:t,subtitle:e}=Ma[this.currentPage],a=document.body.getAttribute("data-theme-mode")!=="light";return n`
+  `);Yt([w({type:Boolean,reflect:!0})],wt.prototype,"collapsed",2);Yt([l()],wt.prototype,"appName",2);wt=Yt([x("ea-sidebar")],wt);var fe=Object.defineProperty,Da=Object.getOwnPropertyDescriptor,Ia=(o,t,e)=>t in o?fe(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,xe=(o,t,e,a)=>{for(var r=a>1?void 0:a?Da(t,e):t,s=o.length-1,i;s>=0;s--)(i=o[s])&&(r=(a?i(t,e,r):i(r))||r);return a&&r&&fe(t,e,r),r},ja=(o,t,e)=>Ia(o,t+"",e);const Na={dashboard:{title:"数据概览",subtitle:"查看数据统计和概览"},"product-master":{title:"商品总库",subtitle:"统一管理所有平台商品"},sourcing:{title:"货源库",subtitle:"1688货源采集与管理"},assets:{title:"素材管理",subtitle:"生成和管理商品素材"},tracking:{title:"商品追踪",subtitle:"追踪特定商品的价格、销量变化"},"cross-platform":{title:"跨平台分析",subtitle:"对比分析不同平台数据"},"today-top":{title:"今日TOP榜",subtitle:"各平台热销产品排行"},"raw-data":{title:"原始数据",subtitle:"查看和搜索原始数据"},export:{title:"数据导出",subtitle:"导出数据为 CSV 或 Excel"},"translation-logs":{title:"翻译日志",subtitle:"翻译任务执行记录"},settings:{title:"系统设置",subtitle:"配置数据源和其他选项"},"product-trend":{title:"商品趋势",subtitle:"查看商品各维度数据随时间变化"}};let At=class extends b{constructor(){super(...arguments);d(this,"currentPage","dashboard")}toggleTheme(){const t=document.body,a=t.getAttribute("data-theme-mode")==="dark"?"light":"dark";t.setAttribute("data-theme-mode",a),localStorage.setItem("theme",a),this.requestUpdate()}render(){const{title:t,subtitle:e}=Na[this.currentPage],a=document.body.getAttribute("data-theme-mode")!=="light";return n`
       <div>
         <div class="title">${t}</div>
         <div class="subtitle">${e}</div>
@@ -122,7 +122,7 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
           </svg>
         </button>
       </div>
-    `}};Oa(kt,"styles",$`
+    `}};ja(At,"styles",f`
     :host {
       display: flex;
       align-items: center;
@@ -176,23 +176,23 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
       fill: none;
       stroke-width: 1.75px;
     }
-  `);ve([T({type:String})],kt.prototype,"currentPage",2);kt=ve([_("ea-header")],kt);var be=Object.defineProperty,Da=Object.getOwnPropertyDescriptor,Ia=(o,t,e)=>t in o?be(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,Bt=(o,t,e,a)=>{for(var r=a>1?void 0:a?Da(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&be(t,e,r),r},ja=(o,t,e)=>Ia(o,t+"",e);let ft=class extends m{constructor(){super(...arguments);d(this,"currentPage","dashboard");d(this,"sidebarCollapsed",!1)}render(){return n`
+  `);xe([w({type:String})],At.prototype,"currentPage",2);At=xe([x("ea-header")],At);var ye=Object.defineProperty,Ua=Object.getOwnPropertyDescriptor,Fa=(o,t,e)=>t in o?ye(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,Wt=(o,t,e,a)=>{for(var r=a>1?void 0:a?Ua(t,e):t,s=o.length-1,i;s>=0;s--)(i=o[s])&&(r=(a?i(t,e,r):i(r))||r);return a&&r&&ye(t,e,r),r},La=(o,t,e)=>Fa(o,t+"",e);let kt=class extends b{constructor(){super(...arguments);d(this,"currentPage","dashboard");d(this,"sidebarCollapsed",!1)}render(){return n`
       <ea-sidebar ?collapsed=${this.sidebarCollapsed}></ea-sidebar>
       <main class="main-content">
         <ea-header .currentPage=${this.currentPage}></ea-header>
         <div class="content-body"><slot></slot></div>
       </main>
-    `}};ja(ft,"styles",$`
+    `}};La(kt,"styles",f`
     :host { display: flex; min-height: 100vh; }
     .main-content { flex: 1; padding: 24px; overflow-y: auto; background: var(--bg); }
     .content-body { animation: fadeIn 0.3s ease; }
     @media (max-width: 1024px) { :host { flex-direction: column; } .main-content { padding: 16px; } }
-  `);Bt([T({type:String})],ft.prototype,"currentPage",2);Bt([l()],ft.prototype,"sidebarCollapsed",2);ft=Bt([_("ea-layout")],ft);var me=Object.defineProperty,Na=Object.getOwnPropertyDescriptor,La=(o,t,e)=>t in o?me(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,B=(o,t,e,a)=>{for(var r=a>1?void 0:a?Na(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&me(t,e,r),r},fe=(o,t,e)=>La(o,t+"",e);let Pt=class extends m{constructor(){super(...arguments);d(this,"padding",16)}render(){return n`
+  `);Wt([w({type:String})],kt.prototype,"currentPage",2);Wt([l()],kt.prototype,"sidebarCollapsed",2);kt=Wt([x("ea-layout")],kt);var $e=Object.defineProperty,Va=Object.getOwnPropertyDescriptor,Ra=(o,t,e)=>t in o?$e(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,W=(o,t,e,a)=>{for(var r=a>1?void 0:a?Va(t,e):t,s=o.length-1,i;s>=0;s--)(i=o[s])&&(r=(a?i(t,e,r):i(r))||r);return a&&r&&$e(t,e,r),r},_e=(o,t,e)=>Ra(o,t+"",e);let Mt=class extends b{constructor(){super(...arguments);d(this,"padding",16)}render(){return n`
       <slot name="header"></slot>
       <div class="card-content" style="--padding: ${this.padding}px">
         <slot></slot>
       </div>
-    `}};fe(Pt,"styles",$`
+    `}};_e(Mt,"styles",f`
     :host {
       display: block;
       background: var(--card);
@@ -218,7 +218,7 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
       font-weight: 600;
       color: var(--text-strong);
     }
-  `);B([T({type:Number})],Pt.prototype,"padding",2);Pt=B([_("ea-card")],Pt);let R=class extends m{constructor(){super(...arguments);d(this,"label","");d(this,"value","-");d(this,"icon","");d(this,"desc","");d(this,"color","")}render(){return n`
+  `);W([w({type:Number})],Mt.prototype,"padding",2);Mt=W([x("ea-card")],Mt);let J=class extends b{constructor(){super(...arguments);d(this,"label","");d(this,"value","-");d(this,"icon","");d(this,"desc","");d(this,"color","")}render(){return n`
       <div class="stat-header">
         <div>
           <div class="stat-label">${this.label}</div>
@@ -228,7 +228,7 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
         ${this.icon?n`<span class="stat-icon">${this.icon}</span>`:""}
       </div>
       <slot></slot>
-    `}};fe(R,"styles",$`
+    `}};_e(J,"styles",f`
     :host {
       display: block;
       background: var(--card);
@@ -291,14 +291,14 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
     .stat-action {
       margin-left: auto;
     }
-  `);B([T({type:String})],R.prototype,"label",2);B([T({type:String})],R.prototype,"value",2);B([T({type:String})],R.prototype,"icon",2);B([T({type:String})],R.prototype,"desc",2);B([T({type:String})],R.prototype,"color",2);R=B([_("ea-stat-card")],R);var xe=Object.defineProperty,Ua=Object.getOwnPropertyDescriptor,Fa=(o,t,e)=>t in o?xe(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,V=(o,t,e,a)=>{for(var r=a>1?void 0:a?Ua(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&xe(t,e,r),r},Ra=(o,t,e)=>Fa(o,t+"",e);let M=class extends m{constructor(){super(...arguments);d(this,"stats",null);d(this,"loading",!0);d(this,"error","");d(this,"expandedPanel",null);d(this,"categories",{amazon:[],tiktok:[]});d(this,"categoriesLoading",!1);d(this,"fetchTaskStatus",{amazon:"",tiktok:""})}connectedCallback(){super.connectedCallback(),this.loadStats()}async loadStats(){this.loading=!0,this.error="";try{this.stats=await ca()}catch(t){this.error=t instanceof Error?t.message:String(t)}finally{this.loading=!1,this.requestUpdate()}}async _togglePanel(t){if(this.expandedPanel===t){this.expandedPanel=null;return}this.expandedPanel=t,this.requestUpdate(),(!this.categories[t]||this.categories[t].length===0)&&await this._loadCategories(t)}async _loadCategories(t){this.categoriesLoading=!0,this.requestUpdate();try{const a=await(await fetch(`/api/categories/${t}`)).json();this.categories={...this.categories,[t]:a.categories||[]},this.requestUpdate()}catch(e){console.error("加载类目失败:",e)}finally{this.categoriesLoading=!1,this.requestUpdate()}}async _refreshCategories(t){this.categoriesLoading=!0;try{const a=await(await fetch(`/api/categories/${t}/refresh`,{method:"POST"})).json();a.success?await this._loadCategories(t):alert(a.message||"刷新失败")}catch(e){alert(`刷新失败: ${e}`)}finally{this.categoriesLoading=!1}}async _toggleCategory(t,e,a){try{await fetch(`/api/categories/${e}/enabled?enabled=${a}`,{method:"PUT"}),this.categories={...this.categories,[t]:this.categories[t].map(r=>r.id===e?{...r,enabled:a?1:0}:r)}}catch(r){alert(`更新失败: ${r}`)}}async _startFetch(t){this.fetchTaskStatus={...this.fetchTaskStatus,[t]:"running"};try{const a=await(await fetch(`/api/tasks/${t}/fetch`,{method:"POST"})).json();a.success?alert(`${t} 抓取任务已启动`):(alert(a.message||"启动失败"),this.fetchTaskStatus={...this.fetchTaskStatus,[t]:""})}catch(e){alert(`启动失败: ${e}`),this.fetchTaskStatus={...this.fetchTaskStatus,[t]:""}}}_renderFetchPanel(t){const e=this.expandedPanel===t,a=this.categories[t],r=this.categoriesLoading,i=this.fetchTaskStatus[t]==="running",s=a.filter(c=>c.today_status==="done").length,p=a.filter(c=>c.today_status==="pending").length;return n`
+  `);W([w({type:String})],J.prototype,"label",2);W([w({type:String})],J.prototype,"value",2);W([w({type:String})],J.prototype,"icon",2);W([w({type:String})],J.prototype,"desc",2);W([w({type:String})],J.prototype,"color",2);J=W([x("ea-stat-card")],J);var we=Object.defineProperty,qa=Object.getOwnPropertyDescriptor,Ha=(o,t,e)=>t in o?we(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,Q=(o,t,e,a)=>{for(var r=a>1?void 0:a?qa(t,e):t,s=o.length-1,i;s>=0;s--)(i=o[s])&&(r=(a?i(t,e,r):i(r))||r);return a&&r&&we(t,e,r),r},Ga=(o,t,e)=>Ha(o,t+"",e);let N=class extends b{constructor(){super(...arguments);d(this,"stats",null);d(this,"loading",!0);d(this,"error","");d(this,"expandedPanel",null);d(this,"categories",{amazon:[],tiktok:[]});d(this,"categoriesLoading",!1);d(this,"fetchTaskStatus",{amazon:"",tiktok:""})}connectedCallback(){super.connectedCallback(),this.loadStats()}async loadStats(){this.loading=!0,this.error="";try{this.stats=await ma()}catch(t){this.error=t instanceof Error?t.message:String(t)}finally{this.loading=!1,this.requestUpdate()}}async _togglePanel(t){if(this.expandedPanel===t){this.expandedPanel=null;return}this.expandedPanel=t,this.requestUpdate(),(!this.categories[t]||this.categories[t].length===0)&&await this._loadCategories(t)}async _loadCategories(t){this.categoriesLoading=!0,this.requestUpdate();try{const a=await(await fetch(`/api/categories/${t}`)).json();this.categories={...this.categories,[t]:a.categories||[]},this.requestUpdate()}catch(e){console.error("加载类目失败:",e)}finally{this.categoriesLoading=!1,this.requestUpdate()}}async _refreshCategories(t){this.categoriesLoading=!0;try{const a=await(await fetch(`/api/categories/${t}/refresh`,{method:"POST"})).json();a.success?await this._loadCategories(t):alert(a.message||"刷新失败")}catch(e){alert(`刷新失败: ${e}`)}finally{this.categoriesLoading=!1}}async _toggleCategory(t,e,a){try{await fetch(`/api/categories/${e}/enabled?enabled=${a}`,{method:"PUT"}),this.categories={...this.categories,[t]:this.categories[t].map(r=>r.id===e?{...r,enabled:a?1:0}:r)}}catch(r){alert(`更新失败: ${r}`)}}async _startFetch(t){this.fetchTaskStatus={...this.fetchTaskStatus,[t]:"running"};try{const a=await(await fetch(`/api/tasks/${t}/fetch`,{method:"POST"})).json();a.success?alert(`${t} 抓取任务已启动`):(alert(a.message||"启动失败"),this.fetchTaskStatus={...this.fetchTaskStatus,[t]:""})}catch(e){alert(`启动失败: ${e}`),this.fetchTaskStatus={...this.fetchTaskStatus,[t]:""}}}_renderFetchPanel(t){const e=this.expandedPanel===t,a=this.categories[t],r=this.categoriesLoading,s=this.fetchTaskStatus[t]==="running",i=a.filter(c=>c.today_status==="done").length,p=a.filter(c=>c.today_status==="pending").length;return n`
       <div class="fetch-panel ${e?"expanded":""}">
         <div class="fetch-header" @click=${()=>this._togglePanel(t)}>
           <div class="fetch-header-left">
             <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
             <span class="fetch-header-title">数据抓取</span>
             ${a.length>0?n`
-              <span class="fetch-header-badge">${a.length} 个类目 · 今日已抓 ${s} / 待抓 ${p}</span>
+              <span class="fetch-header-badge">${a.length} 个类目 · 今日已抓 ${i} / 待抓 ${p}</span>
             `:""}
           </div>
         </div>
@@ -336,9 +336,9 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
             <button
               class="primary"
               @click=${()=>this._startFetch(t)}
-              ?disabled=${i||a.filter(c=>c.enabled&&c.today_status==="pending").length===0}
+              ?disabled=${s||a.filter(c=>c.enabled&&c.today_status==="pending").length===0}
             >
-              ${i?"抓取中...":"开始抓取"}
+              ${s?"抓取中...":"开始抓取"}
             </button>
           </div>
         </div>
@@ -384,7 +384,7 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
           ${this._renderFetchPanel("tiktok")}
         </div>
       </div>
-    `}};Ra(M,"styles",$`
+    `}};Ga(N,"styles",f`
     :host { display: block; }
     h2 { font-size: 20px; font-weight: 700; color: var(--text-strong); margin-bottom: 24px; }
     .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
@@ -439,12 +439,12 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
 
     @keyframes spin { to { transform: rotate(360deg); } }
     @media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr; } }
-  `);V([l()],M.prototype,"stats",2);V([l()],M.prototype,"loading",2);V([l()],M.prototype,"error",2);V([l()],M.prototype,"expandedPanel",2);V([l()],M.prototype,"categories",2);V([l()],M.prototype,"categoriesLoading",2);V([l()],M.prototype,"fetchTaskStatus",2);M=V([_("ea-dashboard")],M);var ye=Object.defineProperty,Ha=Object.getOwnPropertyDescriptor,qa=(o,t,e)=>t in o?ye(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,Q=(o,t,e,a)=>{for(var r=a>1?void 0:a?Ha(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&ye(t,e,r),r},Ba=(o,t,e)=>qa(o,t+"",e);let I=class extends m{constructor(){super(...arguments);d(this,"ecomCode","");d(this,"product",null);d(this,"trendData",[]);d(this,"loading",!0);d(this,"metric","rating");d(this,"days",7)}connectedCallback(){super.connectedCallback(),this.ecomCode&&this.loadTrendData()}updated(t){t.has("ecomCode")&&this.ecomCode&&this.loadTrendData()}async loadTrendData(){if(this.ecomCode){this.loading=!0;try{const t=await xa(this.ecomCode,this.days);this.product=t.product,this.trendData=t.trend||[]}catch(t){console.error("Load trend error:",t)}finally{this.loading=!1,this.requestUpdate()}}}_onMetricChange(t){this.metric=t.target.value,this.requestUpdate()}_onDaysChange(t){const e=t.target.value;e!=="custom"&&(this.days=parseInt(e),this.loadTrendData())}_getMetricLabel(){switch(this.metric){case"price":return"价格";case"rating":return"评分";case"rank":return"排名"}}_renderChart(){if(this.trendData.length===0)return n`<div class="chart-empty">暂无数据</div>`;const t=this.trendData.map(i=>i[this.metric]).filter(i=>i!=null);if(t.length===0)return n`<div class="chart-empty">暂无${this._getMetricLabel()}数据</div>`;const e=Math.max(...t),a=Math.min(...t),r=e-a||1;return n`
+  `);Q([l()],N.prototype,"stats",2);Q([l()],N.prototype,"loading",2);Q([l()],N.prototype,"error",2);Q([l()],N.prototype,"expandedPanel",2);Q([l()],N.prototype,"categories",2);Q([l()],N.prototype,"categoriesLoading",2);Q([l()],N.prototype,"fetchTaskStatus",2);N=Q([x("ea-dashboard")],N);var ke=Object.defineProperty,Ba=Object.getOwnPropertyDescriptor,Ka=(o,t,e)=>t in o?ke(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,st=(o,t,e,a)=>{for(var r=a>1?void 0:a?Ba(t,e):t,s=o.length-1,i;s>=0;s--)(i=o[s])&&(r=(a?i(t,e,r):i(r))||r);return a&&r&&ke(t,e,r),r},Ja=(o,t,e)=>Ka(o,t+"",e);let L=class extends b{constructor(){super(...arguments);d(this,"ecomCode","");d(this,"product",null);d(this,"trendData",[]);d(this,"loading",!0);d(this,"metric","rating");d(this,"days",7)}connectedCallback(){super.connectedCallback(),this.ecomCode&&this.loadTrendData()}updated(t){t.has("ecomCode")&&this.ecomCode&&this.loadTrendData()}async loadTrendData(){if(this.ecomCode){this.loading=!0;try{const t=await wa(this.ecomCode,this.days);this.product=t.product,this.trendData=t.trend||[]}catch(t){console.error("Load trend error:",t)}finally{this.loading=!1,this.requestUpdate()}}}_onMetricChange(t){this.metric=t.target.value,this.requestUpdate()}_onDaysChange(t){const e=t.target.value;e!=="custom"&&(this.days=parseInt(e),this.loadTrendData())}_getMetricLabel(){switch(this.metric){case"price":return"价格";case"rating":return"评分";case"rank":return"排名"}}_renderChart(){if(this.trendData.length===0)return n`<div class="chart-empty">暂无数据</div>`;const t=this.trendData.map(s=>s[this.metric]).filter(s=>s!=null);if(t.length===0)return n`<div class="chart-empty">暂无${this._getMetricLabel()}数据</div>`;const e=Math.max(...t),a=Math.min(...t),r=e-a||1;return n`
       <div class="chart">
-        ${this.trendData.map(i=>{const s=i[this.metric];if(s==null)return n`<div class="chart-bar" style="height:0"></div>`;const p=(s-a)/r*250+20;return n`
+        ${this.trendData.map(s=>{const i=s[this.metric];if(i==null)return n`<div class="chart-bar" style="height:0"></div>`;const p=(i-a)/r*250+20;return n`
             <div class="chart-bar" style="height:${p}px">
-              <span class="chart-bar-value">${this.metric==="rating"?s.toFixed(1):s}</span>
-              <span class="chart-bar-label">${i.date.slice(5)}</span>
+              <span class="chart-bar-value">${this.metric==="rating"?i.toFixed(1):i}</span>
+              <span class="chart-bar-label">${s.date.slice(5)}</span>
             </div>
           `})}
       </div>
@@ -515,7 +515,7 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
           <a class="back-link" href="javascript:history.back()">← 返回</a>
         </div>
         <div style="text-align:center;padding:48px;color:var(--muted)">商品不存在</div>
-      `}};Ba(I,"styles",$`
+      `}};Ja(L,"styles",f`
     :host { display: block; padding: 24px; }
     
     .header {
@@ -713,7 +713,7 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
     }
     
     @keyframes spin { to { transform: rotate(360deg); } }
-  `);Q([T({type:String})],I.prototype,"ecomCode",2);Q([l()],I.prototype,"product",2);Q([l()],I.prototype,"trendData",2);Q([l()],I.prototype,"loading",2);Q([l()],I.prototype,"metric",2);Q([l()],I.prototype,"days",2);I=Q([_("ea-product-trend")],I);var $e=Object.defineProperty,Va=Object.getOwnPropertyDescriptor,Ga=(o,t,e)=>t in o?$e(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,P=(o,t,e,a)=>{for(var r=a>1?void 0:a?Va(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&$e(t,e,r),r},Ja=(o,t,e)=>Ga(o,t+"",e);let y=class extends m{constructor(){super(...arguments);d(this,"products",[]);d(this,"loading",!0);d(this,"page",1);d(this,"pages",0);d(this,"search","");d(this,"platform","amazon");d(this,"category","");d(this,"categories",{amazon:[],tiktok:[],all:[]});d(this,"sortBy","total_sales");d(this,"sortOrder","desc");d(this,"trackedIds",new Set);d(this,"showTrend",!1);d(this,"trendCode","");d(this,"sparklines",new Map);d(this,"previewImg",{show:!1,src:"",x:0,y:0})}async connectedCallback(){super.connectedCallback(),this.loadTracked(),await this.loadCategories(),this.loadData()}loadTracked(){const t=localStorage.getItem("tracked-products");t&&(this.trackedIds=new Set(JSON.parse(t)))}saveTracked(){localStorage.setItem("tracked-products",JSON.stringify([...this.trackedIds]))}async loadCategories(){try{if(this.categories=await pa(),!this.category){const t=this.platform==="amazon"?this.categories.amazon:this.categories.tiktok;t.length>0&&(this.category=t[0])}}catch(t){console.error("Failed to load categories",t)}}async loadData(){this.loading=!0;try{const t=await ha({page:this.page,limit:20,search:this.search,platform:this.platform,category:this.category,sort_by:this.sortBy||void 0,sort_order:this.sortOrder});this.products=t.data,this.pages=t.pagination.pages,this.loadSparklines(t.data)}catch(t){console.error("Failed to load products",t)}finally{this.loading=!1,this.requestUpdate()}}async loadSparklines(t){const e=t.map(async a=>{try{const r=await pe(a.ecom_code,7);this.sparklines.set(a.ecom_code,r.trend)}catch{this.sparklines.set(a.ecom_code,[])}});await Promise.all(e),this.requestUpdate()}_onPlatformChange(t){this.platform=t;const e=t==="amazon"?this.categories.amazon:this.categories.tiktok;this.category=e.length>0?e[0]:"",this.page=1,this.loadData()}_onSearch(){this.page=1,this.loadData()}_onInputChange(t,e){this[e]=t.target.value}_onCategoryChange(t){this.category=t.target.value,this.page=1,this.loadData()}_onSort(t){this.sortBy===t?this.sortOrder=this.sortOrder==="desc"?"asc":"desc":(this.sortBy=t,this.sortOrder="desc"),this.page=1,this.loadData()}_onPageChange(t){this.page=t,this.loadData()}_toggleTrack(t){this.trackedIds.has(t)?this.trackedIds.delete(t):this.trackedIds.add(t),this.saveTracked(),this.requestUpdate()}async _resetTranslation(t){try{(await(await fetch(`/api/products/${t}/reset-translation`,{method:"POST"})).json()).success&&this.loadData()}catch(e){console.error("Reset translation failed:",e)}}_showTrendPage(t){const e={platform:this.platform,category:this.category,search:this.search,sortBy:this.sortBy,sortOrder:this.sortOrder,page:this.page,scrollY:window.scrollY};sessionStorage.setItem("product-master-state",JSON.stringify(e)),window.ecomagentOpenTrend(t,"product-master")}_closeTrendModal(){this.showTrend=!1,this.trendCode=""}_showSourcingModal(t){window.ecomagentNavigateToSourcing(t)}async _open1688(t,e){if(t)try{const i=`${(await(await fetch(`/api/1688-search-url?keyword=${encodeURIComponent(t)}`)).json()).url}&ecom_code=${e}`;window.open(i,"_blank")}catch{const r=`https://s.1688.com/selloffer/offer_search.htm?keywords=${encodeURIComponent(t)}&ecom_code=${e}`;window.open(r,"_blank")}}_showImgPreview(t,e){this.previewImg={show:!0,src:e,x:t.clientX+16,y:t.clientY+16},this._updatePreviewElement()}_hideImgPreview(){this.previewImg={...this.previewImg,show:!1},this._updatePreviewElement()}_moveImgPreview(t){this.previewImg.show&&(this.previewImg={...this.previewImg,x:t.clientX+16,y:t.clientY+16},this._updatePreviewElement())}_updatePreviewElement(){let t=document.getElementById("global-img-preview");t||(t=document.createElement("img"),t.id="global-img-preview",t.style.cssText="position:fixed;z-index:9999;max-width:400px;max-height:400px;border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.5);pointer-events:none;border:1px solid rgba(255,255,255,0.1);",document.body.appendChild(t)),this.previewImg.show?(t.src=this.previewImg.src,t.style.left=this.previewImg.x+"px",t.style.top=this.previewImg.y+"px",t.style.display="block"):t.style.display="none"}_formatSales(t){return t==null?"-":t>=1e4?`${(t/1e3).toFixed(1)}K`:t>=1e3?`${(t/1e3).toFixed(1)}K`:String(t)}_renderSparkline(t){const e=this.sparklines.get(t);if(!e||e.length<2)return n`<div class="sparkline-container" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px;">暂无数据</div>`;const a=e.map(g=>g.value).filter(g=>g!=null);if(a.length<2)return n`<div class="sparkline-container" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px;">暂无数据</div>`;const r=Math.min(...a),s=Math.max(...a)-r||1,p=100,c=32,h=2,b=a.map((g,x)=>{const O=h+x/(a.length-1)*(p-h*2),lt=c-h-(g-r)/s*(c-h*2);return`${O},${lt}`}).join(" "),u=b+` ${h+(a.length-1)/(a.length-1)*(p-h*2)},${c-h} ${h},${c-h}`;return n`
+  `);st([w({type:String})],L.prototype,"ecomCode",2);st([l()],L.prototype,"product",2);st([l()],L.prototype,"trendData",2);st([l()],L.prototype,"loading",2);st([l()],L.prototype,"metric",2);st([l()],L.prototype,"days",2);L=st([x("ea-product-trend")],L);var Pe=Object.defineProperty,Ya=Object.getOwnPropertyDescriptor,Wa=(o,t,e)=>t in o?Pe(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,k=(o,t,e,a)=>{for(var r=a>1?void 0:a?Ya(t,e):t,s=o.length-1,i;s>=0;s--)(i=o[s])&&(r=(a?i(t,e,r):i(r))||r);return a&&r&&Pe(t,e,r),r},Qa=(o,t,e)=>Wa(o,t+"",e);let _=class extends b{constructor(){super(...arguments);d(this,"products",[]);d(this,"loading",!0);d(this,"page",1);d(this,"pages",0);d(this,"search","");d(this,"platform","amazon");d(this,"category","");d(this,"categories",{amazon:[],tiktok:[],all:[]});d(this,"sortBy","total_sales");d(this,"sortOrder","desc");d(this,"trackedIds",new Set);d(this,"showTrend",!1);d(this,"trendCode","");d(this,"sparklines",new Map);d(this,"previewImg",{show:!1,src:"",x:0,y:0})}async connectedCallback(){super.connectedCallback(),this.loadTracked(),await this.loadCategories(),this.loadData()}loadTracked(){const t=localStorage.getItem("tracked-products");t&&(this.trackedIds=new Set(JSON.parse(t)))}saveTracked(){localStorage.setItem("tracked-products",JSON.stringify([...this.trackedIds]))}async loadCategories(){try{if(this.categories=await fa(),!this.category){const t=this.platform==="amazon"?this.categories.amazon:this.categories.tiktok;t.length>0&&(this.category=t[0])}}catch(t){console.error("Failed to load categories",t)}}async loadData(){this.loading=!0;try{const t=await xa({page:this.page,limit:20,search:this.search,platform:this.platform,category:this.category,sort_by:this.sortBy||void 0,sort_order:this.sortOrder});this.products=t.data,this.pages=t.pagination.pages,this.loadSparklines(t.data)}catch(t){console.error("Failed to load products",t)}finally{this.loading=!1,this.requestUpdate()}}async loadSparklines(t){const e=t.map(async a=>{try{const r=await be(a.ecom_code,7);this.sparklines.set(a.ecom_code,r.trend)}catch{this.sparklines.set(a.ecom_code,[])}});await Promise.all(e),this.requestUpdate()}_onPlatformChange(t){this.platform=t;const e=t==="amazon"?this.categories.amazon:this.categories.tiktok;this.category=e.length>0?e[0]:"",this.page=1,this.loadData()}_onSearch(){this.page=1,this.loadData()}_onInputChange(t,e){this[e]=t.target.value}_onCategoryChange(t){this.category=t.target.value,this.page=1,this.loadData()}_onSort(t){this.sortBy===t?this.sortOrder=this.sortOrder==="desc"?"asc":"desc":(this.sortBy=t,this.sortOrder="desc"),this.page=1,this.loadData()}_onPageChange(t){this.page=t,this.loadData()}_toggleTrack(t){this.trackedIds.has(t)?this.trackedIds.delete(t):this.trackedIds.add(t),this.saveTracked(),this.requestUpdate()}async _resetTranslation(t){try{(await(await fetch(`/api/products/${t}/reset-translation`,{method:"POST"})).json()).success&&this.loadData()}catch(e){console.error("Reset translation failed:",e)}}_showTrendPage(t){const e={platform:this.platform,category:this.category,search:this.search,sortBy:this.sortBy,sortOrder:this.sortOrder,page:this.page,scrollY:window.scrollY};sessionStorage.setItem("product-master-state",JSON.stringify(e)),window.ecomagentOpenTrend(t,"product-master")}_closeTrendModal(){this.showTrend=!1,this.trendCode=""}_showSourcingModal(t){window.ecomagentNavigateToSourcing(t)}async _open1688(t,e){if(t)try{const s=`${(await(await fetch(`/api/1688-search-url?keyword=${encodeURIComponent(t)}`)).json()).url}&ecom_code=${e}`;window.open(s,"_blank")}catch{const r=`https://s.1688.com/selloffer/offer_search.htm?keywords=${encodeURIComponent(t)}&ecom_code=${e}`;window.open(r,"_blank")}}_showImgPreview(t,e){this.previewImg={show:!0,src:e,x:t.clientX+16,y:t.clientY+16},this._updatePreviewElement()}_hideImgPreview(){this.previewImg={...this.previewImg,show:!1},this._updatePreviewElement()}_moveImgPreview(t){this.previewImg.show&&(this.previewImg={...this.previewImg,x:t.clientX+16,y:t.clientY+16},this._updatePreviewElement())}_updatePreviewElement(){let t=document.getElementById("global-img-preview");t||(t=document.createElement("img"),t.id="global-img-preview",t.style.cssText="position:fixed;z-index:9999;max-width:400px;max-height:400px;border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.5);pointer-events:none;border:1px solid rgba(255,255,255,0.1);",document.body.appendChild(t)),this.previewImg.show?(t.src=this.previewImg.src,t.style.left=this.previewImg.x+"px",t.style.top=this.previewImg.y+"px",t.style.display="block"):t.style.display="none"}_formatSales(t){return t==null?"-":t>=1e4?`${(t/1e3).toFixed(1)}K`:t>=1e3?`${(t/1e3).toFixed(1)}K`:String(t)}_renderSparkline(t){const e=this.sparklines.get(t);if(!e||e.length<2)return n`<div class="sparkline-container" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px;">暂无数据</div>`;const a=e.map(u=>u.value).filter(u=>u!=null);if(a.length<2)return n`<div class="sparkline-container" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px;">暂无数据</div>`;const r=Math.min(...a),i=Math.max(...a)-r||1,p=100,c=32,h=2,m=a.map((u,$)=>{const D=h+$/(a.length-1)*(p-h*2),vt=c-h-(u-r)/i*(c-h*2);return`${D},${vt}`}).join(" "),g=m+` ${h+(a.length-1)/(a.length-1)*(p-h*2)},${c-h} ${h},${c-h}`;return n`
       <div class="sparkline-container">
         <svg viewBox="0 0 ${p} ${c}" preserveAspectRatio="none">
           <defs>
@@ -722,16 +722,16 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
               <stop offset="100%" stop-color="var(--accent)" stop-opacity="0" />
             </linearGradient>
           </defs>
-          <polygon points="${u}" fill="url(#grad-${t})" />
-          <polyline points="${b}" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          <polygon points="${g}" fill="url(#grad-${t})" />
+          <polyline points="${m}" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </div>
     `}_renderSortHeader(t,e){const a=this.sortBy===e,r=a?this.sortOrder==="desc"?"▼":"▲":"⇅";return n`
       <th class="sortable ${a?"sorted":""}" @click=${()=>this._onSort(e)}>
         ${t} <span class="sort-icon">${r}</span>
       </th>
-    `}_getCategoryOptions(){return this.platform==="amazon"?this.categories.amazon:this.platform==="tiktok"?this.categories.tiktok:[]}_renderPagination(){const t=[];let a=Math.max(1,this.page-Math.floor(2.5)),r=Math.min(this.pages,a+5-1);r-a<4&&(a=Math.max(1,r-5+1)),a>1&&(t.push(n`<button class="page-btn" @click=${()=>this._onPageChange(1)}>1</button>`),a>2&&t.push(n`<span style="color:var(--muted)">...</span>`));for(let i=a;i<=r;i++)t.push(n`
-        <button class="page-btn ${i===this.page?"active":""}" @click=${()=>this._onPageChange(i)}>${i}</button>
+    `}_getCategoryOptions(){return this.platform==="amazon"?this.categories.amazon:this.platform==="tiktok"?this.categories.tiktok:[]}_renderPagination(){const t=[];let a=Math.max(1,this.page-Math.floor(2.5)),r=Math.min(this.pages,a+5-1);r-a<4&&(a=Math.max(1,r-5+1)),a>1&&(t.push(n`<button class="page-btn" @click=${()=>this._onPageChange(1)}>1</button>`),a>2&&t.push(n`<span style="color:var(--muted)">...</span>`));for(let s=a;s<=r;s++)t.push(n`
+        <button class="page-btn ${s===this.page?"active":""}" @click=${()=>this._onPageChange(s)}>${s}</button>
       `);return r<this.pages&&(r<this.pages-1&&t.push(n`<span style="color:var(--muted)">...</span>`),t.push(n`<button class="page-btn" @click=${()=>this._onPageChange(this.pages)}>${this.pages}</button>`)),n`<div class="pagination">${t}</div>`}render(){if(this.loading)return n`<div class="loading"><div class="spinner"></div><p>加载中...</p></div>`;const t=this._getCategoryOptions();return n`
       <!-- 平台切换 -->
       <div class="tabs">
@@ -829,7 +829,7 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
       `:""}
       
       <!-- 图片预览浮框 -->
-    `}};Ja(y,"styles",$`
+    `}};Qa(_,"styles",f`
     :host { display: block; }
     
     /* 模态框 */
@@ -1101,7 +1101,7 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
       margin: 0 auto 12px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-  `);P([l()],y.prototype,"products",2);P([l()],y.prototype,"loading",2);P([l()],y.prototype,"page",2);P([l()],y.prototype,"pages",2);P([l()],y.prototype,"search",2);P([l()],y.prototype,"platform",2);P([l()],y.prototype,"category",2);P([l()],y.prototype,"categories",2);P([l()],y.prototype,"sortBy",2);P([l()],y.prototype,"sortOrder",2);P([l()],y.prototype,"trackedIds",2);P([l()],y.prototype,"showTrend",2);P([l()],y.prototype,"trendCode",2);P([l()],y.prototype,"sparklines",2);P([l()],y.prototype,"previewImg",2);y=P([_("ea-product-master")],y);var _e=Object.defineProperty,Ya=Object.getOwnPropertyDescriptor,Wa=(o,t,e)=>t in o?_e(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,tt=(o,t,e,a)=>{for(var r=a>1?void 0:a?Ya(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&_e(t,e,r),r},Ka=(o,t,e)=>Wa(o,t+"",e);let j=class extends m{constructor(){super(...arguments);d(this,"products",[]);d(this,"loading",!0);d(this,"trackedIds",new Set);d(this,"showTrend",!1);d(this,"trendCode","");d(this,"sparklines",new Map)}connectedCallback(){super.connectedCallback(),this.loadTracked()}loadTracked(){const t=localStorage.getItem("tracked-products");t&&(this.trackedIds=new Set(JSON.parse(t))),this.loadData()}saveTracked(){localStorage.setItem("tracked-products",JSON.stringify([...this.trackedIds]))}async loadData(){if(this.loading=!0,this.trackedIds.size===0){this.products=[],this.loading=!1,this.requestUpdate();return}try{const t=await ua([...this.trackedIds]);this.products=t.products||[],this.loadSparklines(this.products)}catch(t){console.error("Load tracking error:",t),this.products=[]}finally{this.loading=!1,this.requestUpdate()}}async loadSparklines(t){const e=t.map(async a=>{try{const r=await pe(a.ecom_code,7);this.sparklines.set(a.ecom_code,r.trend)}catch{this.sparklines.set(a.ecom_code,[])}});await Promise.all(e),this.requestUpdate()}_untrack(t){this.trackedIds.delete(t),this.saveTracked(),this.products=this.products.filter(e=>e.ecom_code!==t),this.requestUpdate()}_showTrendPage(t){const e={scrollY:window.scrollY};sessionStorage.setItem("tracking-state",JSON.stringify(e)),window.ecomagentOpenTrend(t,"tracking")}_closeTrendModal(){this.showTrend=!1,this.trendCode=""}_formatSales(t){return t==null?"-":t>=1e4?`${(t/1e3).toFixed(1)}K`:t>=1e3?`${(t/1e3).toFixed(1)}K`:String(t)}_renderSparkline(t){const e=this.sparklines.get(t);if(!e||e.length<2)return n`<div class="sparkline-container" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px;">暂无数据</div>`;const a=e.map(g=>g.value).filter(g=>g!=null);if(a.length<2)return n`<div class="sparkline-container" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px;">暂无数据</div>`;const r=Math.min(...a),s=Math.max(...a)-r||1,p=100,c=32,h=2,b=a.map((g,x)=>{const O=h+x/(a.length-1)*(p-h*2),lt=c-h-(g-r)/s*(c-h*2);return`${O},${lt}`}).join(" "),u=b+` ${h+(a.length-1)/(a.length-1)*(p-h*2)},${c-h} ${h},${c-h}`;return n`
+  `);k([l()],_.prototype,"products",2);k([l()],_.prototype,"loading",2);k([l()],_.prototype,"page",2);k([l()],_.prototype,"pages",2);k([l()],_.prototype,"search",2);k([l()],_.prototype,"platform",2);k([l()],_.prototype,"category",2);k([l()],_.prototype,"categories",2);k([l()],_.prototype,"sortBy",2);k([l()],_.prototype,"sortOrder",2);k([l()],_.prototype,"trackedIds",2);k([l()],_.prototype,"showTrend",2);k([l()],_.prototype,"trendCode",2);k([l()],_.prototype,"sparklines",2);k([l()],_.prototype,"previewImg",2);_=k([x("ea-product-master")],_);var ze=Object.defineProperty,Xa=Object.getOwnPropertyDescriptor,Za=(o,t,e)=>t in o?ze(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,it=(o,t,e,a)=>{for(var r=a>1?void 0:a?Xa(t,e):t,s=o.length-1,i;s>=0;s--)(i=o[s])&&(r=(a?i(t,e,r):i(r))||r);return a&&r&&ze(t,e,r),r},tr=(o,t,e)=>Za(o,t+"",e);let V=class extends b{constructor(){super(...arguments);d(this,"products",[]);d(this,"loading",!0);d(this,"trackedIds",new Set);d(this,"showTrend",!1);d(this,"trendCode","");d(this,"sparklines",new Map)}connectedCallback(){super.connectedCallback(),this.loadTracked()}loadTracked(){const t=localStorage.getItem("tracked-products");t&&(this.trackedIds=new Set(JSON.parse(t))),this.loadData()}saveTracked(){localStorage.setItem("tracked-products",JSON.stringify([...this.trackedIds]))}async loadData(){if(this.loading=!0,this.trackedIds.size===0){this.products=[],this.loading=!1,this.requestUpdate();return}try{const t=await ya([...this.trackedIds]);this.products=t.products||[],this.loadSparklines(this.products)}catch(t){console.error("Load tracking error:",t),this.products=[]}finally{this.loading=!1,this.requestUpdate()}}async loadSparklines(t){const e=t.map(async a=>{try{const r=await be(a.ecom_code,7);this.sparklines.set(a.ecom_code,r.trend)}catch{this.sparklines.set(a.ecom_code,[])}});await Promise.all(e),this.requestUpdate()}_untrack(t){this.trackedIds.delete(t),this.saveTracked(),this.products=this.products.filter(e=>e.ecom_code!==t),this.requestUpdate()}_showTrendPage(t){const e={scrollY:window.scrollY};sessionStorage.setItem("tracking-state",JSON.stringify(e)),window.ecomagentOpenTrend(t,"tracking")}_closeTrendModal(){this.showTrend=!1,this.trendCode=""}_formatSales(t){return t==null?"-":t>=1e4?`${(t/1e3).toFixed(1)}K`:t>=1e3?`${(t/1e3).toFixed(1)}K`:String(t)}_renderSparkline(t){const e=this.sparklines.get(t);if(!e||e.length<2)return n`<div class="sparkline-container" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px;">暂无数据</div>`;const a=e.map(u=>u.value).filter(u=>u!=null);if(a.length<2)return n`<div class="sparkline-container" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px;">暂无数据</div>`;const r=Math.min(...a),i=Math.max(...a)-r||1,p=100,c=32,h=2,m=a.map((u,$)=>{const D=h+$/(a.length-1)*(p-h*2),vt=c-h-(u-r)/i*(c-h*2);return`${D},${vt}`}).join(" "),g=m+` ${h+(a.length-1)/(a.length-1)*(p-h*2)},${c-h} ${h},${c-h}`;return n`
       <div class="sparkline-container">
         <svg viewBox="0 0 ${p} ${c}" preserveAspectRatio="none">
           <defs>
@@ -1110,8 +1110,8 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
               <stop offset="100%" stop-color="var(--accent)" stop-opacity="0" />
             </linearGradient>
           </defs>
-          <polygon points="${u}" fill="url(#grad-track-${t})" />
-          <polyline points="${b}" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          <polygon points="${g}" fill="url(#grad-track-${t})" />
+          <polyline points="${m}" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </div>
     `}render(){return this.loading?n`<div class="loading"><div class="spinner"></div><p>加载中...</p></div>`:this.products.length===0?n`
@@ -1173,7 +1173,7 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
           </div>
         </div>
       `:""}
-    `}};Ka(j,"styles",$`
+    `}};tr(V,"styles",f`
     :host { display: block; }
     
     /* 模态框 */
@@ -1308,463 +1308,244 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
       margin: 0 auto 12px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-  `);tt([l()],j.prototype,"products",2);tt([l()],j.prototype,"loading",2);tt([l()],j.prototype,"trackedIds",2);tt([l()],j.prototype,"showTrend",2);tt([l()],j.prototype,"trendCode",2);tt([l()],j.prototype,"sparklines",2);j=tt([_("ea-tracking")],j);var we=Object.defineProperty,Xa=Object.getOwnPropertyDescriptor,Za=(o,t,e)=>t in o?we(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,st=(o,t,e,a)=>{for(var r=a>1?void 0:a?Xa(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&we(t,e,r),r},Qa=(o,t,e)=>Za(o,t+"",e);const tr={app_name:"软件名称",google:"Google API Key",volcano:"火山引擎 API Key",xai:"xAI API Key",image_providers:"图片生成模型",default:"默认模型",available:"可用模型",flash_image:"Flash Image",model:"模型名称",aspect_ratios:"支持比例",resolutions:"支持分辨率",video_providers:"视频生成模型",grok:"Grok",max_duration:"最大时长(秒)",gemini:"Gemini 配置",temperature:"温度参数",max_output_tokens:"最大输出Token",triggers:"触发器列表",image:"生成图片",video:"生成视频",amazon:"亚马逊抓取",tiktok:"TikTok抓取",test:"测试模式",name:"名称",script:"脚本路径",keywords:"触发关键词",description:"描述",settings:"设置",cache_expire_minutes:"缓存过期时间(分钟)",case_sensitive:"区分大小写"},er={settings:{title:"系统设置",desc:"应用名称等基础配置",icon:"⚙️"},api_keys:{title:"API 密钥",desc:"各平台 API 访问密钥",icon:"🔑"},models:{title:"模型配置",desc:"图片、视频生成模型参数",icon:"🤖"},triggers:{title:"触发器",desc:"命令关键词触发配置",icon:"⚡"}};let H=class extends m{constructor(){super(...arguments);d(this,"configs",[]);d(this,"backups",[]);d(this,"showBackups",!1);d(this,"loading",!0);d(this,"saving",null)}connectedCallback(){super.connectedCallback(),this.loadConfigs()}async loadConfigs(){this.loading=!0;try{const t=await ga(),e=await oe(),a=[];for(const r of t.configs)if(!r.name.includes("template"))try{const i=await he(r.name);a.push({name:r.name,filename:r.filename,data:i.data,modified:i.modified})}catch(i){console.error("Load config error:",r.name,i)}this.configs=a,this.backups=e.backups}catch(t){console.error("Failed to load configs:",t)}finally{this.loading=!1,this.requestUpdate()}}_getLabel(t){return tr[t]||t}_getConfigInfo(t){return er[t]||{title:t,desc:"",icon:"📄"}}_onFieldChange(t,e,a){const r=this.configs.find(i=>i.name===t);if(r){const i=e.split(".");let s=r.data;for(let p=0;p<i.length-1;p++)s=s[i[p]];s[i[i.length-1]]=a,this.requestUpdate()}}async _saveConfig(t){const e=this.configs.find(a=>a.name===t);if(e){this.saving=t;try{const a=JSON.stringify(e.data,null,2),r=await ba(t,a);alert(`✅ 配置已保存
-备份文件: `+r.backup),this.loadConfigs()}catch(a){alert("保存失败: "+(a instanceof Error?a.message:String(a)))}finally{this.saving=null}}}async _restoreBackup(t){if(confirm(`确定要还原备份 ${t} 吗？`))try{const e=await ma(t);alert(`✅ 已还原备份
-原配置已备份为: ${e.pre_restore_backup}`),this.showBackups=!1,this.loadConfigs()}catch(e){alert("还原失败: "+(e instanceof Error?e.message:String(e)))}}async _deleteBackup(t){if(confirm(`确定要删除备份 ${t} 吗？`))try{await fa(t);const e=await oe();this.backups=e.backups}catch(e){alert("删除失败: "+(e instanceof Error?e.message:String(e)))}}_renderSimpleFields(t){return n`
-      <div class="field-list">
-        ${Object.entries(t.data).map(([e,a])=>n`
-          <div class="field-item">
-            <div class="field-label">${this._getLabel(e)}</div>
-            <div class="field-input">
-              <input 
-                type="text" 
-                class="input mono"
-                .value=${String(a)}
-                @change=${r=>this._onFieldChange(t.name,e,r.target.value)}
-              >
+  `);it([l()],V.prototype,"products",2);it([l()],V.prototype,"loading",2);it([l()],V.prototype,"trackedIds",2);it([l()],V.prototype,"showTrend",2);it([l()],V.prototype,"trendCode",2);it([l()],V.prototype,"sparklines",2);V=it([x("ea-tracking")],V);var Se=Object.defineProperty,er=Object.getOwnPropertyDescriptor,ar=(o,t,e)=>t in o?Se(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,H=(o,t,e,a)=>{for(var r=a>1?void 0:a?er(t,e):t,s=o.length-1,i;s>=0;s--)(i=o[s])&&(r=(a?i(t,e,r):i(r))||r);return a&&r&&Se(t,e,r),r},rr=(o,t,e)=>ar(o,t+"",e);let I=class extends b{constructor(){super(...arguments);d(this,"loading",!0);d(this,"saving",!1);d(this,"appName","");d(this,"country","马来西亚");d(this,"language","马来语");d(this,"apiKeys",{google:"",volcano:"",xai:""});d(this,"editingField","");d(this,"editValue","")}async connectedCallback(){super.connectedCallback(),console.log("[Settings] connectedCallback called"),await this.loadConfig(),console.log("[Settings] loadConfig done, loading:",this.loading)}async loadConfig(){try{const t=await fetch("/api/config/settings");if(t.ok){const r=(await t.json()).data||{};this.appName=r.app_name||"",this.country=r.country||"马来西亚",this.language=r.language||"马来语"}const e=await fetch("/api/config/api_keys");if(e.ok){const r=(await e.json()).data||{};this.apiKeys={google:r.google||"",volcano:r.volcano||"",xai:r.xai||""}}}catch(t){console.error("加载配置失败:",t)}this.loading=!1,this.requestUpdate()}_editField(t,e){this.editingField=t,this.editValue=e}_cancelEdit(){this.editingField="",this.editValue=""}async _saveField(t){this.saving=!0;try{t==="app_name"||t==="country"||t==="language"?(await fetch("/api/config/settings",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({app_name:this.appName,country:this.country,language:this.language,[t]:this.editValue})})).ok&&(t==="app_name"&&(this.appName=this.editValue),t==="country"&&(this.country=this.editValue),t==="language"&&(this.language=this.editValue)):(await fetch("/api/config/api_keys",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({...this.apiKeys,[t]:this.editValue})})).ok&&(this.apiKeys={...this.apiKeys,[t]:this.editValue})}catch(e){console.error("保存失败:",e),alert("保存失败")}this.saving=!1,this.editingField="",this.editValue=""}_maskKey(t){return!t||t.length<10?t||"未配置":t.substring(0,6)+"****"+t.substring(t.length-4)}render(){return console.log("[Settings] render, loading:",this.loading,"appName:",this.appName),this.loading?n`<div style="text-align:center;padding:40px;color:var(--muted)">加载中...</div>`:n`
+      <h2>⚙️ 系统设置</h2>
+      
+      <!-- 基础设置 -->
+      <div class="section">
+        <div class="section-header">
+          <span class="section-icon">📱</span>
+          <span class="section-title">基础设置</span>
+        </div>
+        <div class="section-body">
+          <div class="field-row">
+            <span class="field-label">软件名称</span>
+            <div class="field-value">
+              ${this.editingField==="app_name"?n`
+                    <input class="field-input" .value=${this.editValue} @input=${t=>this.editValue=t.target.value} />
+                    <button class="btn btn-primary" @click=${()=>this._saveField("app_name")} ?disabled=${this.saving}>保存</button>
+                    <button class="btn" @click=${this._cancelEdit}>取消</button>
+                  `:n`
+                    <span class="field-text">${this.appName||"未设置"}</span>
+                    <button class="btn" @click=${()=>this._editField("app_name",this.appName)}>编辑</button>
+                  `}
             </div>
           </div>
-        `)}
-      </div>
-    `}_renderSectionFields(t){return Object.entries(t.data).map(([e,a])=>typeof a!="object"||a===null?n`
-          <div class="field-item">
-            <div class="field-label">${this._getLabel(e)}</div>
-            <div class="field-input">
-              <input 
-                type="text" 
-                class="input"
-                .value=${String(a)}
-                @change=${r=>this._onFieldChange(t.name,e,r.target.value)}
-              >
+          
+          <div class="field-row">
+            <span class="field-label">国家/地区</span>
+            <div class="field-value">
+              ${this.editingField==="country"?n`
+                    <input class="field-input" .value=${this.editValue} @input=${t=>this.editValue=t.target.value} placeholder="如：马来西亚、印尼、泰国..." />
+                    <button class="btn btn-primary" @click=${()=>this._saveField("country")} ?disabled=${this.saving}>保存</button>
+                    <button class="btn" @click=${this._cancelEdit}>取消</button>
+                  `:n`
+                    <span class="field-text">${this.country||"未设置"}</span>
+                    <button class="btn" @click=${()=>this._editField("country",this.country)}>编辑</button>
+                  `}
             </div>
           </div>
-        `:n`
-        <div class="section">
-          <div class="section-title">${this._getLabel(e)}</div>
-          <div class="section-grid">
-            ${this._renderSectionFieldsRecursive(t.name,e,a)}
-          </div>
-        </div>
-      `)}_renderSectionFieldsRecursive(t,e,a){return Object.entries(a).map(([r,i])=>{const s=`${e}.${r}`;return typeof i=="object"&&i!==null&&!Array.isArray(i)?n`
-          <div class="section">
-            <div class="section-title">${this._getLabel(r)}</div>
-            ${this._renderSectionFieldsRecursive(t,s,i)}
-          </div>
-        `:n`
-        <div class="field-item">
-          <div class="field-label">${this._getLabel(r)}</div>
-          <div class="field-input">
-            ${this._renderInput(t,s,i)}
-          </div>
-        </div>
-      `})}_renderInput(t,e,a){return typeof a=="boolean"?n`
-        <input 
-          type="checkbox" 
-          class="checkbox"
-          .checked=${a}
-          @change=${r=>this._onFieldChange(t,e,r.target.checked)}
-        >
-      `:Array.isArray(a)?n`
-        <input 
-          type="text" 
-          class="input mono"
-          .value=${JSON.stringify(a)}
-          @change=${r=>{try{const i=JSON.parse(r.target.value);this._onFieldChange(t,e,i)}catch{}}}
-        >
-      `:n`
-      <input 
-        type="text" 
-        class="input"
-        .value=${String(a??"")}
-        @change=${r=>this._onFieldChange(t,e,r.target.value)}
-      >
-    `}_renderConfigCard(t){const e=this._getConfigInfo(t.name),a=this.saving===t.name,r=t.name==="api_keys"||t.name==="settings";return n`
-      <div class="config-card">
-        <div class="config-header">
-          <div class="config-title-group">
-            <div class="config-icon">${e.icon}</div>
-            <div class="config-title-text">
-              <h3>${e.title}</h3>
-              <p>${e.desc}</p>
+          
+          <div class="field-row">
+            <span class="field-label">语言</span>
+            <div class="field-value">
+              ${this.editingField==="language"?n`
+                    <input class="field-input" .value=${this.editValue} @input=${t=>this.editValue=t.target.value} placeholder="如：马来语、印尼语、泰语..." />
+                    <button class="btn btn-primary" @click=${()=>this._saveField("language")} ?disabled=${this.saving}>保存</button>
+                    <button class="btn" @click=${this._cancelEdit}>取消</button>
+                  `:n`
+                    <span class="field-text">${this.language||"未设置"}</span>
+                    <button class="btn" @click=${()=>this._editField("language",this.language)}>编辑</button>
+                  `}
             </div>
           </div>
-          <div class="config-actions">
-            <button 
-              class="btn btn-primary" 
-              ?disabled=${a}
-              @click=${()=>this._saveConfig(t.name)}
-            >${a?"保存中...":"保存"}</button>
-          </div>
         </div>
-        
-        <div class="config-body">
-          ${r?this._renderSimpleFields(t):this._renderSectionFields(t)}
-        </div>
-        
-        <div class="config-meta">
-          <span>文件: ${t.filename}</span>
-          <span>修改时间: ${t.modified?new Date(t.modified).toLocaleString("zh-CN"):"-"}</span>
+        <div class="hint" style="padding: 0 20px 16px;">
+          💡 国家和语言配置用于生成素材时的文案语言选择
         </div>
       </div>
-    `}render(){return n`
-      <h2>系统设置</h2>
-
-      <div class="actions">
-        <button class="btn btn-secondary" @click=${()=>this.loadConfigs()}>刷新配置</button>
-        <button class="btn btn-secondary" @click=${()=>this.showBackups=!0}>查看备份</button>
-      </div>
-
-      ${this.loading?n`<div class="loading"><div class="spinner"></div><p>加载中...</p></div>`:this.configs.map(t=>this._renderConfigCard(t))}
-
-      ${this.showBackups?n`
-        <div class="modal-overlay" @click=${()=>this.showBackups=!1}>
-          <div class="modal" @click=${t=>t.stopPropagation()}>
-            <div class="modal-header">
-              <span class="modal-title">备份管理</span>
-              <button class="modal-close" @click=${()=>this.showBackups=!1}>✕</button>
+      
+      <!-- API 密钥 -->
+      <div class="section">
+        <div class="section-header">
+          <span class="section-icon">🔑</span>
+          <span class="section-title">API 密钥</span>
+        </div>
+        <div class="section-body">
+          <div class="field-row">
+            <span class="field-label">Google API Key</span>
+            <div class="field-value">
+              ${this.editingField==="google"?n`
+                    <input class="field-input" type="password" .value=${this.editValue} @input=${t=>this.editValue=t.target.value} />
+                    <button class="btn btn-primary" @click=${()=>this._saveField("google")} ?disabled=${this.saving}>保存</button>
+                    <button class="btn" @click=${this._cancelEdit}>取消</button>
+                  `:n`
+                    <span class="field-text api-key-masked">${this._maskKey(this.apiKeys.google)}</span>
+                    <button class="btn" @click=${()=>this._editField("google",this.apiKeys.google)}>编辑</button>
+                  `}
             </div>
-            <div class="modal-body">
-              ${this.backups.length===0?n`<div style="text-align:center;padding:24px;color:var(--muted)">暂无备份文件</div>`:this.backups.map(t=>n`
-                  <div class="backup-item">
-                    <div class="backup-info">
-                      <div class="backup-name">${t.filename}</div>
-                      <div class="backup-meta">
-                        ${t.config_name} | ${new Date(t.created).toLocaleString("zh-CN")} | ${t.size} bytes
-                      </div>
-                    </div>
-                    <div class="backup-actions">
-                      <button class="action-btn restore" @click=${()=>this._restoreBackup(t.filename)}>还原</button>
-                      <button class="action-btn delete" @click=${()=>this._deleteBackup(t.filename)}>删除</button>
-                    </div>
-                  </div>
-                `)}
+          </div>
+          
+          <div class="field-row">
+            <span class="field-label">火山引擎 API Key</span>
+            <div class="field-value">
+              ${this.editingField==="volcano"?n`
+                    <input class="field-input" type="password" .value=${this.editValue} @input=${t=>this.editValue=t.target.value} />
+                    <button class="btn btn-primary" @click=${()=>this._saveField("volcano")} ?disabled=${this.saving}>保存</button>
+                    <button class="btn" @click=${this._cancelEdit}>取消</button>
+                  `:n`
+                    <span class="field-text api-key-masked">${this._maskKey(this.apiKeys.volcano)}</span>
+                    <button class="btn" @click=${()=>this._editField("volcano",this.apiKeys.volcano)}>编辑</button>
+                  `}
+            </div>
+          </div>
+          
+          <div class="field-row">
+            <span class="field-label">xAI API Key</span>
+            <div class="field-value">
+              ${this.editingField==="xai"?n`
+                    <input class="field-input" type="password" .value=${this.editValue} @input=${t=>this.editValue=t.target.value} />
+                    <button class="btn btn-primary" @click=${()=>this._saveField("xai")} ?disabled=${this.saving}>保存</button>
+                    <button class="btn" @click=${this._cancelEdit}>取消</button>
+                  `:n`
+                    <span class="field-text api-key-masked">${this._maskKey(this.apiKeys.xai)}</span>
+                    <button class="btn" @click=${()=>this._editField("xai",this.apiKeys.xai)}>编辑</button>
+                  `}
             </div>
           </div>
         </div>
-      `:""}
-    `}};Qa(H,"styles",$`
-    :host { display: block; }
+        <div class="hint" style="padding: 0 20px 16px;">
+          💡 API 密钥用于调用各类 AI 模型生成素材
+        </div>
+      </div>
+    `}};rr(I,"styles",f`
+    :host { display: block; padding: 24px; max-width: 800px; }
     
     h2 {
       font-size: 20px;
       font-weight: 700;
-      color: var(--text-strong);
-      margin-bottom: 24px;
-    }
-    
-    .actions {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-    
-    .btn {
-      padding: 8px 16px;
-      border-radius: var(--radius-sm);
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: var(--duration-fast) ease;
-      border: none;
-    }
-    
-    .btn-primary {
-      background: var(--accent);
-      color: var(--accent-foreground);
-    }
-    
-    .btn-primary:hover { background: var(--accent-hover); }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-    
-    .btn-secondary {
-      background: var(--bg-elevated);
       color: var(--text);
-      border: 1px solid var(--border);
+      margin-bottom: 24px;
     }
     
-    .btn-secondary:hover { background: var(--bg-hover); }
-    
-    .config-card {
+    .section {
       background: var(--card);
-      border-radius: var(--radius-lg);
       border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
       margin-bottom: 20px;
       overflow: hidden;
     }
     
-    .config-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 20px;
-      background: linear-gradient(135deg, var(--bg-accent) 0%, var(--card) 100%);
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .config-title-group {
+    .section-header {
       display: flex;
       align-items: center;
       gap: 12px;
+      padding: 16px 20px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
     }
     
-    .config-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      background: var(--accent-subtle);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .section-icon {
       font-size: 20px;
     }
     
-    .config-title-text h3 {
-      margin: 0;
-      font-size: 16px;
+    .section-title {
+      font-size: 15px;
       font-weight: 600;
-      color: var(--text-strong);
+      color: var(--text);
     }
     
-    .config-title-text p {
-      margin: 2px 0 0;
-      font-size: 12px;
-      color: var(--muted);
-    }
-    
-    .config-actions {
-      display: flex;
-      gap: 8px;
-    }
-    
-    .config-body {
+    .section-body {
       padding: 20px;
     }
     
-    /* 简单字段列表 */
-    .field-list {
+    .field-row {
       display: flex;
-      flex-direction: column;
-      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
     }
     
-    .field-item {
-      display: grid;
-      grid-template-columns: 160px 1fr;
-      gap: 16px;
-      align-items: center;
+    .field-row:last-child {
+      border-bottom: none;
     }
     
     .field-label {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text);
-    }
-    
-    .field-input {
-      min-width: 0; /* 防止溢出 */
-    }
-    
-    .input {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 13px;
-      background: var(--bg-elevated);
-      color: var(--text);
-      transition: var(--duration-fast) ease;
-    }
-    
-    .input:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-subtle);
-    }
-    
-    .input.mono {
-      font-family: var(--mono);
-      font-size: 12px;
-    }
-    
-    .checkbox {
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-      accent-color: var(--accent);
-    }
-    
-    /* 分组区域 */
-    .section {
-      background: var(--bg-elevated);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-    
-    .section:last-child { margin-bottom: 0; }
-    
-    .section-title {
       font-size: 14px;
-      font-weight: 600;
-      color: var(--text-strong);
-      margin-bottom: 12px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .section-field {
-      display: grid;
-      grid-template-columns: 160px 1fr;
-      gap: 16px;
-      align-items: center;
-    }
-    
-    .section-field-label {
-      font-size: 13px;
-      font-weight: 500;
       color: var(--text);
     }
     
-    .section-field-input {
-      min-width: 0;
-    }
-    
-    .section-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    
-    .config-meta {
-      font-size: 11px;
-      color: var(--muted);
-      padding: 12px 20px;
-      border-top: 1px solid var(--border);
-      background: var(--bg-accent);
-      display: flex;
-      justify-content: space-between;
-    }
-    
-    /* Modal */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
+    .field-value {
       display: flex;
       align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-    
-    .modal {
-      background: var(--card);
-      border-radius: var(--radius-lg);
-      width: 600px;
-      max-height: 80vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .modal-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-strong);
-    }
-    
-    .modal-close {
-      background: none;
-      border: none;
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 20px;
-    }
-    
-    .modal-body {
-      padding: 16px;
-      overflow-y: auto;
-      flex: 1;
-    }
-    
-    .backup-item {
-      background: var(--bg-elevated);
-      border-radius: var(--radius-md);
-      padding: 12px;
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .backup-info { font-size: 13px; }
-    
-    .backup-name {
-      font-weight: 500;
-      color: var(--text-strong);
-    }
-    
-    .backup-meta {
-      font-size: 11px;
-      color: var(--muted);
-    }
-    
-    .backup-actions {
-      display: flex;
       gap: 8px;
     }
     
-    .action-btn {
+    .field-text {
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    .field-input {
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      min-width: 200px;
+    }
+    
+    .field-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    
+    .btn {
       padding: 6px 12px;
       border-radius: var(--radius-sm);
-      font-size: 12px;
+      font-size: 13px;
       cursor: pointer;
-      border: none;
-      transition: var(--duration-fast) ease;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
     }
     
-    .action-btn.restore {
-      background: var(--ok-subtle);
-      color: var(--ok);
+    .btn:hover {
+      background: var(--bg-hover);
     }
     
-    .action-btn.restore:hover { background: var(--ok); color: white; }
-    
-    .action-btn.delete {
-      background: var(--danger-subtle);
-      color: var(--danger);
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
     }
     
-    .action-btn.delete:hover { background: var(--danger); color: white; }
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
     
-    .loading {
-      text-align: center;
-      padding: 48px;
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .api-key-masked {
+      font-family: monospace;
+      letter-spacing: 2px;
+    }
+    
+    .hint {
+      font-size: 12px;
       color: var(--muted);
+      margin-top: 8px;
     }
-    
-    .spinner {
-      width: 32px;
-      height: 32px;
-      border: 2px solid var(--accent);
-      border-top-color: transparent;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 12px;
-    }
-    
-    @keyframes spin { to { transform: rotate(360deg); } }
-  `);st([l()],H.prototype,"configs",2);st([l()],H.prototype,"backups",2);st([l()],H.prototype,"showBackups",2);st([l()],H.prototype,"loading",2);st([l()],H.prototype,"saving",2);H=st([_("ea-settings")],H);var ke=Object.defineProperty,ar=Object.getOwnPropertyDescriptor,rr=(o,t,e)=>t in o?ke(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,nt=(o,t,e,a)=>{for(var r=a>1?void 0:a?ar(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&ke(t,e,r),r},or=(o,t,e)=>rr(o,t+"",e);let q=class extends m{constructor(){super(...arguments);d(this,"platform","amazon");d(this,"amazonData",{});d(this,"tiktokData",{});d(this,"loading",!1);d(this,"pinnedCategories",new Set)}connectedCallback(){super.connectedCallback(),this._loadPinned(),this.loadData()}_loadPinned(){const t=localStorage.getItem("pinned-categories");t&&(this.pinnedCategories=new Set(JSON.parse(t)))}_savePinned(){localStorage.setItem("pinned-categories",JSON.stringify([...this.pinnedCategories]))}_togglePin(t){this.pinnedCategories.has(t)?this.pinnedCategories.delete(t):this.pinnedCategories.add(t),this._savePinned(),this.requestUpdate()}async loadData(){this.loading=!0;try{this.platform==="amazon"&&Object.keys(this.amazonData).length===0?this.amazonData=await ya():this.platform==="tiktok"&&Object.keys(this.tiktokData).length===0&&(this.tiktokData=await $a())}catch(t){console.error("Load top error:",t)}finally{this.loading=!1,this.requestUpdate()}}_switchPlatform(t){this.platform=t,this.loadData()}_truncate(t,e=20){return t?t.length>e?t.substring(0,e)+"...":t:"-"}_renderRankChange(t,e){return e?n`<span class="new-badge">新</span>`:t==null?null:t>0?n`<span class="rank-change up">↑${t}</span>`:t<0?n`<span class="rank-change down">↓${Math.abs(t)}</span>`:null}_sortCategories(t){const e=t.filter(r=>this.pinnedCategories.has(r)),a=t.filter(r=>!this.pinnedCategories.has(r));return[...e,...a]}render(){const t=this.platform==="amazon"?this.amazonData:this.tiktokData,e=this._sortCategories(Object.keys(t));return n`
+  `);H([l()],I.prototype,"loading",2);H([l()],I.prototype,"saving",2);H([l()],I.prototype,"appName",2);H([l()],I.prototype,"country",2);H([l()],I.prototype,"language",2);H([l()],I.prototype,"apiKeys",2);H([l()],I.prototype,"editingField",2);H([l()],I.prototype,"editValue",2);I=H([x("ea-settings")],I);var Ce=Object.defineProperty,or=Object.getOwnPropertyDescriptor,sr=(o,t,e)=>t in o?Ce(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,gt=(o,t,e,a)=>{for(var r=a>1?void 0:a?or(t,e):t,s=o.length-1,i;s>=0;s--)(i=o[s])&&(r=(a?i(t,e,r):i(r))||r);return a&&r&&Ce(t,e,r),r},ir=(o,t,e)=>sr(o,t+"",e);let Y=class extends b{constructor(){super(...arguments);d(this,"platform","amazon");d(this,"amazonData",{});d(this,"tiktokData",{});d(this,"loading",!1);d(this,"pinnedCategories",new Set)}connectedCallback(){super.connectedCallback(),this._loadPinned(),this.loadData()}_loadPinned(){const t=localStorage.getItem("pinned-categories");t&&(this.pinnedCategories=new Set(JSON.parse(t)))}_savePinned(){localStorage.setItem("pinned-categories",JSON.stringify([...this.pinnedCategories]))}_togglePin(t){this.pinnedCategories.has(t)?this.pinnedCategories.delete(t):this.pinnedCategories.add(t),this._savePinned(),this.requestUpdate()}async loadData(){this.loading=!0;try{this.platform==="amazon"&&Object.keys(this.amazonData).length===0?this.amazonData=await ka():this.platform==="tiktok"&&Object.keys(this.tiktokData).length===0&&(this.tiktokData=await Pa())}catch(t){console.error("Load top error:",t)}finally{this.loading=!1,this.requestUpdate()}}_switchPlatform(t){this.platform=t,this.loadData()}_truncate(t,e=20){return t?t.length>e?t.substring(0,e)+"...":t:"-"}_renderRankChange(t,e){return e?n`<span class="new-badge">新</span>`:t==null?null:t>0?n`<span class="rank-change up">↑${t}</span>`:t<0?n`<span class="rank-change down">↓${Math.abs(t)}</span>`:null}_sortCategories(t){const e=t.filter(r=>this.pinnedCategories.has(r)),a=t.filter(r=>!this.pinnedCategories.has(r));return[...e,...a]}render(){const t=this.platform==="amazon"?this.amazonData:this.tiktokData,e=this._sortCategories(Object.keys(t));return n`
       <div class="tabs">
         <button class="tab-btn ${this.platform==="amazon"?"active":""}" @click=${()=>this._switchPlatform("amazon")}>Amazon</button>
         <button class="tab-btn ${this.platform==="tiktok"?"active":""}" @click=${()=>this._switchPlatform("tiktok")}>TikTok</button>
@@ -1784,21 +1565,21 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
                     </div>
                     <table>
                       <tbody>
-                        ${(t[a]||[]).slice(0,15).map((i,s)=>n`
-                          <tr style="cursor:pointer" @click=${()=>window.open(i.product_url||"#","_blank")}>
+                        ${(t[a]||[]).slice(0,15).map((s,i)=>n`
+                          <tr style="cursor:pointer" @click=${()=>window.open(s.product_url||"#","_blank")}>
                             <td>
                               <div class="rank-cell">
-                                <span class="rank">#${s+1}</span>
-                                ${this._renderRankChange(i.rank_change,i.is_new)}
+                                <span class="rank">#${i+1}</span>
+                                ${this._renderRankChange(s.rank_change,s.is_new)}
                               </div>
                             </td>
                             <td>
-                              <a class="product-link" href=${i.product_url||"#"} target="_blank" title=${i.name}>
-                                ${this._truncate(i.short_name||i.name)}
+                              <a class="product-link" href=${s.product_url||"#"} target="_blank" title=${s.name}>
+                                ${this._truncate(s.short_name||s.name)}
                               </a>
                             </td>
-                            <td>${i.price?`$${i.price.toFixed(2)}`:"-"}</td>
-                            <td>${i.rating?`${i.rating.toFixed(1)} ⭐`:"-"}</td>
+                            <td>${s.price?`$${s.price.toFixed(2)}`:"-"}</td>
+                            <td>${s.rating?`${s.rating.toFixed(1)} ⭐`:"-"}</td>
                           </tr>
                         `)}
                       </tbody>
@@ -1807,7 +1588,7 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
                 `})}
             </div>
           `}
-    `}};or(q,"styles",$`
+    `}};ir(Y,"styles",f`
     :host { display: block; }
     
     .tabs {
@@ -1954,8 +1735,8 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
     @media (max-width: 768px) {
       .categories-grid { grid-template-columns: 1fr; }
     }
-  `);nt([l()],q.prototype,"platform",2);nt([l()],q.prototype,"amazonData",2);nt([l()],q.prototype,"tiktokData",2);nt([l()],q.prototype,"loading",2);nt([l()],q.prototype,"pinnedCategories",2);q=nt([_("ea-today-top")],q);var Pe=Object.defineProperty,ir=Object.getOwnPropertyDescriptor,sr=(o,t,e)=>t in o?Pe(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,G=(o,t,e,a)=>{for(var r=a>1?void 0:a?ir(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&Pe(t,e,r),r},nr=(o,t,e)=>sr(o,t+"",e);let D=class extends m{constructor(){super(...arguments);d(this,"platform","amazon");d(this,"products",[]);d(this,"loading",!1);d(this,"page",1);d(this,"pages",0);d(this,"search","");d(this,"category","")}connectedCallback(){super.connectedCallback(),this.loadData()}async loadData(){var t;this.loading=!0,console.log("=== RawData: Loading, platform:",this.platform);try{const e={page:this.page,limit:20,search:this.search,category:this.category},a=this.platform==="amazon"?await _a(e):await wa(e);console.log("=== RawData: Result:",a),this.products=a.data||[],this.pages=((t=a.pagination)==null?void 0:t.pages)||0}catch(e){console.error("=== RawData: Error:",e),this.products=[]}finally{this.loading=!1,this.requestUpdate()}}_switchPlatform(t){this.platform=t,this.page=1,this.loadData()}_onSearch(){this.page=1,this.loadData()}_onPageChange(t){this.page=t,this.loadData()}_renderPagination(){const t=[];let a=Math.max(1,this.page-Math.floor(2.5)),r=Math.min(this.pages,a+5-1);r-a<4&&(a=Math.max(1,r-5+1));for(let i=a;i<=r;i++)t.push(n`
-        <button class="page-btn ${i===this.page?"active":""}" @click=${()=>this._onPageChange(i)}>${i}</button>
+  `);gt([l()],Y.prototype,"platform",2);gt([l()],Y.prototype,"amazonData",2);gt([l()],Y.prototype,"tiktokData",2);gt([l()],Y.prototype,"loading",2);gt([l()],Y.prototype,"pinnedCategories",2);Y=gt([x("ea-today-top")],Y);var Te=Object.defineProperty,nr=Object.getOwnPropertyDescriptor,dr=(o,t,e)=>t in o?Te(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,X=(o,t,e,a)=>{for(var r=a>1?void 0:a?nr(t,e):t,s=o.length-1,i;s>=0;s--)(i=o[s])&&(r=(a?i(t,e,r):i(r))||r);return a&&r&&Te(t,e,r),r},lr=(o,t,e)=>dr(o,t+"",e);let U=class extends b{constructor(){super(...arguments);d(this,"platform","amazon");d(this,"products",[]);d(this,"loading",!1);d(this,"page",1);d(this,"pages",0);d(this,"search","");d(this,"category","")}connectedCallback(){super.connectedCallback(),this.loadData()}async loadData(){var t;this.loading=!0,console.log("=== RawData: Loading, platform:",this.platform);try{const e={page:this.page,limit:20,search:this.search,category:this.category},a=this.platform==="amazon"?await za(e):await Sa(e);console.log("=== RawData: Result:",a),this.products=a.data||[],this.pages=((t=a.pagination)==null?void 0:t.pages)||0}catch(e){console.error("=== RawData: Error:",e),this.products=[]}finally{this.loading=!1,this.requestUpdate()}}_switchPlatform(t){this.platform=t,this.page=1,this.loadData()}_onSearch(){this.page=1,this.loadData()}_onPageChange(t){this.page=t,this.loadData()}_renderPagination(){const t=[];let a=Math.max(1,this.page-Math.floor(2.5)),r=Math.min(this.pages,a+5-1);r-a<4&&(a=Math.max(1,r-5+1));for(let s=a;s<=r;s++)t.push(n`
+        <button class="page-btn ${s===this.page?"active":""}" @click=${()=>this._onPageChange(s)}>${s}</button>
       `);return n`<div class="pagination">${t}</div>`}render(){return n`
       <div class="tabs">
         <button class="tab-btn ${this.platform==="amazon"?"active":""}" @click=${()=>this._switchPlatform("amazon")}>Amazon</button>
@@ -2017,7 +1798,7 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
             ${this.pages>1?this._renderPagination():""}
           </div>
         `}
-    `}};nr(D,"styles",$`
+    `}};lr(U,"styles",f`
     :host { display: block; }
     
     .tabs {
@@ -2191,7 +1972,7 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
     }
     
     @keyframes spin { to { transform: rotate(360deg); } }
-  `);G([l()],D.prototype,"platform",2);G([l()],D.prototype,"products",2);G([l()],D.prototype,"loading",2);G([l()],D.prototype,"page",2);G([l()],D.prototype,"pages",2);G([l()],D.prototype,"search",2);G([l()],D.prototype,"category",2);D=G([_("ea-raw-data")],D);var Se=Object.defineProperty,dr=Object.getOwnPropertyDescriptor,lr=(o,t,e)=>t in o?Se(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,zt=(o,t,e,a)=>{for(var r=a>1?void 0:a?dr(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&Se(t,e,r),r},cr=(o,t,e)=>lr(o,t+"",e);let ot=class extends m{constructor(){super(...arguments);d(this,"stats",{amazon_hot_tiktok_not:0,tiktok_hot_amazon_not:0,both_hot:0});d(this,"items",[]);d(this,"loading",!1)}connectedCallback(){super.connectedCallback(),this.loadData()}async loadData(){this.loading=!0;try{const t=await ka();this.stats=t.stats||this.stats,this.items=t.items||[]}catch(t){console.error("Load cross-platform error:",t)}finally{this.loading=!1}}render(){return n`
+  `);X([l()],U.prototype,"platform",2);X([l()],U.prototype,"products",2);X([l()],U.prototype,"loading",2);X([l()],U.prototype,"page",2);X([l()],U.prototype,"pages",2);X([l()],U.prototype,"search",2);X([l()],U.prototype,"category",2);U=X([x("ea-raw-data")],U);var Ae=Object.defineProperty,cr=Object.getOwnPropertyDescriptor,pr=(o,t,e)=>t in o?Ae(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,Ot=(o,t,e,a)=>{for(var r=a>1?void 0:a?cr(t,e):t,s=o.length-1,i;s>=0;s--)(i=o[s])&&(r=(a?i(t,e,r):i(r))||r);return a&&r&&Ae(t,e,r),r},hr=(o,t,e)=>pr(o,t+"",e);let pt=class extends b{constructor(){super(...arguments);d(this,"stats",{amazon_hot_tiktok_not:0,tiktok_hot_amazon_not:0,both_hot:0});d(this,"items",[]);d(this,"loading",!1)}connectedCallback(){super.connectedCallback(),this.loadData()}async loadData(){this.loading=!0;try{const t=await Ca();this.stats=t.stats||this.stats,this.items=t.items||[]}catch(t){console.error("Load cross-platform error:",t)}finally{this.loading=!1}}render(){return n`
       <div class="header">
         <h2 style="font-size:20px;font-weight:700;color:var(--text-strong)">跨平台分析</h2>
         <button class="refresh-btn" @click=${this.loadData}>刷新分析</button>
@@ -2250,7 +2031,7 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
             </table>
           </div>
         `}
-    `}};cr(ot,"styles",$`
+    `}};hr(pt,"styles",f`
     :host { display: block; }
     
     .header {
@@ -2367,7 +2148,7 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
     @media (max-width: 768px) {
       .stats-grid { grid-template-columns: 1fr; }
     }
-  `);zt([l()],ot.prototype,"stats",2);zt([l()],ot.prototype,"items",2);zt([l()],ot.prototype,"loading",2);ot=zt([_("ea-cross-platform")],ot);var ze=Object.defineProperty,pr=Object.getOwnPropertyDescriptor,hr=(o,t,e)=>t in o?ze(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,Vt=(o,t,e,a)=>{for(var r=a>1?void 0:a?pr(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&ze(t,e,r),r},ur=(o,t,e)=>hr(o,t+"",e);let xt=class extends m{constructor(){super(...arguments);d(this,"format","csv");d(this,"dateRange","all")}_export(t){console.log("Export:",{platform:t,format:this.format,dateRange:this.dateRange}),alert(`导出功能开发中...
+  `);Ot([l()],pt.prototype,"stats",2);Ot([l()],pt.prototype,"items",2);Ot([l()],pt.prototype,"loading",2);pt=Ot([x("ea-cross-platform")],pt);var Me=Object.defineProperty,gr=Object.getOwnPropertyDescriptor,ur=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,Qt=(o,t,e,a)=>{for(var r=a>1?void 0:a?gr(t,e):t,s=o.length-1,i;s>=0;s--)(i=o[s])&&(r=(a?i(t,e,r):i(r))||r);return a&&r&&Me(t,e,r),r},vr=(o,t,e)=>ur(o,t+"",e);let Pt=class extends b{constructor(){super(...arguments);d(this,"format","csv");d(this,"dateRange","all")}_export(t){console.log("Export:",{platform:t,format:this.format,dateRange:this.dateRange}),alert(`导出功能开发中...
 平台: ${t}
 格式: ${this.format}
 时间范围: ${this.dateRange}`)}render(){return n`
@@ -2441,7 +2222,7 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
       <div style="margin-top:24px">
         <button class="export-btn" style="width:100%" @click=${()=>this._export("all")}>导出全部数据</button>
       </div>
-    `}};ur(xt,"styles",$`
+    `}};vr(Pt,"styles",f`
     :host { display: block; }
     
     .export-grid {
@@ -2575,16 +2356,16 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
     @media (max-width: 768px) {
       .export-grid { grid-template-columns: 1fr; }
     }
-  `);Vt([l()],xt.prototype,"format",2);Vt([l()],xt.prototype,"dateRange",2);xt=Vt([_("ea-export")],xt);var Ce=Object.defineProperty,gr=Object.getOwnPropertyDescriptor,vr=(o,t,e)=>t in o?Ce(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,A=(o,t,e,a)=>{for(var r=a>1?void 0:a?gr(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&Ce(t,e,r),r},br=(o,t,e)=>vr(o,t+"",e);let z=class extends m{constructor(){super(...arguments);d(this,"ecomCode","");d(this,"loading",!0);d(this,"product",{});d(this,"trend",[]);d(this,"details",[]);d(this,"pagination",{page:1,limit:20,total:0,pages:1});d(this,"timePreset","7");d(this,"customStart","");d(this,"customEnd","");d(this,"metric","");d(this,"currentPage",1);d(this,"tooltipData",{show:!1,x:0,y:0,date:"",value:null,index:0})}connectedCallback(){super.connectedCallback(),this.loadData()}async loadData(){this.loading=!0;try{const t=new URLSearchParams;this.timePreset==="custom"&&this.customStart&&this.customEnd?(t.set("start_date",this.customStart),t.set("end_date",this.customEnd)):t.set("days",this.timePreset),t.set("page",String(this.currentPage));const e=await fetch(`/api/product-trend/${this.ecomCode}?${t}`);if(!e.ok)throw new Error("Failed to load");const a=await e.json();this.product=a.product,this.trend=a.trend,this.details=a.details,this.pagination=a.pagination,this.metric||(this.product.platform==="amazon"?this.metric="rating":this.metric="sales_count")}catch(t){console.error("Load trend error:",t)}finally{this.loading=!1,this.requestUpdate()}}_goBack(){const t=sessionStorage.getItem("trend-source-page")||"product-master";window.ecomagentNavigate(t);const e=sessionStorage.getItem("trend-source-state");e&&sessionStorage.setItem("restore-state",e)}_onTimePreset(t){this.timePreset=t,this.currentPage=1,this.loadData()}_onCustomDateChange(){this.customStart&&this.customEnd&&(this.timePreset="custom",this.currentPage=1,this.loadData())}_onMetricChange(t){this.metric=t,this.requestUpdate()}_onPageChange(t){this.currentPage=t,this.loadData()}_formatValue(t,e){if(t==null)return"-";if(e==="sales_count"){if(t>=1e4)return`${(t/1e3).toFixed(1)}K`;if(t>=1e3)return`${(t/1e3).toFixed(1)}K`}return e==="rating"?t.toFixed(1):e==="price"?`$${t.toFixed(2)}`:String(t)}_renderChart(){const t=this.trend;if(!t||t.length<1)return n`<div class="chart-empty">暂无数据</div>`;const e=t.map(v=>{const S=v[this.metric];return{...v,value:S??0,rawValue:S}}),a=800,r=320,i={top:20,right:40,bottom:50,left:70},s=a-i.left-i.right,p=r-i.top-i.bottom,c=e.map(v=>v.value),h=Math.min(...c),u=Math.max(...c)-h||1,g=v=>i.left+v/(t.length-1||1)*s,x=v=>i.top+p-(v-h)/u*p,O=e.map((v,S)=>`${g(S)},${x(v.value)}`).join(" L "),lt=`M ${O}`,De=`M ${i.left},${i.top+p} L ${O} L ${g(t.length-1)},${i.top+p} Z`,Tt=[],Gt=5;for(let v=0;v<=Gt;v++)Tt.push(h+u*v/Gt);const Ie=Math.ceil(t.length/7);let L="";return L+=`<defs>
+  `);Qt([l()],Pt.prototype,"format",2);Qt([l()],Pt.prototype,"dateRange",2);Pt=Qt([x("ea-export")],Pt);var Ee=Object.defineProperty,br=Object.getOwnPropertyDescriptor,mr=(o,t,e)=>t in o?Ee(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,T=(o,t,e,a)=>{for(var r=a>1?void 0:a?br(t,e):t,s=o.length-1,i;s>=0;s--)(i=o[s])&&(r=(a?i(t,e,r):i(r))||r);return a&&r&&Ee(t,e,r),r},fr=(o,t,e)=>mr(o,t+"",e);let z=class extends b{constructor(){super(...arguments);d(this,"ecomCode","");d(this,"loading",!0);d(this,"product",{});d(this,"trend",[]);d(this,"details",[]);d(this,"pagination",{page:1,limit:20,total:0,pages:1});d(this,"timePreset","7");d(this,"customStart","");d(this,"customEnd","");d(this,"metric","");d(this,"currentPage",1);d(this,"tooltipData",{show:!1,x:0,y:0,date:"",value:null,index:0})}connectedCallback(){super.connectedCallback(),this.loadData()}async loadData(){this.loading=!0;try{const t=new URLSearchParams;this.timePreset==="custom"&&this.customStart&&this.customEnd?(t.set("start_date",this.customStart),t.set("end_date",this.customEnd)):t.set("days",this.timePreset),t.set("page",String(this.currentPage));const e=await fetch(`/api/product-trend/${this.ecomCode}?${t}`);if(!e.ok)throw new Error("Failed to load");const a=await e.json();this.product=a.product,this.trend=a.trend,this.details=a.details,this.pagination=a.pagination,this.metric||(this.product.platform==="amazon"?this.metric="rating":this.metric="sales_count")}catch(t){console.error("Load trend error:",t)}finally{this.loading=!1,this.requestUpdate()}}_goBack(){const t=sessionStorage.getItem("trend-source-page")||"product-master";window.ecomagentNavigate(t);const e=sessionStorage.getItem("trend-source-state");e&&sessionStorage.setItem("restore-state",e)}_onTimePreset(t){this.timePreset=t,this.currentPage=1,this.loadData()}_onCustomDateChange(){this.customStart&&this.customEnd&&(this.timePreset="custom",this.currentPage=1,this.loadData())}_onMetricChange(t){this.metric=t,this.requestUpdate()}_onPageChange(t){this.currentPage=t,this.loadData()}_formatValue(t,e){if(t==null)return"-";if(e==="sales_count"){if(t>=1e4)return`${(t/1e3).toFixed(1)}K`;if(t>=1e3)return`${(t/1e3).toFixed(1)}K`}return e==="rating"?t.toFixed(1):e==="price"?`$${t.toFixed(2)}`:String(t)}_renderChart(){const t=this.trend;if(!t||t.length<1)return n`<div class="chart-empty">暂无数据</div>`;const e=t.map(v=>{const P=v[this.metric];return{...v,value:P??0,rawValue:P}}),a=800,r=320,s={top:20,right:40,bottom:50,left:70},i=a-s.left-s.right,p=r-s.top-s.bottom,c=e.map(v=>v.value),h=Math.min(...c),g=Math.max(...c)-h||1,u=v=>s.left+v/(t.length-1||1)*i,$=v=>s.top+p-(v-h)/g*p,D=e.map((v,P)=>`${u(P)},${$(v.value)}`).join(" L "),vt=`M ${D}`,Ve=`M ${s.left},${s.top+p} L ${D} L ${u(t.length-1)},${s.top+p} Z`,It=[],Xt=5;for(let v=0;v<=Xt;v++)It.push(h+g*v/Xt);const Re=Math.ceil(t.length/7);let G="";return G+=`<defs>
       <linearGradient id="areaGradient" x1="0" x2="0" y1="0" y2="1">
         <stop offset="0%" stop-color="#ff5c5c" stop-opacity="0.3" />
         <stop offset="100%" stop-color="#ff5c5c" stop-opacity="0.05" />
       </linearGradient>
-    </defs>`,Tt.forEach(v=>{L+=`<line x1="${i.left}" y1="${x(v)}" x2="${a-i.right}" y2="${x(v)}" stroke="#444" stroke-width="1" stroke-dasharray="4,4"/>`}),L+=`<path d="${De}" fill="url(#areaGradient)"/>`,L+=`<path d="${lt}" fill="none" stroke="#ff5c5c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`,e.forEach((v,S)=>{L+=`<circle cx="${g(S)}" cy="${x(v.value)}" r="4" fill="#ff5c5c" stroke="#1a1a1a" stroke-width="1"/>`}),Tt.forEach(v=>{const S=this._formatValue(v,this.metric);L+=`<text x="${i.left-10}" y="${x(v)+4}" text-anchor="end" fill="#aaa" font-size="11" font-family="system-ui, -apple-system, sans-serif" font-weight="500">${S}</text>`}),e.forEach((v,S)=>{if(S%Ie!==0&&S!==t.length-1)return;const At=v.date.slice(5);L+=`<text x="${g(S)}" y="${r-20}" text-anchor="middle" fill="#aaa" font-size="11" font-family="system-ui, -apple-system, sans-serif" font-weight="500">${At}</text>`}),n`
+    </defs>`,It.forEach(v=>{G+=`<line x1="${s.left}" y1="${$(v)}" x2="${a-s.right}" y2="${$(v)}" stroke="#444" stroke-width="1" stroke-dasharray="4,4"/>`}),G+=`<path d="${Ve}" fill="url(#areaGradient)"/>`,G+=`<path d="${vt}" fill="none" stroke="#ff5c5c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`,e.forEach((v,P)=>{G+=`<circle cx="${u(P)}" cy="${$(v.value)}" r="4" fill="#ff5c5c" stroke="#1a1a1a" stroke-width="1"/>`}),It.forEach(v=>{const P=this._formatValue(v,this.metric);G+=`<text x="${s.left-10}" y="${$(v)+4}" text-anchor="end" fill="#aaa" font-size="11" font-family="system-ui, -apple-system, sans-serif" font-weight="500">${P}</text>`}),e.forEach((v,P)=>{if(P%Re!==0&&P!==t.length-1)return;const jt=v.date.slice(5);G+=`<text x="${u(P)}" y="${r-20}" text-anchor="middle" fill="#aaa" font-size="11" font-family="system-ui, -apple-system, sans-serif" font-weight="500">${jt}</text>`}),n`
       <svg class="chart-svg" viewBox="0 0 ${a} ${r}" preserveAspectRatio="xMidYMid meet"
-        @mousemove=${v=>{const S=v.currentTarget.getBoundingClientRect(),At=v.clientX-S.left,je=S.width/a,Ne=At/je-i.left,ct=Math.round(Ne/s*(t.length-1));if(ct>=0&&ct<t.length){const Et=e[ct];this.tooltipData={show:!0,x:g(ct),y:x(Et.value),date:Et.date,value:Et.rawValue,index:ct},this.requestUpdate()}}} @mouseleave=${()=>{this.tooltipData={...this.tooltipData,show:!1},this.requestUpdate()}}>
-        ${Lt(L)}
-        ${this.tooltipData.show?Lt(`<line class="tooltip-line" x1="${this.tooltipData.x}" y1="0" x2="${this.tooltipData.x}" y2="${r}" stroke="#ff5c5c" stroke-width="1" stroke-dasharray="4,4" opacity="0.6"/><circle class="tooltip-point" cx="${this.tooltipData.x}" cy="${this.tooltipData.y}" r="8" fill="#ff5c5c" stroke="#fff" stroke-width="3"/>`):null}
+        @mousemove=${v=>{const P=v.currentTarget.getBoundingClientRect(),jt=v.clientX-P.left,qe=P.width/a,He=jt/qe-s.left,bt=Math.round(He/i*(t.length-1));if(bt>=0&&bt<t.length){const Nt=e[bt];this.tooltipData={show:!0,x:u(bt),y:$(Nt.value),date:Nt.date,value:Nt.rawValue,index:bt},this.requestUpdate()}}} @mouseleave=${()=>{this.tooltipData={...this.tooltipData,show:!1},this.requestUpdate()}}>
+        ${Ht(G)}
+        ${this.tooltipData.show?Ht(`<line class="tooltip-line" x1="${this.tooltipData.x}" y1="0" x2="${this.tooltipData.x}" y2="${r}" stroke="#ff5c5c" stroke-width="1" stroke-dasharray="4,4" opacity="0.6"/><circle class="tooltip-point" cx="${this.tooltipData.x}" cy="${this.tooltipData.y}" r="8" fill="#ff5c5c" stroke="#fff" stroke-width="3"/>`):null}
       </svg>
       
       <!-- Tooltip 浮框 -->
@@ -2597,8 +2378,8 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
           </div>
         </div>
       `:""}
-    `}_getMetricLabel(){switch(this.metric){case"sales_count":return"销量";case"rank":return"排名";case"rating":return"评分";case"price":return"价格";default:return""}}_getMetricHint(){switch(this.metric){case"sales_count":return"显示商品每日销量变化趋势";case"rank":return"显示商品排名变化趋势";case"rating":return"显示商品评分变化趋势";case"price":return"显示商品价格变化趋势";default:return""}}_renderPagination(){const t=[];let a=Math.max(1,this.pagination.page-Math.floor(2.5)),r=Math.min(this.pagination.pages,a+5-1);r-a<4&&(a=Math.max(1,r-5+1)),a>1&&(t.push(n`<button class="page-btn" @click=${()=>this._onPageChange(1)}>1</button>`),a>2&&t.push(n`<span style="color:var(--muted)">...</span>`));for(let i=a;i<=r;i++)t.push(n`
-        <button class="page-btn ${i===this.pagination.page?"active":""}" @click=${()=>this._onPageChange(i)}>${i}</button>
+    `}_getMetricLabel(){switch(this.metric){case"sales_count":return"销量";case"rank":return"排名";case"rating":return"评分";case"price":return"价格";default:return""}}_getMetricHint(){switch(this.metric){case"sales_count":return"显示商品每日销量变化趋势";case"rank":return"显示商品排名变化趋势";case"rating":return"显示商品评分变化趋势";case"price":return"显示商品价格变化趋势";default:return""}}_renderPagination(){const t=[];let a=Math.max(1,this.pagination.page-Math.floor(2.5)),r=Math.min(this.pagination.pages,a+5-1);r-a<4&&(a=Math.max(1,r-5+1)),a>1&&(t.push(n`<button class="page-btn" @click=${()=>this._onPageChange(1)}>1</button>`),a>2&&t.push(n`<span style="color:var(--muted)">...</span>`));for(let s=a;s<=r;s++)t.push(n`
+        <button class="page-btn ${s===this.pagination.page?"active":""}" @click=${()=>this._onPageChange(s)}>${s}</button>
       `);return r<this.pagination.pages&&(r<this.pagination.pages-1&&t.push(n`<span style="color:var(--muted)">...</span>`),t.push(n`<button class="page-btn" @click=${()=>this._onPageChange(this.pagination.pages)}>${this.pagination.pages}</button>`)),n`<div class="pagination">${t}</div>`}render(){if(this.loading)return n`<div class="loading"><div class="spinner"></div><p>加载中...</p></div>`;const t=this.product.platform==="amazon"?[{key:"rank",label:"排名"},{key:"rating",label:"评分"},{key:"price",label:"价格"}]:[{key:"sales_count",label:"销量"},{key:"rating",label:"评分"},{key:"price",label:"价格"}],e=[{key:"7",label:"近7天"},{key:"15",label:"近15天"},{key:"30",label:"近1月"},{key:"90",label:"近3月"}];return n`
       <!-- 头部 -->
       <div class="header">
@@ -2676,7 +2457,7 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
         </table>
         ${this.pagination.pages>1?this._renderPagination():""}
       </div>
-    `}};br(z,"styles",$`
+    `}};fr(z,"styles",f`
     :host { display: block; }
     
     /* 头部 */
@@ -2976,35 +2757,25 @@ var Le=Object.defineProperty;var Ue=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,config
       margin: 0 auto 12px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-  `);A([T({type:String})],z.prototype,"ecomCode",2);A([l()],z.prototype,"loading",2);A([l()],z.prototype,"product",2);A([l()],z.prototype,"trend",2);A([l()],z.prototype,"details",2);A([l()],z.prototype,"pagination",2);A([l()],z.prototype,"timePreset",2);A([l()],z.prototype,"customStart",2);A([l()],z.prototype,"customEnd",2);A([l()],z.prototype,"metric",2);A([l()],z.prototype,"currentPage",2);A([l()],z.prototype,"tooltipData",2);z=A([_("ea-product-trend-page")],z);var Te=Object.defineProperty,mr=Object.getOwnPropertyDescriptor,fr=(o,t,e)=>t in o?Te(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,E=(o,t,e,a)=>{for(var r=a>1?void 0:a?mr(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&Te(t,e,r),r},xr=(o,t,e)=>fr(o,t+"",e);let C=class extends m{constructor(){super(...arguments);d(this,"ecomCode","");d(this,"sourcingList",[]);d(this,"loading",!0);d(this,"search","");d(this,"page",1);d(this,"pages",0);d(this,"total",0);d(this,"stats",{total:0,products_linked:0,today_count:0,last_updated:null});d(this,"showModal",!1);d(this,"modalType","");d(this,"modalItem",null)}connectedCallback(){super.connectedCallback(),this.loadStats(),this.loadSourcing()}async loadStats(){try{const t=await fetch("/api/sourcing/stats");this.stats=await t.json(),console.log("[Sourcing] stats:",this.stats)}catch(t){console.error("加载统计失败:",t)}}async loadSourcing(){var t,e;try{const a=new URLSearchParams;a.set("page",String(this.page)),a.set("limit","20"),this.search&&a.set("search",this.search),this.ecomCode&&a.set("ecom_code",this.ecomCode),console.log("[Sourcing] 请求:",`/api/sourcing/list?${a}`);const i=await(await fetch(`/api/sourcing/list?${a}`)).json();console.log("[Sourcing] 响应:",i),this.sourcingList=i.data||[],this.total=((t=i.pagination)==null?void 0:t.total)||0,this.pages=((e=i.pagination)==null?void 0:e.pages)||0,this.loading=!1,console.log("[Sourcing] loading 设为 false, 触发 requestUpdate"),this.requestUpdate()}catch(a){console.error("加载货源失败:",a),this.sourcingList=[],this.loading=!1,this.requestUpdate()}}_onSearch(t){t.key==="Enter"&&(this.page=1,this.loadSourcing())}_onPageChange(t){this.page=t,this.loadSourcing(),window.scrollTo({top:0,behavior:"smooth"})}_formatPrice(t){return t?`¥${t.toFixed(2)}`:"-"}_formatDate(t){if(!t)return"-";const e=new Date(t);return`${e.getMonth()+1}/${e.getDate()} ${e.getHours()}:${String(e.getMinutes()).padStart(2,"0")}`}async _deleteSourcing(t,e){if(confirm("确定删除此货源记录？"))try{await fetch(`/api/sourcing/${t}/${e}`,{method:"DELETE"}),await Promise.all([this.loadStats(),this.loadSourcing()])}catch(a){console.error("删除失败:",a)}}_openProduct(t){t&&window.open(t,"_blank")}_showModal(t,e){console.log("[Sourcing] _showModal called:",t,e),this.modalType=t,this.modalItem=e,this.showModal=!0,this.requestUpdate()}_closeModal(){console.log("[Sourcing] _closeModal called"),this.showModal=!1,this.modalType="",this.modalItem=null,this.requestUpdate()}_confirmModal(){console.log(`[Sourcing] 确认生成: ${this.modalType}`,this.modalItem),this._closeModal(),alert(this.modalType==="video"?"视频生成功能开发中...":"详情图生成功能开发中...")}async _uploadToTikTok(t){console.log("[Sourcing] _uploadToTikTok called, item:",t);try{console.log("[Sourcing] Checking TikTok connection...");const a=await(await fetch("/api/tiktok/status")).json();if(console.log("[Sourcing] TikTok status:",a),!a.connected){console.log("[Sourcing] Chrome not running, starting...");const r=await fetch("/api/tiktok/ensure-chrome",{method:"POST"}),i=await r.json();if(console.log("[Sourcing] Ensure Chrome result:",i),!r.ok){alert("Failed to start Chrome. Please start manually.");return}if(await new Promise(p=>setTimeout(p,2e3)),(await fetch("/api/tiktok/open-login",{method:"POST"})).ok){alert(`Chrome started!
+  `);T([w({type:String})],z.prototype,"ecomCode",2);T([l()],z.prototype,"loading",2);T([l()],z.prototype,"product",2);T([l()],z.prototype,"trend",2);T([l()],z.prototype,"details",2);T([l()],z.prototype,"pagination",2);T([l()],z.prototype,"timePreset",2);T([l()],z.prototype,"customStart",2);T([l()],z.prototype,"customEnd",2);T([l()],z.prototype,"metric",2);T([l()],z.prototype,"currentPage",2);T([l()],z.prototype,"tooltipData",2);z=T([x("ea-product-trend-page")],z);var Oe=Object.defineProperty,xr=Object.getOwnPropertyDescriptor,yr=(o,t,e)=>t in o?Oe(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,j=(o,t,e,a)=>{for(var r=a>1?void 0:a?xr(t,e):t,s=o.length-1,i;s>=0;s--)(i=o[s])&&(r=(a?i(t,e,r):i(r))||r);return a&&r&&Oe(t,e,r),r},$r=(o,t,e)=>yr(o,t+"",e);let C=class extends b{constructor(){super(...arguments);d(this,"ecomCode","");d(this,"sourcingList",[]);d(this,"loading",!0);d(this,"search","");d(this,"page",1);d(this,"pages",0);d(this,"total",0);d(this,"stats",{total:0,products_linked:0,today_count:0,last_updated:null});d(this,"showAssetManager",!1);d(this,"assetManagerItem",null)}connectedCallback(){super.connectedCallback(),this.loadStats(),this.loadSourcing()}async loadStats(){try{const t=await fetch("/api/sourcing/stats");this.stats=await t.json(),console.log("[Sourcing] stats:",this.stats)}catch(t){console.error("加载统计失败:",t)}}async loadSourcing(){var t,e;try{const a=new URLSearchParams;a.set("page",String(this.page)),a.set("limit","20"),this.search&&a.set("search",this.search),this.ecomCode&&a.set("ecom_code",this.ecomCode),console.log("[Sourcing] 请求:",`/api/sourcing/list?${a}`);const s=await(await fetch(`/api/sourcing/list?${a}`)).json();console.log("[Sourcing] 响应:",s),this.sourcingList=s.data||[],this.total=((t=s.pagination)==null?void 0:t.total)||0,this.pages=((e=s.pagination)==null?void 0:e.pages)||0,this.loading=!1,console.log("[Sourcing] loading 设为 false, 触发 requestUpdate"),this.requestUpdate()}catch(a){console.error("加载货源失败:",a),this.sourcingList=[],this.loading=!1,this.requestUpdate()}}_onSearch(t){t.key==="Enter"&&(this.page=1,this.loadSourcing())}_onPageChange(t){this.page=t,this.loadSourcing(),window.scrollTo({top:0,behavior:"smooth"})}_formatPrice(t){return t?`¥${t.toFixed(2)}`:"-"}_formatDate(t){if(!t)return"-";const e=new Date(t);return`${e.getMonth()+1}/${e.getDate()} ${e.getHours()}:${String(e.getMinutes()).padStart(2,"0")}`}async _deleteSourcing(t,e){if(confirm("确定删除此货源记录?"))try{await fetch(`/api/sourcing/${t}/${e}`,{method:"DELETE"}),await Promise.all([this.loadStats(),this.loadSourcing()])}catch(a){console.error("删除失败:",a)}}_openProduct(t){t&&window.open(t,"_blank")}_showAssetManager(t){console.log("[Sourcing] _showAssetManager called:",t),this.assetManagerItem=t,this.showAssetManager=!0,this.requestUpdate()}_closeAssetManager(){this.showAssetManager=!1,this.assetManagerItem=null,this.requestUpdate()}async _uploadToTikTok(t){console.log("[Sourcing] _uploadToTikTok called, item:",t);try{console.log("[Sourcing] Checking TikTok connection...");const a=await(await fetch("/api/tiktok/status")).json();if(console.log("[Sourcing] TikTok status:",a),!a.connected){console.log("[Sourcing] Chrome not running, starting...");const r=await fetch("/api/tiktok/ensure-chrome",{method:"POST"}),s=await r.json();if(console.log("[Sourcing] Ensure Chrome result:",s),!r.ok){alert("Failed to start Chrome. Please start manually.");return}if(await new Promise(p=>setTimeout(p,2e3)),(await fetch("/api/tiktok/open-login",{method:"POST"})).ok){alert(`Chrome started!
 Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e){console.error("[Sourcing] Status check failed:",e),alert("Server connection failed");return}console.log("[Sourcing] 开始上传到 TikTok:",t.ecom_code);try{const a=await(await fetch(`/api/tiktok/upload/${t.ecom_code}`,{method:"POST"})).json();console.log("[Sourcing] 上传结果:",a),a.success?alert(`上传成功!
-请在 TikTok Shop 后台检查草稿商品`):alert(`上传失败: ${a.message}`)}catch(e){console.error("[Sourcing] 上传失败:",e),alert("上传失败，请检查服务器连接")}}_renderModal(){var r,i;if(!this.showModal)return null;const t=this.modalType==="video"?"🎬":"🖼️",e=this.modalType==="video"?"生成宣传视频":"生成详情图",a=this.modalType==="video"?"将使用货源商品信息自动生成宣传视频，用于社交平台推广":"将使用货源商品详情自动生成电商详情图，用于商品上架";return n`
-      <div class="modal-overlay" @click=${s=>{s.target===s.currentTarget&&this._closeModal()}}>
-        <div class="modal-content">
-          <div class="modal-icon">${t}</div>
-          <div class="modal-title">${e}</div>
-          <div class="modal-desc">${a}</div>
-          <div class="modal-product">
-            <img 
-              class="modal-product-thumb" 
-              src=${((r=this.modalItem)==null?void 0:r.image_url)||'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><rect fill="%23ddd" width="40" height="40"/></svg>'}
-              onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><rect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/></svg>'"
-            >
-            <div class="modal-product-title">${((i=this.modalItem)==null?void 0:i.title)||"未知商品"}</div>
-          </div>
-          <div class="modal-buttons">
-            <button class="modal-btn modal-btn-cancel" @click=${this._closeModal}>取消</button>
-            <button class="modal-btn modal-btn-confirm" @click=${this._confirmModal}>确认生成</button>
-          </div>
+请在 TikTok Shop 后台检查草稿商品`):alert(`上传失败: ${a.message}`)}catch(e){console.error("[Sourcing] 上传失败:",e),alert("上传失败,请检查服务器连接")}}_renderModal(){return null}_renderAssetManager(){var t;return this.showAssetManager?n`
+      <div class="modal-overlay" @click=${e=>{e.target===e.currentTarget&&this._closeAssetManager()}}>
+        <div class="modal-content" style="max-width: 500px;">
+          <asset-generator
+            .ecomCode=${(t=this.assetManagerItem)==null?void 0:t.ecom_code}
+            .item=${this.assetManagerItem}
+            @close=${this._closeAssetManager}
+          ></asset-generator>
         </div>
       </div>
-    `}_renderPagination(){if(this.pages<=1)return null;const t=[],e=5;let a=Math.max(1,this.page-Math.floor(e/2)),r=Math.min(this.pages,a+e-1);r-a<e-1&&(a=Math.max(1,r-e+1)),t.push(n`
+    `:null}_renderPagination(){if(this.pages<=1)return null;const t=[],e=5;let a=Math.max(1,this.page-Math.floor(e/2)),r=Math.min(this.pages,a+e-1);r-a<e-1&&(a=Math.max(1,r-e+1)),t.push(n`
       <button class="page-btn" ?disabled=${this.page===1} @click=${()=>this._onPageChange(this.page-1)}>
         ‹
       </button>
-    `);for(let i=a;i<=r;i++)t.push(n`
-        <button class="page-btn ${i===this.page?"active":""}" @click=${()=>this._onPageChange(i)}>
-          ${i}
+    `);for(let s=a;s<=r;s++)t.push(n`
+        <button class="page-btn ${s===this.page?"active":""}" @click=${()=>this._onPageChange(s)}>
+          ${s}
         </button>
       `);return t.push(n`
       <button class="page-btn" ?disabled=${this.page===this.pages} @click=${()=>this._onPageChange(this.page+1)}>
@@ -3031,7 +2802,7 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
           <div class="stat-label">今日采集</div>
         </div>
       </div>
-      
+
       <!-- 搜索栏 -->
       <div class="toolbar">
         <div class="field-group">
@@ -3053,7 +2824,7 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
           </div>
         `:""}
       </div>
-      
+
       <!-- 货源列表 -->
       ${this.sourcingList.length===0?n`
         <div class="empty-state">
@@ -3079,8 +2850,8 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
                 <tr>
                   <td>
                     <div class="product-cell">
-                      <img 
-                        class="product-thumb" 
+                      <img
+                        class="product-thumb"
                         src=${t.local_image_path?`/images/${t.local_image_path}`:t.image_url||'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"><rect fill="%23ddd" width="50" height="50"/></svg>'}
                         onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22><rect fill=%22%23ddd%22 width=%2250%22 height=%2250%22/></svg>'"
                       >
@@ -3098,11 +2869,8 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
                     <button class="action-btn action-btn-tiktok" @click=${()=>{console.log("[Sourcing] TikTok button clicked!"),this._uploadToTikTok(t)}}>
                       TikTok
                     </button>
-                    <button class="action-btn action-btn-video" @click=${()=>this._showModal("video",t)}>
-                      视频
-                    </button>
-                    <button class="action-btn action-btn-detail" @click=${()=>this._showModal("detail",t)}>
-                      详情图
+                    <button class="action-btn action-btn-asset" @click=${()=>this._showAssetManager(t)}>
+                      素材
                     </button>
                     <button class="action-btn action-btn-view" @click=${()=>this._openProduct(t.product_url)}>
                       查看
@@ -3116,16 +2884,18 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
             </tbody>
           </table>
         </div>
-        
+
         ${this._renderPagination()}
       `}
-      
+
       ${this._renderModal()}
-    `}};xr(C,"styles",$`
+
+      ${this._renderAssetManager()}
+    `}};$r(C,"styles",f`
     :host {
       display: block;
     }
-    
+
     /* 弹窗样式 */
     .modal-overlay {
       position: fixed;
@@ -3140,12 +2910,12 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
       z-index: 1000;
       animation: fadeIn 0.2s ease;
     }
-    
+
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
-    
+
     .modal-content {
       background: var(--card);
       border: 1px solid var(--border);
@@ -3157,31 +2927,31 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
       animation: slideIn 0.3s ease;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
     }
-    
+
     @keyframes slideIn {
       from { transform: translateY(-20px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
-    
+
     .modal-icon {
       font-size: 48px;
       margin-bottom: 16px;
     }
-    
+
     .modal-title {
       font-size: 18px;
       font-weight: 600;
       color: var(--text);
       margin-bottom: 8px;
     }
-    
+
     .modal-desc {
       font-size: 14px;
       color: var(--muted);
       margin-bottom: 24px;
       line-height: 1.6;
     }
-    
+
     .modal-product {
       background: var(--bg);
       border-radius: var(--radius-md);
@@ -3191,14 +2961,14 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
       align-items: center;
       gap: 12px;
     }
-    
+
     .modal-product-thumb {
       width: 40px;
       height: 40px;
       object-fit: cover;
       border-radius: var(--radius-sm);
     }
-    
+
     .modal-product-title {
       font-size: 13px;
       color: var(--text);
@@ -3206,13 +2976,13 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    
+
     .modal-buttons {
       display: flex;
       gap: 12px;
       justify-content: center;
     }
-    
+
     .modal-btn {
       padding: 12px 24px;
       border-radius: var(--radius-md);
@@ -3220,28 +2990,28 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
       cursor: pointer;
       transition: all 0.2s;
     }
-    
+
     .modal-btn-confirm {
       background: var(--primary);
       color: white;
       border: none;
     }
-    
+
     .modal-btn-confirm:hover {
       opacity: 0.9;
       transform: translateY(-1px);
     }
-    
+
     .modal-btn-cancel {
       background: var(--bg);
       color: var(--text);
       border: 1px solid var(--border);
     }
-    
+
     .modal-btn-cancel:hover {
       background: var(--bg-elevated);
     }
-    
+
     /* 头部统计 */
     .stats-row {
       display: grid;
@@ -3249,26 +3019,26 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
       gap: 16px;
       margin-bottom: 24px;
     }
-    
+
     .stat-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       padding: 20px;
     }
-    
+
     .stat-value {
       font-size: 28px;
       font-weight: 600;
       color: var(--text);
       margin-bottom: 4px;
     }
-    
+
     .stat-label {
       font-size: 13px;
       color: var(--muted);
     }
-    
+
     /* 工具栏 */
     .toolbar {
       background: var(--card);
@@ -3280,17 +3050,17 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
       gap: 12px;
       align-items: flex-end;
     }
-    
+
     .field-group {
       display: flex;
       flex-direction: column;
       gap: 4px;
     }
-    
+
     .field-label {
       font-size: 11px; font-weight: 600; color: var(--muted);
     }
-    
+
     .search-input {
       padding: 6px 10px;
       border: 1px solid var(--border);
@@ -3299,20 +3069,20 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
       color: var(--text); transition: var(--duration-fast) ease;
       width: 240px;
     }
-    
+
     .search-input:focus {
       outline: none; border-color: var(--accent);
     }
-    
+
     .search-btn {
       padding: 6px 16px; border-radius: var(--radius-sm);
       font-size: 13px; font-weight: 500; border: none;
       cursor: pointer; transition: var(--duration-fast) ease;
       background: var(--accent); color: var(--accent-foreground);
     }
-    
+
     .search-btn:hover { background: var(--accent-hover); }
-    
+
     /* 筛选标签 */
     .filter-tag {
       display: inline-flex;
@@ -3324,7 +3094,7 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
       border-radius: var(--radius-sm);
       font-size: 13px;
     }
-    
+
     .filter-clear {
       background: transparent;
       border: none;
@@ -3335,11 +3105,11 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
       line-height: 1;
       opacity: 0.8;
     }
-    
+
     .filter-clear:hover {
       opacity: 1;
     }
-    
+
     /* 货源列表 */
     .sourcing-table {
       background: var(--card);
@@ -3347,12 +3117,12 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
       border-radius: var(--radius-lg);
       overflow: hidden;
     }
-    
+
     .sourcing-table table {
       width: 100%;
       border-collapse: collapse;
     }
-    
+
     .sourcing-table th {
       text-align: left;
       padding: 12px 16px;
@@ -3363,28 +3133,28 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
       color: var(--muted);
       border-bottom: 1px solid var(--border);
     }
-    
+
     .sourcing-table td {
       padding: 12px 16px;
       border-bottom: 1px solid var(--border);
       font-size: 13px;
     }
-    
+
     .sourcing-table tr:last-child td {
       border-bottom: none;
     }
-    
+
     .sourcing-table tr:hover td {
       background: var(--bg);
     }
-    
+
     .product-cell {
       display: flex;
       align-items: center;
       gap: 12px;
       min-width: 300px;
     }
-    
+
     .product-thumb {
       width: 50px;
       height: 50px;
@@ -3393,12 +3163,12 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
       background: var(--bg-elevated);
       flex-shrink: 0;
     }
-    
+
     .product-info {
       flex: 1;
       min-width: 0;
     }
-    
+
     .product-title {
       font-size: 13px;
       color: var(--text);
@@ -3409,24 +3179,24 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
     }
-    
+
     .product-shop {
       font-size: 11px;
       color: var(--muted);
       margin-top: 2px;
     }
-    
+
     .price-cell {
       color: #f5222d;
       font-weight: 600;
     }
-    
+
     .ecom-code-cell {
       font-family: monospace;
       font-size: 12px;
       color: var(--primary);
     }
-    
+
     .action-btn {
       padding: 6px 12px;
       border-radius: var(--radius-sm);
@@ -3435,48 +3205,58 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
       transition: all 0.2s;
       margin-right: 8px;
     }
-    
+
     .action-btn-view {
       background: var(--primary);
       color: white;
       border: none;
     }
-    
+
     .action-btn-view:hover {
       opacity: 0.9;
     }
-    
+
     .action-btn-video, .action-btn-detail {
       background: transparent;
       color: var(--text);
       border: 1px solid var(--border);
     }
-    
+
     .action-btn-video:hover, .action-btn-detail:hover {
       background: var(--bg);
       border-color: var(--primary);
     }
-    
+
+    .action-btn-asset {
+      background: #722ed1;
+      color: white;
+      border: none;
+    }
+
+    .action-btn-asset:hover {
+      opacity: 0.9;
+    }
+
     .action-btn-tiktok {
       background: #ff0050;
       color: white;
       border: none;
     }
-    
+
     .action-btn-tiktok:hover {
       opacity: 0.9;
     }
-    
+
     .action-btn-delete {
       background: transparent;
       color: #f5222d;
       border: 1px solid #f5222d;
     }
-    
+
     .action-btn-delete:hover {
       background: #fff1f0;
     }
-    
+
     /* 分页 */
     .pagination {
       display: flex;
@@ -3485,7 +3265,7 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
       gap: 8px;
       margin-top: 24px;
     }
-    
+
     .page-btn {
       padding: 8px 12px;
       border: 1px solid var(--border);
@@ -3495,56 +3275,56 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
       font-size: 13px;
       cursor: pointer;
     }
-    
+
     .page-btn:hover:not(:disabled) {
       border-color: var(--primary);
     }
-    
+
     .page-btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
-    
+
     .page-btn.active {
       background: var(--primary);
       border-color: var(--primary);
       color: white;
     }
-    
+
     .page-info {
       font-size: 13px;
       color: var(--muted);
     }
-    
+
     /* 空状态 */
     .empty-state {
       text-align: center;
       padding: 60px 20px;
       color: var(--muted);
     }
-    
+
     .empty-icon {
       font-size: 64px;
       margin-bottom: 16px;
     }
-    
+
     .empty-title {
       font-size: 18px;
       color: var(--text);
       margin-bottom: 8px;
     }
-    
+
     .empty-desc {
       font-size: 14px;
     }
-    
+
     /* 加载状态 */
     .loading-state {
       text-align: center;
       padding: 60px;
       color: var(--muted);
     }
-  `);E([T({type:String})],C.prototype,"ecomCode",2);E([l()],C.prototype,"sourcingList",2);E([l()],C.prototype,"loading",2);E([l()],C.prototype,"search",2);E([l()],C.prototype,"page",2);E([l()],C.prototype,"pages",2);E([l()],C.prototype,"total",2);E([l()],C.prototype,"stats",2);E([l()],C.prototype,"showModal",2);E([l()],C.prototype,"modalType",2);E([l()],C.prototype,"modalItem",2);C=E([_("ea-sourcing")],C);var Ae=Object.defineProperty,yr=Object.getOwnPropertyDescriptor,$r=(o,t,e)=>t in o?Ae(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,et=(o,t,e,a)=>{for(var r=a>1?void 0:a?yr(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&Ae(t,e,r),r},_r=(o,t,e)=>$r(o,t+"",e);const Ee="/api";async function Oe(o,t){const e=await fetch(o,t);if(!e.ok){const a=await e.json().catch(()=>({detail:"Request failed"}));throw new Error(a.detail||`HTTP ${e.status}`)}return e.json()}async function wr(o){const t=new URLSearchParams(Object.entries(o).filter(([,e])=>e!==void 0&&e!=="").map(([e,a])=>[e,String(a)]));return Oe(`${Ee}/translation-logs?${t}`)}async function kr(){return Oe(`${Ee}/translation-logs/stats`)}let N=class extends m{constructor(){super(...arguments);d(this,"logs",[]);d(this,"stats",null);d(this,"loading",!0);d(this,"page",1);d(this,"pages",0);d(this,"statusFilter","")}async connectedCallback(){super.connectedCallback(),await this.loadData()}async loadData(){this.loading=!0;try{const[t,e]=await Promise.all([wr({page:this.page,limit:20,status:this.statusFilter||void 0}),kr()]);this.logs=t.data,this.pages=t.pagination.pages,this.stats=e}catch(t){console.error("Failed to load translation logs:",t)}finally{this.loading=!1,this.requestUpdate()}}_onStatusFilter(t){this.statusFilter=t.target.value,this.page=1,this.loadData()}_onPageChange(t){this.page=t,this.loadData()}_formatDateTime(t){return t?new Date(t).toLocaleString("zh-CN",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}):"-"}_renderStatusBadge(t){return n`
+  `);j([w({type:String})],C.prototype,"ecomCode",2);j([l()],C.prototype,"sourcingList",2);j([l()],C.prototype,"loading",2);j([l()],C.prototype,"search",2);j([l()],C.prototype,"page",2);j([l()],C.prototype,"pages",2);j([l()],C.prototype,"total",2);j([l()],C.prototype,"stats",2);j([l()],C.prototype,"showAssetManager",2);j([l()],C.prototype,"assetManagerItem",2);C=j([x("ea-sourcing")],C);var De=Object.defineProperty,_r=Object.getOwnPropertyDescriptor,wr=(o,t,e)=>t in o?De(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,nt=(o,t,e,a)=>{for(var r=a>1?void 0:a?_r(t,e):t,s=o.length-1,i;s>=0;s--)(i=o[s])&&(r=(a?i(t,e,r):i(r))||r);return a&&r&&De(t,e,r),r},kr=(o,t,e)=>wr(o,t+"",e);const Ie="/api";async function je(o,t){const e=await fetch(o,t);if(!e.ok){const a=await e.json().catch(()=>({detail:"Request failed"}));throw new Error(a.detail||`HTTP ${e.status}`)}return e.json()}async function Pr(o){const t=new URLSearchParams(Object.entries(o).filter(([,e])=>e!==void 0&&e!=="").map(([e,a])=>[e,String(a)]));return je(`${Ie}/translation-logs?${t}`)}async function zr(){return je(`${Ie}/translation-logs/stats`)}let R=class extends b{constructor(){super(...arguments);d(this,"logs",[]);d(this,"stats",null);d(this,"loading",!0);d(this,"page",1);d(this,"pages",0);d(this,"statusFilter","")}async connectedCallback(){super.connectedCallback(),await this.loadData()}async loadData(){this.loading=!0;try{const[t,e]=await Promise.all([Pr({page:this.page,limit:20,status:this.statusFilter||void 0}),zr()]);this.logs=t.data,this.pages=t.pagination.pages,this.stats=e}catch(t){console.error("Failed to load translation logs:",t)}finally{this.loading=!1,this.requestUpdate()}}_onStatusFilter(t){this.statusFilter=t.target.value,this.page=1,this.loadData()}_onPageChange(t){this.page=t,this.loadData()}_formatDateTime(t){return t?new Date(t).toLocaleString("zh-CN",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}):"-"}_renderStatusBadge(t){return n`
       <span class="status-badge ${t}">
         <span class="status-dot"></span>
         ${{pending:"等待中",running:"运行中",completed:"已完成",failed:"失败"}[t]||t}
@@ -3552,8 +3332,8 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
     `}_renderPagination(){const t=[];let a=Math.max(1,this.page-Math.floor(2.5)),r=Math.min(this.pages,a+5-1);r-a<4&&(a=Math.max(1,r-5+1)),a>1&&t.push(n`
         <button class="page-btn" @click=${()=>this._onPageChange(1)}>1</button>
         ${a>2?n`<span style="color:var(--muted)">...</span>`:""}
-      `);for(let i=a;i<=r;i++)t.push(n`
-        <button class="page-btn ${i===this.page?"active":""}" @click=${()=>this._onPageChange(i)}>${i}</button>
+      `);for(let s=a;s<=r;s++)t.push(n`
+        <button class="page-btn ${s===this.page?"active":""}" @click=${()=>this._onPageChange(s)}>${s}</button>
       `);return r<this.pages&&t.push(n`
         ${r<this.pages-1?n`<span style="color:var(--muted)">...</span>`:""}
         <button class="page-btn" @click=${()=>this._onPageChange(this.pages)}>${this.pages}</button>
@@ -3649,7 +3429,7 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
           ${this.pages>1?this._renderPagination():""}
         </div>
       `}
-    `}};_r(N,"styles",$`
+    `}};kr(R,"styles",f`
     :host { display: block; }
     
     h2 {
@@ -3886,7 +3666,1179 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
     }
     
     @keyframes spin { to { transform: rotate(360deg); } }
-  `);et([l()],N.prototype,"logs",2);et([l()],N.prototype,"stats",2);et([l()],N.prototype,"loading",2);et([l()],N.prototype,"page",2);et([l()],N.prototype,"pages",2);et([l()],N.prototype,"statusFilter",2);N=et([_("ea-translation-logs")],N);var Me=Object.defineProperty,Pr=Object.getOwnPropertyDescriptor,Sr=(o,t,e)=>t in o?Me(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,Ct=(o,t,e,a)=>{for(var r=a>1?void 0:a?Pr(t,e):t,i=o.length-1,s;i>=0;i--)(s=o[i])&&(r=(a?s(t,e,r):s(r))||r);return a&&r&&Me(t,e,r),r},zr=(o,t,e)=>Sr(o,t+"",e);const dt=new Set;let Z="dashboard";window.ecomagentNavigate=o=>{Z=o,dt.forEach(t=>t(o))};window.ecomagentGetCurrentPage=()=>Z;window.ecomagentOnPageChange=o=>{dt.add(o)};window.ecomagentOpenTrend=(o,t="product-master")=>{sessionStorage.setItem("trend-source-page",t),sessionStorage.setItem("trend-source-state",JSON.stringify({page:Z,scrollY:window.scrollY})),Z="product-trend",sessionStorage.setItem("trend-ecom-code",o),dt.forEach(e=>e("product-trend"))};window.ecomagentNavigateToSourcing=o=>{Z="sourcing",o?sessionStorage.setItem("sourcing-ecom-code",o):sessionStorage.removeItem("sourcing-ecom-code"),dt.forEach(t=>t("sourcing"))};window.ecomagentNavigateDirectToSourcing=()=>{sessionStorage.removeItem("sourcing-ecom-code"),Z="sourcing",dt.forEach(o=>o("sourcing"))};let it=class extends m{constructor(){super();d(this,"_page",Z);d(this,"_trendCode","");d(this,"_sourcingCode","");dt.add(t=>{this._page=t,t==="product-trend"&&(this._trendCode=sessionStorage.getItem("trend-ecom-code")||""),t==="sourcing"&&(this._sourcingCode=sessionStorage.getItem("sourcing-ecom-code")||""),this.requestUpdate()})}connectedCallback(){super.connectedCallback();const t=localStorage.getItem("theme")||"dark";document.body.setAttribute("data-theme-mode",t)}_renderPage(){switch(this._page){case"dashboard":return n`<ea-dashboard></ea-dashboard>`;case"settings":return n`<ea-settings></ea-settings>`;case"product-master":return n`<ea-product-master></ea-product-master>`;case"tracking":return n`<ea-tracking></ea-tracking>`;case"cross-platform":return n`<ea-cross-platform></ea-cross-platform>`;case"today-top":return n`<ea-today-top></ea-today-top>`;case"raw-data":return n`<ea-raw-data></ea-raw-data>`;case"export":return n`<ea-export></ea-export>`;case"product-trend":return n`<ea-product-trend-page ecomCode=${this._trendCode}></ea-product-trend-page>`;case"sourcing":return n`<ea-sourcing ecomCode=${this._sourcingCode}></ea-sourcing>`;case"translation-logs":return n`<ea-translation-logs></ea-translation-logs>`;default:return n`<div style="padding:24px;color:var(--muted)">未知页面</div>`}}render(){return this._page==="product-trend"?n`
+  `);nt([l()],R.prototype,"logs",2);nt([l()],R.prototype,"stats",2);nt([l()],R.prototype,"loading",2);nt([l()],R.prototype,"page",2);nt([l()],R.prototype,"pages",2);nt([l()],R.prototype,"statusFilter",2);R=nt([x("ea-translation-logs")],R);var Ne=Object.defineProperty,Sr=Object.getOwnPropertyDescriptor,Cr=(o,t,e)=>t in o?Ne(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,F=(o,t,e,a)=>{for(var r=a>1?void 0:a?Sr(t,e):t,s=o.length-1,i;s>=0;s--)(i=o[s])&&(r=(a?i(t,e,r):i(r))||r);return a&&r&&Ne(t,e,r),r},Tr=(o,t,e)=>Cr(o,t+"",e);let A=class extends b{constructor(){super(...arguments);d(this,"ecomCode","");d(this,"item",null);d(this,"assets",{showcase:[],video:[],detail:[]});d(this,"loading",!0);d(this,"generating",!1);d(this,"generateType","");d(this,"showGenerateModal",!1);d(this,"taskInfo",null);d(this,"pollingTask",!1)}connectedCallback(){super.connectedCallback(),setTimeout(()=>this.loadAssets(),0)}updated(t){t.has("ecomCode")&&this.ecomCode&&this.loadAssets()}async loadAssets(){if(!this.ecomCode){this.loading=!1,this.assets={showcase:[],video:[],detail:[]},this.requestUpdate();return}this.loading=!0;try{const e=await(await fetch(`/api/assets/${this.ecomCode}`)).json();this.assets=e.assets||{showcase:[],video:[],detail:[]},console.log("[AssetManager] API response:",e)}catch(t){console.error("[AssetManager] 加载素材失败:",t)}this.loading=!1,this.requestUpdate()}_close(){this.dispatchEvent(new CustomEvent("close",{bubbles:!0,composed:!0}))}_showGenerateModal(t){console.log("[AssetManager] _showGenerateModal:",t),this.generateType=t,this.showGenerateModal=!0,this.taskInfo=null,this.requestUpdate()}_closeGenerateModal(){console.log("[AssetManager] _closeGenerateModal"),this.showGenerateModal=!1,this.generateType="",this.pollingTask=!1,this.requestUpdate()}async _startGenerate(){console.log("[AssetManager] _startGenerate called, generateType:",this.generateType),this.generating=!0,this.requestUpdate();try{let t="/api/assets/generate/image",e={ecom_code:this.ecomCode,asset_type:this.generateType};this.generateType==="video"&&(t="/api/assets/generate/video",e={ecom_code:this.ecomCode,duration:5,resolution:"480p"});const r=await(await fetch(t,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(e)})).json();r.success?(this.taskInfo={task_id:r.task_id,status:"pending",progress:0,message:"任务已提交..."},this.pollingTask=!0,this._pollTaskStatus(r.task_id)):(alert("生成任务提交失败: "+r.message),this.generating=!1)}catch(t){console.error("生成失败:",t),alert("生成失败，请检查服务器连接"),this.generating=!1}}async _pollTaskStatus(t){for(;this.pollingTask;)try{const a=await(await fetch(`/api/tasks/${t}`)).json();if(this.taskInfo=a,a.status==="success"||a.status==="failed"){this.pollingTask=!1,this.generating=!1,a.status==="success"?(await this.loadAssets(),this.showGenerateModal=!1):alert("生成失败: "+a.error);break}await new Promise(r=>setTimeout(r,2e3))}catch(e){console.error("轮询任务状态失败:",e),this.pollingTask=!1,this.generating=!1}}async _deleteAsset(t,e){if(confirm(`确定删除 ${t} 组 ${e}？`))try{(await fetch(`/api/assets/${this.ecomCode}/${t}/${e}`,{method:"DELETE"})).ok?await this.loadAssets():alert("删除失败")}catch(a){console.error("删除失败:",a)}}_previewAsset(t,e){const a=e.files||[];if(a.length!==0)if(t==="video"){const r=a.find(s=>s.includes("merged"));r&&window.open("/assets/"+r,"_blank")}else window.open("/assets/"+a[0],"_blank")}render(){var e;if(console.log("[AssetManager] render called, ecomCode:",this.ecomCode,"loading:",this.loading,"assets:",this.assets),this.loading)return n`
+        <div class="asset-manager">
+          <div style="text-align: center; padding: 40px; color: var(--muted);">
+            加载中...
+          </div>
+        </div>
+      `;const t={showcase:"展示图",video:"宣传视频",detail:"详情图"};return n`
+      <div class="asset-manager">
+        <div class="asset-header">
+          <div class="asset-title">📁 素材管理</div>
+          <button class="asset-close" @click=${this._close}>×</button>
+        </div>
+        
+        <div style="font-size: 12px; color: var(--muted); margin-bottom: 16px;">
+          商品: ${((e=this.item)==null?void 0:e.title)||this.ecomCode}
+        </div>
+        
+        ${["showcase","video","detail"].map(a=>{var r,s;return n`
+          <div class="asset-section">
+            <div class="section-header">
+              <div>
+                <span class="section-title">${t[a]}</span>
+                <span class="section-count">(${((r=this.assets[a])==null?void 0:r.length)||0}组)</span>
+              </div>
+              <button class="add-btn" @click=${()=>this._showGenerateModal(a)}>
+                + 生成
+              </button>
+            </div>
+            
+            ${((s=this.assets[a])==null?void 0:s.length)>0?this.assets[a].map(i=>{var p;return n`
+                <div class="asset-group">
+                  <div class="group-index">组 ${i.group_index}</div>
+                  <div class="group-files">${((p=i.files)==null?void 0:p.length)||0} 个文件</div>
+                  <div class="group-actions">
+                    <button class="preview-btn" @click=${()=>this._previewAsset(a,i)}>
+                      预览
+                    </button>
+                    <button class="delete-btn" @click=${()=>this._deleteAsset(a,i.group_index)}>
+                      删除
+                    </button>
+                  </div>
+                </div>
+              `}):n`<div class="empty-section">暂无素材</div>`}
+          </div>
+        `})}
+      </div>
+      
+      ${this.showGenerateModal?n`
+        <div class="gen-modal-overlay" @click=${a=>{a.target===a.currentTarget&&this._closeGenerateModal()}}>
+          <div class="gen-modal">
+            <div class="gen-modal-title">
+              ${this.generateType==="video"?"🎬 生成宣传视频":this.generateType==="showcase"?"🖼️ 生成展示图":"📋 生成详情图"}
+            </div>
+            
+            <div class="gen-option">
+              <div class="gen-label">图片来源：</div>
+              <div class="gen-radio-group">
+                <label class="gen-radio">
+                  <input type="radio" name="imageSource" value="sourcing" checked>
+                  使用货源图片
+                </label>
+                <label class="gen-radio">
+                  <input type="radio" name="imageSource" value="custom">
+                  上传自定义图片
+                </label>
+              </div>
+            </div>
+            
+            ${this.generateType==="video"?n`
+              <div class="gen-option">
+                <div class="gen-label">视频时长：</div>
+                <select class="gen-select">
+                  <option value="5">5 秒/段（共15秒）</option>
+                  <option value="8">8 秒/段（共24秒）</option>
+                </select>
+              </div>
+              
+              <div class="gen-option">
+                <div class="gen-label">分辨率：</div>
+                <select class="gen-select">
+                  <option value="480p">480p（更快）</option>
+                  <option value="720p">720p（更清晰）</option>
+                </select>
+              </div>
+            `:""}
+            
+            ${this.taskInfo?n`
+              <div class="task-progress">
+                <div class="task-status">
+                  状态: ${this.taskInfo.status==="pending"?"等待中":this.taskInfo.status==="running"?"生成中...":this.taskInfo.status==="success"?"完成":"失败"}
+                </div>
+                <div class="task-bar">
+                  <div class="task-bar-fill" style="width: ${this.taskInfo.progress}%"></div>
+                </div>
+                <div class="task-message">${this.taskInfo.message||""}</div>
+              </div>
+            `:""}
+            
+            <div class="gen-buttons">
+              <button class="gen-cancel" @click=${this._closeGenerateModal} 
+                ?disabled=${this.pollingTask}>
+                取消
+              </button>
+              <button class="gen-confirm" @click=${this._startGenerate}
+                ?disabled=${this.generating||this.pollingTask}>
+                ${this.generating?"生成中...":"开始生成"}
+              </button>
+            </div>
+          </div>
+        </div>
+      `:""}
+    `}};Tr(A,"styles",f`
+    :host {
+      display: block;
+    }
+    
+    .asset-manager {
+      padding: 20px;
+      max-width: 600px;
+    }
+    
+    .asset-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    
+    .asset-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .asset-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--muted);
+    }
+    
+    .asset-section {
+      margin-bottom: 24px;
+    }
+    
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    
+    .section-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    
+    .section-count {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    
+    .add-btn {
+      padding: 6px 12px;
+      font-size: 12px;
+      border: 1px solid var(--primary);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--primary);
+      cursor: pointer;
+    }
+    
+    .add-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .asset-group {
+      background: var(--bg);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .group-index {
+      font-size: 12px;
+      color: var(--muted);
+      min-width: 50px;
+    }
+    
+    .group-files {
+      font-size: 13px;
+      color: var(--text);
+      flex: 1;
+    }
+    
+    .group-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .preview-btn, .delete-btn {
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+    
+    .preview-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+    }
+    
+    .delete-btn {
+      background: transparent;
+      border: 1px solid #f5222d;
+      color: #f5222d;
+    }
+    
+    .empty-section {
+      text-align: center;
+      padding: 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    
+    /* 生成弹窗 */
+    .gen-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1100;
+    }
+    
+    .gen-modal {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      max-width: 400px;
+      width: 90%;
+    }
+    
+    .gen-modal-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    
+    .gen-option {
+      margin-bottom: 16px;
+    }
+    
+    .gen-label {
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    
+    .gen-radio-group {
+      display: flex;
+      gap: 16px;
+    }
+    
+    .gen-radio {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+    
+    .gen-select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+    }
+    
+    .gen-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    
+    .gen-cancel, .gen-confirm {
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      cursor: pointer;
+    }
+    
+    .gen-cancel {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    
+    .gen-confirm {
+      background: var(--primary);
+      border: none;
+      color: white;
+    }
+    
+    .gen-confirm:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    /* 任务进度 */
+    .task-progress {
+      padding: 16px;
+      background: var(--bg);
+      border-radius: var(--radius-md);
+      margin-top: 16px;
+    }
+    
+    .task-status {
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    
+    .task-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    
+    .task-bar-fill {
+      height: 100%;
+      background: var(--primary);
+      transition: width 0.3s;
+    }
+    
+    .task-message {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+  `);F([w({type:String})],A.prototype,"ecomCode",2);F([w({type:Object})],A.prototype,"item",2);F([l()],A.prototype,"assets",2);F([l()],A.prototype,"loading",2);F([l()],A.prototype,"generating",2);F([l()],A.prototype,"generateType",2);F([l()],A.prototype,"showGenerateModal",2);F([l()],A.prototype,"taskInfo",2);F([l()],A.prototype,"pollingTask",2);A=F([x("asset-manager")],A);var Ue=Object.defineProperty,Ar=Object.getOwnPropertyDescriptor,Mr=(o,t,e)=>t in o?Ue(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,dt=(o,t,e,a)=>{for(var r=a>1?void 0:a?Ar(t,e):t,s=o.length-1,i;s>=0;s--)(i=o[s])&&(r=(a?i(t,e,r):i(r))||r);return a&&r&&Ue(t,e,r),r},Er=(o,t,e)=>Mr(o,t+"",e);let q=class extends b{constructor(){super(...arguments);d(this,"ecomCode","");d(this,"item",null);d(this,"generateType","showcase");d(this,"generating",!1);d(this,"taskInfo",null);d(this,"pollingTask",!1)}_close(){this.dispatchEvent(new CustomEvent("close"))}async _startGenerate(){if(!this.ecomCode){alert("缺少商品编码");return}this.generating=!0;try{let t="/api/assets/generate/image";const e={ecom_code:this.ecomCode,asset_type:this.generateType};this.generateType==="video"&&(t="/api/assets/generate/video");const r=await(await fetch(t,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(e)})).json();r.success?(this.taskInfo={task_id:r.task_id,status:"pending",progress:0,message:"任务已提交..."},this.pollingTask=!0,this._pollTaskStatus(r.task_id)):(alert("生成任务提交失败: "+r.message),this.generating=!1)}catch(t){console.error("生成失败:",t),alert("生成失败,请检查服务器连接"),this.generating=!1}}async _pollTaskStatus(t){for(;this.pollingTask;)try{const a=await(await fetch(`/api/tasks/${t}`)).json();if(this.taskInfo=a,a.status==="success"||a.status==="failed"){this.pollingTask=!1,this.generating=!1,a.status==="success"?setTimeout(()=>{alert("生成成功!"),this._close()},500):alert("生成失败: "+a.error);break}await new Promise(r=>setTimeout(r,2e3))}catch(e){console.error("轮询任务状态失败:",e),this.pollingTask=!1,this.generating=!1}}render(){var e,a,r;const t=(e=this.item)!=null&&e.local_image_path?`/images/${this.item.local_image_path}`:(a=this.item)==null?void 0:a.image_url;return n`
+      <div class="generator">
+        <div class="gen-header">
+          <div class="gen-title">生成素材</div>
+          <button class="gen-close" @click=${this._close} ?disabled=${this.generating}>×</button>
+        </div>
+
+        <div class="product-info">
+          ${t?n`<img class="product-thumb" src=${t} />`:""}
+          <div style="flex:1; overflow: hidden;">
+            <div class="product-name">${((r=this.item)==null?void 0:r.title)||this.ecomCode}</div>
+            <div class="product-code">${this.ecomCode}</div>
+          </div>
+        </div>
+
+        <div class="type-section">
+          <div class="type-label">选择素材类型</div>
+          <div class="type-options">
+            <button
+              class="type-option ${this.generateType==="showcase"?"active":""}"
+              @click=${()=>{this.generateType="showcase",this.requestUpdate()}}
+              ?disabled=${this.generating}
+            >
+              <div class="type-option-icon">🖼️</div>
+              <div class="type-option-label">展示图</div>
+              <div class="type-option-desc">9张营销图</div>
+            </button>
+            <button
+              class="type-option ${this.generateType==="video"?"active":""}"
+              @click=${()=>{this.generateType="video",this.requestUpdate()}}
+              ?disabled=${this.generating}
+            >
+              <div class="type-option-icon">🎬</div>
+              <div class="type-option-label">视频</div>
+              <div class="type-option-desc">宣传视频</div>
+            </button>
+            <button
+              class="type-option ${this.generateType==="detail"?"active":""}"
+              @click=${()=>{this.generateType="detail",this.requestUpdate()}}
+              ?disabled=${this.generating}
+            >
+              <div class="type-option-icon">📋</div>
+              <div class="type-option-label">详情图</div>
+              <div class="type-option-desc">详情页图片</div>
+            </button>
+          </div>
+        </div>
+
+        ${this.taskInfo?n`
+          <div class="task-progress">
+            <div class="task-status">${this.taskInfo.message||"处理中..."}</div>
+            <div class="task-bar">
+              <div class="task-bar-fill" style="width: ${this.taskInfo.progress||0}%"></div>
+            </div>
+          </div>
+        `:""}
+
+        <div class="gen-actions">
+          <button class="gen-btn gen-btn-cancel" @click=${this._close} ?disabled=${this.generating}>
+            取消
+          </button>
+          <button class="gen-btn gen-btn-confirm" @click=${this._startGenerate} ?disabled=${this.generating}>
+            ${this.generating?"生成中...":"开始生成"}
+          </button>
+        </div>
+      </div>
+    `}};Er(q,"styles",f`
+    :host {
+      display: block;
+    }
+
+    .generator {
+      padding: 20px;
+      min-width: 400px;
+    }
+
+    .gen-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .gen-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .gen-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--muted);
+      line-height: 1;
+    }
+
+    .gen-close:hover {
+      color: var(--text);
+    }
+
+    .product-info {
+      background: var(--bg);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .product-thumb {
+      width: 48px;
+      height: 48px;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+    }
+
+    .product-name {
+      font-size: 13px;
+      color: var(--text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .product-code {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .type-section {
+      margin-bottom: 20px;
+    }
+
+    .type-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .type-options {
+      display: flex;
+      gap: 12px;
+    }
+
+    .type-option {
+      flex: 1;
+      padding: 16px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .type-option:hover {
+      border-color: var(--primary);
+      background: var(--bg-hover);
+    }
+
+    .type-option.active {
+      border-color: var(--primary);
+      border-width: 2px;
+      background: var(--primary);
+      box-shadow: 0 0 0 2px rgba(var(--primary-rgb, 59, 130, 246), 0.3);
+    }
+
+    .type-option.active .type-option-label {
+      color: white;
+      font-weight: 600;
+    }
+
+    .type-option.active .type-option-desc {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .type-option-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .type-option-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .type-option-desc {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .task-progress {
+      background: var(--bg);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .task-status {
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .task-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .task-bar-fill {
+      height: 100%;
+      background: var(--primary);
+      transition: width 0.3s;
+    }
+
+    .gen-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .gen-btn {
+      padding: 10px 20px;
+      font-size: 13px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .gen-btn-cancel {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .gen-btn-cancel:hover {
+      border-color: var(--text);
+      color: var(--text);
+    }
+
+    .gen-btn-confirm {
+      background: var(--primary);
+      border: none;
+      color: white;
+    }
+
+    .gen-btn-confirm:hover {
+      opacity: 0.9;
+    }
+
+    .gen-btn-confirm:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  `);dt([w({type:String})],q.prototype,"ecomCode",2);dt([w({type:Object})],q.prototype,"item",2);dt([l()],q.prototype,"generateType",2);dt([l()],q.prototype,"generating",2);dt([l()],q.prototype,"taskInfo",2);dt([l()],q.prototype,"pollingTask",2);q=dt([x("asset-generator")],q);var Fe=Object.defineProperty,Or=Object.getOwnPropertyDescriptor,Dr=(o,t,e)=>t in o?Fe(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,O=(o,t,e,a)=>{for(var r=a>1?void 0:a?Or(t,e):t,s=o.length-1,i;s>=0;s--)(i=o[s])&&(r=(a?i(t,e,r):i(r))||r);return a&&r&&Fe(t,e,r),r},Ir=(o,t,e)=>Dr(o,t+"",e);let S=class extends b{constructor(){super(...arguments);d(this,"ecomCode","");d(this,"searchQuery","");d(this,"assets",[]);d(this,"loading",!0);d(this,"showGenerateModal",!1);d(this,"generating",!1);d(this,"generateType","showcase");d(this,"selectedEcomCode","");d(this,"sourcingList",[]);d(this,"taskInfo",null);d(this,"pollingTask",!1)}connectedCallback(){super.connectedCallback(),console.log("[AssetsPage] connectedCallback called"),this.ecomCode&&(this.searchQuery=this.ecomCode),this.loadAssets(),this.loadSourcingList()}updated(t){t.has("ecomCode")&&this.ecomCode&&(this.searchQuery=this.ecomCode,this.loadAssets())}async loadAssets(){console.log("[AssetsPage] loadAssets called"),this.loading=!0,this.requestUpdate();try{const t=this.searchQuery?`/api/assets/list?search=${encodeURIComponent(this.searchQuery)}`:"/api/assets/list";console.log("[AssetsPage] fetching:",t);const a=await(await fetch(t)).json();console.log("[AssetsPage] response:",a),this.assets=a.assets||[]}catch(t){console.error("[AssetsPage] 加载素材失败:",t),this.assets=[]}this.loading=!1,console.log("[AssetsPage] loadAssets done, loading:",this.loading,"assets:",this.assets.length),this.requestUpdate()}async loadSourcingList(){try{const e=await(await fetch("/api/sourcing/list?limit=100")).json();this.sourcingList=e.items||[]}catch(t){console.error("[AssetsPage] 加载货源列表失败:",t)}}_onSearch(t){t.key==="Enter"&&this.loadAssets()}_onSearchInput(t){const e=t.target;this.searchQuery=e.value}_openGenerateModal(){this.showGenerateModal=!0,this.selectedEcomCode=this.ecomCode||"",this.generateType="showcase",this.taskInfo=null,this.generating=!1}_closeGenerateModal(){this.showGenerateModal=!1,this.pollingTask=!1}async _startGenerate(){if(!this.selectedEcomCode){alert("请选择货源");return}this.generating=!0;try{let t="/api/assets/generate/image",e={ecom_code:this.selectedEcomCode,asset_type:this.generateType};this.generateType==="video"&&(t="/api/assets/generate/video",e={ecom_code:this.selectedEcomCode,duration:5,resolution:"480p"});const r=await(await fetch(t,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(e)})).json();r.success?(this.taskInfo={task_id:r.task_id,status:"pending",progress:0,message:"任务已提交..."},this.pollingTask=!0,this._pollTaskStatus(r.task_id)):(alert("生成任务提交失败: "+r.message),this.generating=!1)}catch(t){console.error("生成失败:",t),alert("生成失败，请检查服务器连接"),this.generating=!1}}async _pollTaskStatus(t){for(;this.pollingTask;)try{const a=await(await fetch(`/api/tasks/${t}`)).json();if(this.taskInfo=a,a.status==="success"||a.status==="failed"){this.pollingTask=!1,this.generating=!1,a.status==="success"?(await this.loadAssets(),this.showGenerateModal=!1):alert("生成失败: "+a.error);break}await new Promise(r=>setTimeout(r,2e3))}catch(e){console.error("轮询任务状态失败:",e),this.pollingTask=!1,this.generating=!1}}_openFolder(t,e,a){fetch(`/api/assets/open-folder/${t}/${e}/${a}`,{method:"POST"})}async _deleteAsset(t,e,a){if(confirm("确定删除该素材？"))try{(await fetch(`/api/assets/${t}/${e}/${a}`,{method:"DELETE"})).ok?await this.loadAssets():alert("删除失败")}catch(r){console.error("删除失败:",r)}}_previewImage(t){const e=document.createElement("div");e.className="preview-overlay",e.innerHTML=`
+      <img class="preview-image" src="${t}" />
+      <button class="preview-close">×</button>
+    `,e.addEventListener("click",a=>{(a.target===e||a.target.classList.contains("preview-close"))&&e.remove()}),document.body.appendChild(e)}_formatTime(t){return t?new Date(t).toLocaleString("zh-CN",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}):"-"}_getTypeName(t){return{showcase:"展示图",video:"视频",detail:"详情图"}[t]||t}_getTypeIcon(t){return{showcase:"🖼️",video:"🎬",detail:"📋"}[t]||"📄"}render(){return n`
+      <div class="assets-page">
+        <div class="page-header">
+          <h1 class="page-title">📁 素材管理</h1>
+          <div class="header-actions">
+            <div class="search-box">
+              <span>🔍</span>
+              <input 
+                type="text" 
+                placeholder="搜索货源名称或编码..." 
+                .value=${this.searchQuery}
+                @input=${this._onSearchInput}
+                @keydown=${this._onSearch}
+              />
+            </div>
+            <button class="generate-btn" @click=${this._openGenerateModal}>
+              + 生成素材
+            </button>
+          </div>
+        </div>
+
+        ${this.loading?n`
+          <div class="empty-state">
+            <div class="empty-state-text">加载中...</div>
+          </div>
+        `:this.assets.length===0?n`
+          <div class="empty-state">
+            <div class="empty-state-icon">📁</div>
+            <div class="empty-state-text">暂无素材，点击"生成素材"开始创建</div>
+          </div>
+        `:n`
+          <table class="assets-table">
+            <thead>
+              <tr>
+                <th style="width: 200px;">货源名称</th>
+                <th style="width: 100px;">资源类型</th>
+                <th style="width: 200px;">缩略图</th>
+                <th>简介</th>
+                <th style="width: 140px;">生成时间</th>
+                <th style="width: 160px;">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${this.assets.map(t=>{var e,a;return n`
+                <tr>
+                  <td>
+                    <div class="product-name">${t.title||"-"}</div>
+                    <div class="product-code">${t.ecom_code}</div>
+                  </td>
+                  <td>
+                    <span class="asset-type ${t.asset_type}">
+                      ${this._getTypeIcon(t.asset_type)} ${this._getTypeName(t.asset_type)}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="thumbnails">
+                      ${(t.thumbnails||[]).slice(0,3).map(r=>n`
+                        <img 
+                          class="thumb" 
+                          src="${r}" 
+                          @click=${()=>this._previewImage(r)}
+                        />
+                      `)}
+                      ${(((e=t.thumbnails)==null?void 0:e.length)||0)>3?n`
+                        <div class="thumb-more">+${(((a=t.thumbnails)==null?void 0:a.length)||0)-3}</div>
+                      `:""}
+                    </div>
+                  </td>
+                  <td>-</td>
+                  <td>
+                    <div class="time">${this._formatTime(t.created_at)}</div>
+                  </td>
+                  <td>
+                    <div class="actions">
+                      <button 
+                        class="action-btn" 
+                        @click=${()=>this._openFolder(t.ecom_code,t.asset_type,t.group_index)}
+                      >
+                        文件
+                      </button>
+                      <button 
+                        class="action-btn delete" 
+                        @click=${()=>this._deleteAsset(t.ecom_code,t.asset_type,t.group_index)}
+                      >
+                        删除
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              `})}
+            </tbody>
+          </table>
+        `}
+      </div>
+
+      ${this.showGenerateModal?n`
+        <div class="modal-overlay" @click=${t=>{t.target===t.currentTarget&&!this.generating&&this._closeGenerateModal()}}>
+          <div class="modal-content">
+            <div class="modal-title">生成素材</div>
+            
+            <div class="form-group">
+              <label class="form-label">选择货源</label>
+              <select class="form-select" .value=${this.selectedEcomCode} @change=${t=>{this.selectedEcomCode=t.target.value}}>
+                <option value="">请选择...</option>
+                ${this.sourcingList.map(t=>n`
+                  <option value=${t.ecom_code}>${t.title||t.ecom_code}</option>
+                `)}
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">资源类型</label>
+              <div class="type-options">
+                <button 
+                  class="type-option ${this.generateType==="showcase"?"active":""}"
+                  @click=${()=>{this.generateType="showcase"}}
+                >
+                  <div class="type-option-label">🖼️ 展示图</div>
+                  <div class="type-option-desc">9张营销图</div>
+                </button>
+                <button 
+                  class="type-option ${this.generateType==="video"?"active":""}"
+                  @click=${()=>{this.generateType="video"}}
+                >
+                  <div class="type-option-label">🎬 视频</div>
+                  <div class="type-option-desc">宣传视频</div>
+                </button>
+                <button 
+                  class="type-option ${this.generateType==="detail"?"active":""}"
+                  @click=${()=>{this.generateType="detail"}}
+                >
+                  <div class="type-option-label">📋 详情图</div>
+                  <div class="type-option-desc">详情页图片</div>
+                </button>
+              </div>
+            </div>
+
+            ${this.taskInfo?n`
+              <div class="task-progress">
+                <div class="task-status">${this.taskInfo.message||"处理中..."}</div>
+                <div class="task-bar">
+                  <div class="task-bar-fill" style="width: ${this.taskInfo.progress||0}%"></div>
+                </div>
+              </div>
+            `:""}
+
+            <div class="modal-actions">
+              <button class="modal-btn cancel" @click=${this._closeGenerateModal} ?disabled=${this.generating}>
+                取消
+              </button>
+              <button class="modal-btn confirm" @click=${this._startGenerate} ?disabled=${this.generating}>
+                ${this.generating?"生成中...":"开始生成"}
+              </button>
+            </div>
+          </div>
+        </div>
+      `:""}
+    `}};Ir(S,"styles",f`
+    :host {
+      display: block;
+    }
+    
+    .assets-page {
+      padding: 24px;
+    }
+    
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    
+    .page-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 8px 12px;
+      gap: 8px;
+      min-width: 300px;
+    }
+    
+    .search-box input {
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      flex: 1;
+    }
+    
+    .search-box input::placeholder {
+      color: var(--muted);
+    }
+    
+    .generate-btn {
+      padding: 8px 16px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .generate-btn:hover {
+      opacity: 0.9;
+    }
+    
+    .assets-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    
+    .assets-table th {
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .assets-table td {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    
+    .assets-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .product-name {
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 14px;
+      color: var(--text);
+    }
+    
+    .product-code {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    
+    .asset-type {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .asset-type.showcase {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3b82f6;
+    }
+    
+    .asset-type.video {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+    
+    .asset-type.detail {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+    }
+    
+    .thumbnails {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      max-width: 180px;
+    }
+    
+    .thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      cursor: pointer;
+      border: 1px solid var(--border);
+    }
+    
+    .thumb:hover {
+      border-color: var(--primary);
+    }
+    
+    .thumb-more {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    
+    .time {
+      font-size: 13px;
+      color: var(--text);
+    }
+    
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .action-btn {
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+    }
+    
+    .action-btn:hover {
+      background: var(--border);
+    }
+    
+    .action-btn.delete {
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    
+    .action-btn.delete:hover {
+      background: rgba(239, 68, 68, 0.1);
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    
+    .empty-state-text {
+      font-size: 14px;
+    }
+    
+    /* 生成弹窗 */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .modal-content {
+      background: var(--bg);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    
+    .form-select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+    }
+    
+    .form-select:focus {
+      border-color: var(--primary);
+    }
+    
+    .type-options {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .type-option {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      background: transparent;
+      cursor: pointer;
+      text-align: center;
+    }
+    
+    .type-option.active {
+      border-color: var(--primary);
+      background: rgba(var(--primary-rgb), 0.1);
+    }
+    
+    .type-option-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    
+    .type-option-desc {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 24px;
+    }
+    
+    .modal-btn {
+      padding: 10px 20px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      cursor: pointer;
+    }
+    
+    .modal-btn.cancel {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    
+    .modal-btn.confirm {
+      background: var(--primary);
+      border: none;
+      color: white;
+    }
+    
+    .modal-btn.confirm:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    /* 任务进度 */
+    .task-progress {
+      padding: 16px;
+      background: var(--border);
+      border-radius: var(--radius-md);
+      margin-top: 16px;
+    }
+    
+    .task-status {
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    
+    .task-bar {
+      height: 4px;
+      background: var(--muted);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    
+    .task-bar-fill {
+      height: 100%;
+      background: var(--primary);
+      transition: width 0.3s;
+    }
+    
+    /* 图片预览 */
+    .preview-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+    
+    .preview-image {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+    }
+    
+    .preview-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+    }
+  `);O([w({type:String})],S.prototype,"ecomCode",2);O([l()],S.prototype,"searchQuery",2);O([l()],S.prototype,"assets",2);O([l()],S.prototype,"loading",2);O([l()],S.prototype,"showGenerateModal",2);O([l()],S.prototype,"generating",2);O([l()],S.prototype,"generateType",2);O([l()],S.prototype,"selectedEcomCode",2);O([l()],S.prototype,"sourcingList",2);O([l()],S.prototype,"taskInfo",2);O([l()],S.prototype,"pollingTask",2);S=O([x("ea-assets-page")],S);var Le=Object.defineProperty,jr=Object.getOwnPropertyDescriptor,Nr=(o,t,e)=>t in o?Le(o,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[t]=e,Dt=(o,t,e,a)=>{for(var r=a>1?void 0:a?jr(t,e):t,s=o.length-1,i;s>=0;s--)(i=o[s])&&(r=(a?i(t,e,r):i(r))||r);return a&&r&&Le(t,e,r),r},Ur=(o,t,e)=>Nr(o,t+"",e);const ut=new Set;let ot="dashboard";window.ecomagentNavigate=o=>{ot=o,ut.forEach(t=>t(o))};window.ecomagentGetCurrentPage=()=>ot;window.ecomagentOnPageChange=o=>{ut.add(o)};window.ecomagentOpenTrend=(o,t="product-master")=>{sessionStorage.setItem("trend-source-page",t),sessionStorage.setItem("trend-source-state",JSON.stringify({page:ot,scrollY:window.scrollY})),ot="product-trend",sessionStorage.setItem("trend-ecom-code",o),ut.forEach(e=>e("product-trend"))};window.ecomagentNavigateToSourcing=o=>{ot="sourcing",o?sessionStorage.setItem("sourcing-ecom-code",o):sessionStorage.removeItem("sourcing-ecom-code"),ut.forEach(t=>t("sourcing"))};window.ecomagentNavigateDirectToSourcing=()=>{sessionStorage.removeItem("sourcing-ecom-code"),ot="sourcing",ut.forEach(o=>o("sourcing"))};let ht=class extends b{constructor(){super();d(this,"_page",ot);d(this,"_trendCode","");d(this,"_sourcingCode","");ut.add(t=>{this._page=t,t==="product-trend"&&(this._trendCode=sessionStorage.getItem("trend-ecom-code")||""),t==="sourcing"&&(this._sourcingCode=sessionStorage.getItem("sourcing-ecom-code")||""),this.requestUpdate()})}connectedCallback(){super.connectedCallback();const t=localStorage.getItem("theme")||"dark";document.body.setAttribute("data-theme-mode",t)}_renderPage(){switch(this._page){case"dashboard":return n`<ea-dashboard></ea-dashboard>`;case"settings":return n`<ea-settings></ea-settings>`;case"product-master":return n`<ea-product-master></ea-product-master>`;case"tracking":return n`<ea-tracking></ea-tracking>`;case"cross-platform":return n`<ea-cross-platform></ea-cross-platform>`;case"today-top":return n`<ea-today-top></ea-today-top>`;case"raw-data":return n`<ea-raw-data></ea-raw-data>`;case"export":return n`<ea-export></ea-export>`;case"product-trend":return n`<ea-product-trend-page ecomCode=${this._trendCode}></ea-product-trend-page>`;case"sourcing":return n`<ea-sourcing ecomCode=${this._sourcingCode}></ea-sourcing>`;case"translation-logs":return n`<ea-translation-logs></ea-translation-logs>`;case"assets":return n`<ea-assets-page ecomCode=${this._sourcingCode}></ea-assets-page>`;default:return n`<div style="padding:24px;color:var(--muted)">未知页面</div>`}}render(){return this._page==="product-trend"?n`
         <ea-layout currentPage=${this._page}>
           <div style="padding:24px">${this._renderPage()}</div>
         </ea-layout>
@@ -3894,4 +4846,4 @@ Please login to TikTok Shop, then click TikTok button again.`);return}}}catch(e)
       <ea-layout currentPage=${this._page}>
         ${this._renderPage()}
       </ea-layout>
-    `}};zr(it,"styles",$`:host { display: block; min-height: 100vh; }`);Ct([l()],it.prototype,"_page",2);Ct([l()],it.prototype,"_trendCode",2);Ct([l()],it.prototype,"_sourcingCode",2);it=Ct([_("ecomagent-app")],it);console.log("EcomAgent UI loaded");
+    `}};Ur(ht,"styles",f`:host { display: block; min-height: 100vh; }`);Dt([l()],ht.prototype,"_page",2);Dt([l()],ht.prototype,"_trendCode",2);Dt([l()],ht.prototype,"_sourcingCode",2);ht=Dt([x("ecomagent-app")],ht);console.log("EcomAgent UI loaded");

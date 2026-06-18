@@ -14,6 +14,9 @@ import './pages/product-trend';
 import './pages/product-trend-page';
 import './pages/sourcing';
 import './pages/translation-logs';
+import './pages/asset-manager'; // 素材管理弹窗组件（已弃用）
+import './pages/asset-generator'; // 生成素材弹窗组件
+import './pages/assets-page'; // 素材管理页面
 
 // 全局状态
 const _listeners: Set<(page: PageName) => void> = new Set();
@@ -105,6 +108,7 @@ export class EcomagentApp extends LitElement {
       case 'product-trend': return html`<ea-product-trend-page ecomCode=${this._trendCode}></ea-product-trend-page>`;
       case 'sourcing': return html`<ea-sourcing ecomCode=${this._sourcingCode}></ea-sourcing>`;
       case 'translation-logs': return html`<ea-translation-logs></ea-translation-logs>`;
+      case 'assets': return html`<ea-assets-page ecomCode=${this._sourcingCode}></ea-assets-page>`;
       default: return html`<div style="padding:24px;color:var(--muted)">未知页面</div>`;
     }
   }

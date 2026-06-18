@@ -21,10 +21,18 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+# 强制禁用 stdout 缓冲，确保日志实时输出
+sys.stdout.reconfigure(line_buffering=True) if hasattr(sys.stdout, 'reconfigure') else None
+# 或者使用环境变量 PYTHONUNBUFFERED=1
+
 sys.path.insert(0, str(Path(__file__).parent))
 
-from providers import FlashImageProvider, GeminiPromptProvider
+from providers import FlashImageProvider
+from providers.gemini_prompt_http import GeminiPromptProviderHTTP
 from utils.logger import get_logger
+
+# 使用 HTTP 版本绕过 SSL 问题
+GeminiPromptProvider = GeminiPromptProviderHTTP
 
 
 def generate_images(

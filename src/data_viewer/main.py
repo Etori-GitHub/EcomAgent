@@ -1944,6 +1944,23 @@ async def get_tasks_status():
     return task_status
 
 
+@app.get("/api/tasks/{task_id}")
+async def get_task(task_id: str):
+    """获取单个任务状态"""
+    from .task_queue import task_queue
+    task = task_queue.get_task(task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return task
+
+
+@app.get("/api/tasks")
+async def list_tasks(limit: int = 20):
+    """列出任务"""
+    from .task_queue import task_queue
+    return {"tasks": task_queue.list_tasks(limit)}
+
+
 # ==================== 抓取任务 API ====================
 
 import subprocess
@@ -2295,6 +2312,210 @@ async def get_translation_logs_stats():
     }
 
 
+# ==================== 素材管理页面 API ====================
+
+ASSETS_DIR = DATA_DIR / "assets"
+
+@app.get("/api/assets/list")
+async def api_list_assets(search: str = None):
+    """获取素材列表（用于素材管理页面）"""
+    # 连接素材数据库
+    assets_db = DATA_DIR / "assets.db"
+    sourcing_db = DATA_DIR / "sourcing.db"
+    
+    if not assets_db.exists():
+        return {"assets": []}
+    
+    conn = sqlite3.connect(str(assets_db))
+    conn.row_factory = sqlite3.Row
+    
+    # 如果 sourcing.db 存在，attach 它
+    if sourcing_db.exists():
+        conn.execute(f"ATTACH DATABASE '{str(sourcing_db)}' AS sourcing")
+    
+    # 构建查询
+    if search:
+        cursor = conn.execute("""
+            SELECT a.*, s.title 
+            FROM sourcing_assets a 
+            LEFT JOIN sourcing.sourcing_1688 s ON a.ecom_code = s.ecom_code 
+            WHERE a.ecom_code LIKE ? OR s.title LIKE ?
+            ORDER BY a.created_at DESC
+        """, (f"%{search}%", f"%{search}%"))
+    else:
+        cursor = conn.execute("""
+            SELECT a.*, s.title 
+            FROM sourcing_assets a 
+            LEFT JOIN sourcing.sourcing_1688 s ON a.ecom_code = s.ecom_code 
+            ORDER BY a.created_at DESC
+        """)
+    
+    rows = cursor.fetchall()
+    conn.close()
+    
+    # 处理缩略图
+    assets = []
+    for row in rows:
+        asset = dict(row)
+        
+        # 解析文件列表
+        files_str = asset.get("files", "[]")
+        try:
+            files = json.loads(files_str) if isinstance(files_str, str) else files_str
+        except:
+            files = []
+        
+        # 生成缩略图 URL
+        thumbnails = []
+        for f in files[:9]:
+            if isinstance(f, str) and f.endswith(('.png', '.jpg', '.jpeg', '.webp')):
+                # 文件路径格式: assets/ECTK26000401/showcase/group_1/00_marketing.png (Mac/Linux)
+                #           或 assets\ECTK26000401\showcase\group_1\00_marketing.png (Windows)
+                # 需要去掉 assets 前缀，因为 /assets-data 已经指向 assets 目录
+                relative_path = f
+                # 先统一转换为正斜杠
+                relative_path = relative_path.replace('\\', '/')
+                # 去掉开头的 assets/
+                if relative_path.lower().startswith('assets/'):
+                    relative_path = relative_path[7:]  # 去掉 'assets/'
+                thumbnails.append(f"/assets-data/{relative_path}")
+        
+        asset["thumbnails"] = thumbnails
+        asset["file_count"] = len(files)
+        assets.append(asset)
+    
+    return {"assets": assets}
+
+
+@app.post("/api/assets/open-folder/{ecom_code}/{asset_type}/{group_index}")
+async def api_open_folder(ecom_code: str, asset_type: str, group_index: int):
+    """打开素材所在文件夹"""
+    import subprocess
+    import platform
+    
+    folder_path = ASSETS_DIR / ecom_code / asset_type / f"group_{group_index}"
+    
+    if not folder_path.exists():
+        raise HTTPException(status_code=404, detail="文件夹不存在")
+    
+    # 根据操作系统打开文件夹
+    if platform.system() == "Windows":
+        subprocess.run(["explorer", str(folder_path)])
+    elif platform.system() == "Darwin":
+        subprocess.run(["open", str(folder_path)])
+    else:
+        subprocess.run(["xdg-open", str(folder_path)])
+    
+    return {"success": True, "path": str(folder_path)}
+
+
+@app.post("/api/assets/generate/image")
+async def api_generate_image(request: dict):
+    """生成展示图或详情图"""
+    from .task_queue import submit_image_task
+    
+    ecom_code = request.get("ecom_code")
+    asset_type = request.get("asset_type", "showcase")  # showcase | detail
+    
+    if not ecom_code:
+        raise HTTPException(status_code=400, detail="缺少 ecom_code")
+    
+    # 获取货源图片路径
+    sourcing_db = DATA_DIR / "sourcing.db"
+    if not sourcing_db.exists():
+        raise HTTPException(status_code=404, detail="货源数据库不存在")
+    
+    conn = sqlite3.connect(str(sourcing_db))
+    conn.row_factory = sqlite3.Row
+    cursor = conn.execute("SELECT local_image_path FROM sourcing_1688 WHERE ecom_code = ?", (ecom_code,))
+    row = cursor.fetchone()
+    conn.close()
+    
+    if not row or not row["local_image_path"]:
+        raise HTTPException(status_code=404, detail="未找到货源图片")
+    
+    image_path = DATA_DIR / "images" / row["local_image_path"]
+    if not image_path.exists():
+        raise HTTPException(status_code=404, detail=f"图片文件不存在: {image_path}")
+    
+    # 提交任务
+    task_id = submit_image_task(
+        ecom_code=ecom_code,
+        image_path=str(image_path),
+        task_type=asset_type
+    )
+    
+    return {"success": True, "task_id": task_id}
+
+
+@app.post("/api/assets/generate/video")
+async def api_generate_video(request: dict):
+    """生成视频"""
+    from .task_queue import submit_video_task
+    
+    ecom_code = request.get("ecom_code")
+    duration = request.get("duration", 5)
+    resolution = request.get("resolution", "480p")
+    
+    if not ecom_code:
+        raise HTTPException(status_code=400, detail="缺少 ecom_code")
+    
+    # 获取货源图片路径
+    sourcing_db = DATA_DIR / "sourcing.db"
+    if not sourcing_db.exists():
+        raise HTTPException(status_code=404, detail="货源数据库不存在")
+    
+    conn = sqlite3.connect(str(sourcing_db))
+    conn.row_factory = sqlite3.Row
+    cursor = conn.execute("SELECT local_image_path FROM sourcing_1688 WHERE ecom_code = ?", (ecom_code,))
+    row = cursor.fetchone()
+    conn.close()
+    
+    if not row or not row["local_image_path"]:
+        raise HTTPException(status_code=404, detail="未找到货源图片")
+    
+    image_path = DATA_DIR / "images" / row["local_image_path"]
+    if not image_path.exists():
+        raise HTTPException(status_code=404, detail=f"图片文件不存在: {image_path}")
+    
+    # 提交任务
+    task_id = submit_video_task(
+        ecom_code=ecom_code,
+        image_path=str(image_path),
+        duration=duration,
+        resolution=resolution
+    )
+    
+    return {"success": True, "task_id": task_id}
+
+
+@app.delete("/api/assets/{ecom_code}/{asset_type}/{group_index}")
+async def api_delete_asset(ecom_code: str, asset_type: str, group_index: int):
+    """删除素材组"""
+    import shutil
+    
+    folder_path = ASSETS_DIR / ecom_code / asset_type / f"group_{group_index}"
+    
+    if not folder_path.exists():
+        raise HTTPException(status_code=404, detail="素材不存在")
+    
+    # 删除文件夹
+    shutil.rmtree(str(folder_path))
+    
+    # 从数据库删除记录
+    assets_db = DATA_DIR / "assets.db"
+    if assets_db.exists():
+        conn = sqlite3.connect(str(assets_db))
+        conn.execute("""
+            DELETE FROM sourcing_assets 
+            WHERE ecom_code = ? AND asset_type = ? AND group_index = ?
+        """, (ecom_code, asset_type, group_index))
+        conn.commit()
+        conn.close()
+    
+    return {"success": True, "message": f"已删除 {asset_type} 组 {group_index}"}
+
+
 # ==================== 服务启动 ====================
 
 def run_server(host: str = "0.0.0.0", port: int = 8000):
@@ -2315,6 +2536,11 @@ def run_server(host: str = "0.0.0.0", port: int = 8000):
     images_dir = DATA_DIR / "images"
     if images_dir.exists():
         app.mount("/images", StaticFiles(directory=str(images_dir)), name="images")
+
+    # 挂载素材目录 - 用于素材缩略图访问
+    assets_data_dir = DATA_DIR / "assets"
+    if assets_data_dir.exists():
+        app.mount("/assets-data", StaticFiles(directory=str(assets_data_dir)), name="assets-data")
 
     print(f"\n{'='*60}")
     print(f"EcomAgent Data Viewer")

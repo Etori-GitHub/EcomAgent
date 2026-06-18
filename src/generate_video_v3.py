@@ -35,7 +35,7 @@ sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 sys.path.insert(0, str(Path(__file__).parent))
 
 from providers.grok_video import GrokVideoProvider
-from providers.gemini_prompt import GeminiPromptProvider
+from providers.gemini_prompt_http import GeminiPromptProviderHTTP as GeminiPromptProvider
 from providers.flash_image import FlashImageProvider
 from utils.logger import get_logger
 from utils.feishu import send_text, send_image

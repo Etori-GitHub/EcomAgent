@@ -1,6 +1,9 @@
 """Gemini Prompt Provider - 生成图片提示词"""
 import json
 import base64
+import time
+import ssl
+import urllib.request
 from pathlib import Path
 from typing import Dict, List
 from PIL import Image
@@ -90,15 +93,28 @@ Requirements:
 Return ONLY a JSON object in this format:
 {{"prompts": ["description 1", "description 2", ...], "scenes": ["scene name 1", "scene name 2", ...]}}"""
 
-            # 调用 Gemini (使用新的 google.genai API)
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=[prompt_text, image],
-                config=types.GenerateContentConfig(
-                    temperature=0.7,
-                    max_output_tokens=4096
-                )
-            )
+            # 调用 Gemini (使用新的 google.genai API) - 带重试
+            max_retries = 3
+            last_error = None
+            for attempt in range(max_retries):
+                try:
+                    print(f"[GeminiPrompt] 第 {attempt+1} 次尝试调用 Gemini API...")
+                    response = self.client.models.generate_content(
+                        model=self.model_name,
+                        contents=[prompt_text, image],
+                        config=types.GenerateContentConfig(
+                            temperature=0.7,
+                            max_output_tokens=4096
+                        )
+                    )
+                    break
+                except Exception as e:
+                    last_error = e
+                    print(f"[GeminiPrompt] 第 {attempt+1} 次失败: {e}")
+                    if attempt < max_retries - 1:
+                        time.sleep(2)  # 等待2秒后重试
+            else:
+                raise last_error
             
             # 解析响应
             content = response.text.strip()

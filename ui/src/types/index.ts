@@ -80,7 +80,8 @@ export type PageName =
   | 'export' 
   | 'settings'
   | 'translation-logs'
-  | 'product-trend';
+  | 'product-trend'
+  | 'assets';
 
 export interface AppState {
   currentPage: PageName;

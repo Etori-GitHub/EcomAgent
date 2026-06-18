@@ -1,0 +1,82 @@
+{
+  "status": "success",
+  "output_dir": "C:\\Users\\Etroi\\.openclaw\\workspace\\code\\EcomAgent\\data\\assets\\ECTK26000403\\showcase\\group_1",
+  "total": 9,
+  "success_count": 9,
+  "failed_count": 0,
+  "images": [
+    {
+      "index": 0,
+      "scene": "Main product shot",
+      "prompt": "The exact pink 'YIZHIQING BODY BUTTER STRAWBERRY' jar with its natural wood-grain lid, displaying all original text and design elements precisely as seen in the reference image, centered on a pristine white background. Studio lighting from a slightly elevated angle highlights the smooth pink jar and the detailed wood grain of the lid, casting a subtle, soft shadow directly beneath it, creating a clean, professional atmosphere.",
+      "status": "success",
+      "output_path": "C:\\Users\\Etroi\\.openclaw\\workspace\\code\\EcomAgent\\data\\assets\\ECTK26000403\\showcase\\group_1\\00_marketing.png",
+      "error": null
+    },
+    {
+      "index": 1,
+      "scene": "Lifestyle scene",
+      "prompt": "A close-up of a woman's hand gently applying the exact pink 'YIZHIQING BODY BUTTER STRAWBERRY' from its natural wood-grain lidded jar onto her arm, displaying all original text and design elements. Soft, warm natural light from a window illuminates the scene, with a blurred, cozy bathroom vanity in the background, conveying a sense of daily self-care and relaxation.",
+      "status": "success",
+      "output_path": "C:\\Users\\Etroi\\.openclaw\\workspace\\code\\EcomAgent\\data\\assets\\ECTK26000403\\showcase\\group_1\\01_marketing.png",
+      "error": null
+    },
+    {
+      "index": 2,
+      "scene": "Detail close-up",
+      "prompt": "An extreme macro close-up shot of the exact pink 'YIZHIQING BODY BUTTER STRAWBERRY' jar, displaying all original text and design elements, focusing intently on the intricate wood grain texture of its lid and the glossy smoothness of the pink jar body. Diffused, soft daylight reveals the fine print on the label and the subtle sheen of the materials, emphasizing quality and detail.",
+      "status": "success",
+      "output_path": "C:\\Users\\Etroi\\.openclaw\\workspace\\code\\EcomAgent\\data\\assets\\ECTK26000403\\showcase\\group_1\\02_marketing.png",
+      "error": null
+    },
+    {
+      "index": 3,
+      "scene": "Feature highlight",
+      "prompt": "The exact pink 'YIZHIQING BODY BUTTER STRAWBERRY' jar with its natural wood-grain lid, displaying all original text and design elements, positioned on a vibrant pink surface next to a fresh, ripe strawberry and a small, creamy dollop of the product. Bright, soft studio lighting from a slight overhead angle emphasizes the 'STRAWBERRY' and 'Moisturizing & Skin Elasticity' claims, creating a fresh, appealing, and inviting atmosphere.",
+      "status": "success",
+      "output_path": "C:\\Users\\Etroi\\.openclaw\\workspace\\code\\EcomAgent\\data\\assets\\ECTK26000403\\showcase\\group_1\\03_marketing.png",
+      "error": null
+    },
+    {
+      "index": 4,
+      "scene": "Comparison/before-after",
+      "prompt": "A split image showing two arms side-by-side: one with visibly dry, dull skin (before) and the other with smooth, glowing, moisturized skin (after), with the exact pink 'YIZHIQING BODY BUTTER STRAWBERRY' jar and its natural wood-grain lid, displaying all original text and design elements, prominently displayed in the foreground. Soft, even lighting highlights the dramatic skin transformation, conveying product effectiveness and visible results.",
+      "status": "success",
+      "output_path": "C:\\Users\\Etroi\\.openclaw\\workspace\\code\\EcomAgent\\data\\assets\\ECTK26000403\\showcase\\group_1\\04_marketing.png",
+      "error": null
+    },
+    {
+      "index": 5,
+      "scene": "Specifications display",
+      "prompt": "The exact pink 'YIZHIQING BODY BUTTER STRAWBERRY' jar with its natural wood-grain lid, displaying all original text and design elements, precisely placed on a clean, minimalist white table. The background features elegant, legible typography presenting key specifications like '150ML / 5.07FL OZ', 'Strawberry Scent', and 'Moisturizing & Skin Elasticity' in a clean, informative layout, under bright, clear overhead studio lighting.",
+      "status": "success",
+      "output_path": "C:\\Users\\Etroi\\.openclaw\\workspace\\code\\EcomAgent\\data\\assets\\ECTK26000403\\showcase\\group_1\\05_marketing.png",
+      "error": null
+    },
+    {
+      "index": 6,
+      "scene": "Bundle/set showcase",
+      "prompt": "Three identical pink 'YIZHIQING BODY BUTTER STRAWBERRY' jars, each with its natural wood-grain lid, displaying all original text and design elements, arranged artfully on a smooth, luxurious white marble surface. Soft, diffused lighting from above creates a sophisticated and abundant atmosphere, suggesting a premium gift set or multi-pack.",
+      "status": "success",
+      "output_path": "C:\\Users\\Etroi\\.openclaw\\workspace\\code\\EcomAgent\\data\\assets\\ECTK26000403\\showcase\\group_1\\06_marketing.png",
+      "error": null
+    },
+    {
+      "index": 7,
+      "scene": "Real photo/unfiltered",
+      "prompt": "A candid, authentic, slightly overhead shot of the exact pink 'YIZHIQING BODY BUTTER STRAWBERRY' jar with its natural wood-grain lid, displaying all original text and design elements, sitting on a natural, light-colored wooden vanity or a rustic stone countertop. Natural daylight from a nearby window illuminates the scene, giving it an honest, everyday, and unfiltered feel.",
+      "status": "success",
+      "output_path": "C:\\Users\\Etroi\\.openclaw\\workspace\\code\\EcomAgent\\data\\assets\\ECTK26000403\\showcase\\group_1\\07_marketing.png",
+      "error": null
+    },
+    {
+      "index": 8,
+      "scene": "Trust/guarantee elements",
+      "prompt": "The exact pink 'YIZHIQING BODY BUTTER STRAWBERRY' jar with its natural wood-grain lid, displaying all original text and design elements, positioned centrally on a clean, bright, white background. Subtle graphic elements like a '100% Satisfaction Guaranteed' badge and a 'Dermatologist Tested' seal are elegantly placed around it, under professional, bright studio lighting, creating a trustworthy and reliable impression.",
+      "status": "success",
+      "output_path": "C:\\Users\\Etroi\\.openclaw\\workspace\\code\\EcomAgent\\data\\assets\\ECTK26000403\\showcase\\group_1\\08_marketing.png",
+      "error": null
+    }
+  ],
+  "user_id": null
+}

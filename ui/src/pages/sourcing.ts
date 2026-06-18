@@ -12,15 +12,15 @@ export class EcomAgentSourcing extends LitElement {
   @state() private total = 0;
   @state() private stats = { total: 0, products_linked: 0, today_count: 0, last_updated: null };
 
-  @state() private showModal = false;
-  @state() private modalType = ''; // 'video' | 'detail'
-  @state() private modalItem: any = null;
+  // 素材管理
+  @state() private showAssetManager = false;
+  @state() private assetManagerItem: any = null;
 
   static styles = css`
     :host {
       display: block;
     }
-    
+
     /* 弹窗样式 */
     .modal-overlay {
       position: fixed;
@@ -35,12 +35,12 @@ export class EcomAgentSourcing extends LitElement {
       z-index: 1000;
       animation: fadeIn 0.2s ease;
     }
-    
+
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
-    
+
     .modal-content {
       background: var(--card);
       border: 1px solid var(--border);
@@ -52,31 +52,31 @@ export class EcomAgentSourcing extends LitElement {
       animation: slideIn 0.3s ease;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
     }
-    
+
     @keyframes slideIn {
       from { transform: translateY(-20px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
-    
+
     .modal-icon {
       font-size: 48px;
       margin-bottom: 16px;
     }
-    
+
     .modal-title {
       font-size: 18px;
       font-weight: 600;
       color: var(--text);
       margin-bottom: 8px;
     }
-    
+
     .modal-desc {
       font-size: 14px;
       color: var(--muted);
       margin-bottom: 24px;
       line-height: 1.6;
     }
-    
+
     .modal-product {
       background: var(--bg);
       border-radius: var(--radius-md);
@@ -86,14 +86,14 @@ export class EcomAgentSourcing extends LitElement {
       align-items: center;
       gap: 12px;
     }
-    
+
     .modal-product-thumb {
       width: 40px;
       height: 40px;
       object-fit: cover;
       border-radius: var(--radius-sm);
     }
-    
+
     .modal-product-title {
       font-size: 13px;
       color: var(--text);
@@ -101,13 +101,13 @@ export class EcomAgentSourcing extends LitElement {
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    
+
     .modal-buttons {
       display: flex;
       gap: 12px;
       justify-content: center;
     }
-    
+
     .modal-btn {
       padding: 12px 24px;
       border-radius: var(--radius-md);
@@ -115,28 +115,28 @@ export class EcomAgentSourcing extends LitElement {
       cursor: pointer;
       transition: all 0.2s;
     }
-    
+
     .modal-btn-confirm {
       background: var(--primary);
       color: white;
       border: none;
     }
-    
+
     .modal-btn-confirm:hover {
       opacity: 0.9;
       transform: translateY(-1px);
     }
-    
+
     .modal-btn-cancel {
       background: var(--bg);
       color: var(--text);
       border: 1px solid var(--border);
     }
-    
+
     .modal-btn-cancel:hover {
       background: var(--bg-elevated);
     }
-    
+
     /* 头部统计 */
     .stats-row {
       display: grid;
@@ -144,26 +144,26 @@ export class EcomAgentSourcing extends LitElement {
       gap: 16px;
       margin-bottom: 24px;
     }
-    
+
     .stat-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       padding: 20px;
     }
-    
+
     .stat-value {
       font-size: 28px;
       font-weight: 600;
       color: var(--text);
       margin-bottom: 4px;
     }
-    
+
     .stat-label {
       font-size: 13px;
       color: var(--muted);
     }
-    
+
     /* 工具栏 */
     .toolbar {
       background: var(--card);
@@ -175,17 +175,17 @@ export class EcomAgentSourcing extends LitElement {
       gap: 12px;
       align-items: flex-end;
     }
-    
+
     .field-group {
       display: flex;
       flex-direction: column;
       gap: 4px;
     }
-    
+
     .field-label {
       font-size: 11px; font-weight: 600; color: var(--muted);
     }
-    
+
     .search-input {
       padding: 6px 10px;
       border: 1px solid var(--border);
@@ -194,20 +194,20 @@ export class EcomAgentSourcing extends LitElement {
       color: var(--text); transition: var(--duration-fast) ease;
       width: 240px;
     }
-    
+
     .search-input:focus {
       outline: none; border-color: var(--accent);
     }
-    
+
     .search-btn {
       padding: 6px 16px; border-radius: var(--radius-sm);
       font-size: 13px; font-weight: 500; border: none;
       cursor: pointer; transition: var(--duration-fast) ease;
       background: var(--accent); color: var(--accent-foreground);
     }
-    
+
     .search-btn:hover { background: var(--accent-hover); }
-    
+
     /* 筛选标签 */
     .filter-tag {
       display: inline-flex;
@@ -219,7 +219,7 @@ export class EcomAgentSourcing extends LitElement {
       border-radius: var(--radius-sm);
       font-size: 13px;
     }
-    
+
     .filter-clear {
       background: transparent;
       border: none;
@@ -230,11 +230,11 @@ export class EcomAgentSourcing extends LitElement {
       line-height: 1;
       opacity: 0.8;
     }
-    
+
     .filter-clear:hover {
       opacity: 1;
     }
-    
+
     /* 货源列表 */
     .sourcing-table {
       background: var(--card);
@@ -242,12 +242,12 @@ export class EcomAgentSourcing extends LitElement {
       border-radius: var(--radius-lg);
       overflow: hidden;
     }
-    
+
     .sourcing-table table {
       width: 100%;
       border-collapse: collapse;
     }
-    
+
     .sourcing-table th {
       text-align: left;
       padding: 12px 16px;
@@ -258,28 +258,28 @@ export class EcomAgentSourcing extends LitElement {
       color: var(--muted);
       border-bottom: 1px solid var(--border);
     }
-    
+
     .sourcing-table td {
       padding: 12px 16px;
       border-bottom: 1px solid var(--border);
       font-size: 13px;
     }
-    
+
     .sourcing-table tr:last-child td {
       border-bottom: none;
     }
-    
+
     .sourcing-table tr:hover td {
       background: var(--bg);
     }
-    
+
     .product-cell {
       display: flex;
       align-items: center;
       gap: 12px;
       min-width: 300px;
     }
-    
+
     .product-thumb {
       width: 50px;
       height: 50px;
@@ -288,12 +288,12 @@ export class EcomAgentSourcing extends LitElement {
       background: var(--bg-elevated);
       flex-shrink: 0;
     }
-    
+
     .product-info {
       flex: 1;
       min-width: 0;
     }
-    
+
     .product-title {
       font-size: 13px;
       color: var(--text);
@@ -304,24 +304,24 @@ export class EcomAgentSourcing extends LitElement {
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
     }
-    
+
     .product-shop {
       font-size: 11px;
       color: var(--muted);
       margin-top: 2px;
     }
-    
+
     .price-cell {
       color: #f5222d;
       font-weight: 600;
     }
-    
+
     .ecom-code-cell {
       font-family: monospace;
       font-size: 12px;
       color: var(--primary);
     }
-    
+
     .action-btn {
       padding: 6px 12px;
       border-radius: var(--radius-sm);
@@ -330,48 +330,58 @@ export class EcomAgentSourcing extends LitElement {
       transition: all 0.2s;
       margin-right: 8px;
     }
-    
+
     .action-btn-view {
       background: var(--primary);
       color: white;
       border: none;
     }
-    
+
     .action-btn-view:hover {
       opacity: 0.9;
     }
-    
+
     .action-btn-video, .action-btn-detail {
       background: transparent;
       color: var(--text);
       border: 1px solid var(--border);
     }
-    
+
     .action-btn-video:hover, .action-btn-detail:hover {
       background: var(--bg);
       border-color: var(--primary);
     }
-    
+
+    .action-btn-asset {
+      background: #722ed1;
+      color: white;
+      border: none;
+    }
+
+    .action-btn-asset:hover {
+      opacity: 0.9;
+    }
+
     .action-btn-tiktok {
       background: #ff0050;
       color: white;
       border: none;
     }
-    
+
     .action-btn-tiktok:hover {
       opacity: 0.9;
     }
-    
+
     .action-btn-delete {
       background: transparent;
       color: #f5222d;
       border: 1px solid #f5222d;
     }
-    
+
     .action-btn-delete:hover {
       background: #fff1f0;
     }
-    
+
     /* 分页 */
     .pagination {
       display: flex;
@@ -380,7 +390,7 @@ export class EcomAgentSourcing extends LitElement {
       gap: 8px;
       margin-top: 24px;
     }
-    
+
     .page-btn {
       padding: 8px 12px;
       border: 1px solid var(--border);
@@ -390,49 +400,49 @@ export class EcomAgentSourcing extends LitElement {
       font-size: 13px;
       cursor: pointer;
     }
-    
+
     .page-btn:hover:not(:disabled) {
       border-color: var(--primary);
     }
-    
+
     .page-btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
-    
+
     .page-btn.active {
       background: var(--primary);
       border-color: var(--primary);
       color: white;
     }
-    
+
     .page-info {
       font-size: 13px;
       color: var(--muted);
     }
-    
+
     /* 空状态 */
     .empty-state {
       text-align: center;
       padding: 60px 20px;
       color: var(--muted);
     }
-    
+
     .empty-icon {
       font-size: 64px;
       margin-bottom: 16px;
     }
-    
+
     .empty-title {
       font-size: 18px;
       color: var(--text);
       margin-bottom: 8px;
     }
-    
+
     .empty-desc {
       font-size: 14px;
     }
-    
+
     /* 加载状态 */
     .loading-state {
       text-align: center;
@@ -443,7 +453,7 @@ export class EcomAgentSourcing extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    // 不用 await，让渲染先进行
+    // 不用 await,让渲染先进行
     this.loadStats();
     this.loadSourcing();
   }
@@ -465,12 +475,12 @@ export class EcomAgentSourcing extends LitElement {
       params.set('limit', '20');
       if (this.search) params.set('search', this.search);
       if (this.ecomCode) params.set('ecom_code', this.ecomCode);
-      
+
       console.log('[Sourcing] 请求:', `/api/sourcing/list?${params}`);
       const response = await fetch(`/api/sourcing/list?${params}`);
       const data = await response.json();
       console.log('[Sourcing] 响应:', data);
-      
+
       this.sourcingList = data.data || [];
       this.total = data.pagination?.total || 0;
       this.pages = data.pagination?.pages || 0;
@@ -509,8 +519,8 @@ export class EcomAgentSourcing extends LitElement {
   }
 
   private async _deleteSourcing(ecomCode: string, offerId: string) {
-    if (!confirm('确定删除此货源记录？')) return;
-    
+    if (!confirm('确定删除此货源记录?')) return;
+
     try {
       await fetch(`/api/sourcing/${ecomCode}/${offerId}`, { method: 'DELETE' });
       await Promise.all([this.loadStats(), this.loadSourcing()]);
@@ -523,28 +533,20 @@ export class EcomAgentSourcing extends LitElement {
     if (url) window.open(url, '_blank');
   }
 
-  private _showModal(type: 'video' | 'detail', item: any) {
-    console.log('[Sourcing] _showModal called:', type, item);
-    this.modalType = type;
-    this.modalItem = item;
-    this.showModal = true;
+  // 旧的生成弹窗(已弃用,保留兼容)
+  // private _showModal(type: 'video' | 'detail', item: any) { ... }
+
+  private _showAssetManager(item: any) {
+    console.log('[Sourcing] _showAssetManager called:', item);
+    this.assetManagerItem = item;
+    this.showAssetManager = true;
     this.requestUpdate();
   }
 
-  private _closeModal() {
-    console.log('[Sourcing] _closeModal called');
-    this.showModal = false;
-    this.modalType = '';
-    this.modalItem = null;
+  private _closeAssetManager() {
+    this.showAssetManager = false;
+    this.assetManagerItem = null;
     this.requestUpdate();
-  }
-
-  private _confirmModal() {
-    // TODO: 实际功能待开发
-    console.log(`[Sourcing] 确认生成: ${this.modalType}`, this.modalItem);
-    this._closeModal();
-    // 显示提示
-    alert(this.modalType === 'video' ? '视频生成功能开发中...' : '详情图生成功能开发中...');
   }
 
   // tiktokUploading and tiktokResult used for future UI enhancement
@@ -553,29 +555,29 @@ export class EcomAgentSourcing extends LitElement {
 
   private async _uploadToTikTok(item: any) {
     console.log('[Sourcing] _uploadToTikTok called, item:', item);
-    
+
     // 检查并自动启动 Chrome
     try {
       console.log('[Sourcing] Checking TikTok connection...');
       const statusRes = await fetch('/api/tiktok/status');
       const status = await statusRes.json();
       console.log('[Sourcing] TikTok status:', status);
-      
+
       if (!status.connected) {
         // 尝试启动 Chrome
         console.log('[Sourcing] Chrome not running, starting...');
         const ensureRes = await fetch('/api/tiktok/ensure-chrome', { method: 'POST' });
         const ensureData = await ensureRes.json();
         console.log('[Sourcing] Ensure Chrome result:', ensureData);
-        
+
         if (!ensureRes.ok) {
           alert('Failed to start Chrome. Please start manually.');
           return;
         }
-        
+
         // 等待 Chrome 启动
         await new Promise(r => setTimeout(r, 2000));
-        
+
         // 打开登录页面
         const loginRes = await fetch('/api/tiktok/open-login', { method: 'POST' });
         if (loginRes.ok) {
@@ -589,19 +591,19 @@ export class EcomAgentSourcing extends LitElement {
       return;
     }
 
-    // 直接上传，不使用 confirm
+    // 直接上传,不使用 confirm
     console.log('[Sourcing] 开始上传到 TikTok:', item.ecom_code);
     // this.tiktokUploading = true;
     // this.requestUpdate();
-    
+
     try {
       const response = await fetch(`/api/tiktok/upload/${item.ecom_code}`, { method: 'POST' });
       const result = await response.json();
       console.log('[Sourcing] 上传结果:', result);
-      
+
       // this.tiktokUploading = false;
       // this.requestUpdate();
-      
+
       if (result.success) {
         alert(`上传成功!\n请在 TikTok Shop 后台检查草稿商品`);
       } else {
@@ -611,39 +613,28 @@ export class EcomAgentSourcing extends LitElement {
       console.error('[Sourcing] 上传失败:', e);
       // this.tiktokUploading = false;
       // this.requestUpdate();
-      alert('上传失败，请检查服务器连接');
+      alert('上传失败,请检查服务器连接');
     }
   }
 
   private _renderModal() {
-    if (!this.showModal) return null;
-    
-    const icon = this.modalType === 'video' ? '🎬' : '🖼️';
-    const title = this.modalType === 'video' ? '生成宣传视频' : '生成详情图';
-    const desc = this.modalType === 'video' 
-      ? '将使用货源商品信息自动生成宣传视频，用于社交平台推广'
-      : '将使用货源商品详情自动生成电商详情图，用于商品上架';
-    
+    // 旧的生成弹窗已弃用,返回空
+    return null;
+  }
+
+  private _renderAssetManager() {
+    if (!this.showAssetManager) return null;
+
     return html`
       <div class="modal-overlay" @click=${(e: Event) => {
-        if (e.target === e.currentTarget) this._closeModal();
+        if (e.target === e.currentTarget) this._closeAssetManager();
       }}>
-        <div class="modal-content">
-          <div class="modal-icon">${icon}</div>
-          <div class="modal-title">${title}</div>
-          <div class="modal-desc">${desc}</div>
-          <div class="modal-product">
-            <img 
-              class="modal-product-thumb" 
-              src=${this.modalItem?.image_url || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><rect fill="%23ddd" width="40" height="40"/></svg>'}
-              onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><rect fill=%22%23ddd%22 width=%2240%22 height=%2240%22/></svg>'"
-            >
-            <div class="modal-product-title">${this.modalItem?.title || '未知商品'}</div>
-          </div>
-          <div class="modal-buttons">
-            <button class="modal-btn modal-btn-cancel" @click=${this._closeModal}>取消</button>
-            <button class="modal-btn modal-btn-confirm" @click=${this._confirmModal}>确认生成</button>
-          </div>
+        <div class="modal-content" style="max-width: 500px;">
+          <asset-generator
+            .ecomCode=${this.assetManagerItem?.ecom_code}
+            .item=${this.assetManagerItem}
+            @close=${this._closeAssetManager}
+          ></asset-generator>
         </div>
       </div>
     `;
@@ -651,23 +642,23 @@ export class EcomAgentSourcing extends LitElement {
 
   private _renderPagination() {
     if (this.pages <= 1) return null;
-    
+
     const buttons = [];
     const maxVisible = 5;
     let start = Math.max(1, this.page - Math.floor(maxVisible / 2));
     let end = Math.min(this.pages, start + maxVisible - 1);
-    
+
     if (end - start < maxVisible - 1) {
       start = Math.max(1, end - maxVisible + 1);
     }
-    
+
     // 上一页
     buttons.push(html`
       <button class="page-btn" ?disabled=${this.page === 1} @click=${() => this._onPageChange(this.page - 1)}>
         ‹
       </button>
     `);
-    
+
     // 页码
     for (let i = start; i <= end; i++) {
       buttons.push(html`
@@ -676,14 +667,14 @@ export class EcomAgentSourcing extends LitElement {
         </button>
       `);
     }
-    
+
     // 下一页
     buttons.push(html`
       <button class="page-btn" ?disabled=${this.page === this.pages} @click=${() => this._onPageChange(this.page + 1)}>
         ›
       </button>
     `);
-    
+
     return html`
       <div class="pagination">
         <span class="page-info">共 ${this.total} 条</span>
@@ -694,7 +685,7 @@ export class EcomAgentSourcing extends LitElement {
 
   render() {
     console.log('[Sourcing] render called, loading=', this.loading, 'list=', this.sourcingList.length);
-    
+
     if (this.loading) {
       return html`<div class="loading-state">加载中...</div>`;
     }
@@ -715,7 +706,7 @@ export class EcomAgentSourcing extends LitElement {
           <div class="stat-label">今日采集</div>
         </div>
       </div>
-      
+
       <!-- 搜索栏 -->
       <div class="toolbar">
         <div class="field-group">
@@ -737,7 +728,7 @@ export class EcomAgentSourcing extends LitElement {
           </div>
         ` : ''}
       </div>
-      
+
       <!-- 货源列表 -->
       ${this.sourcingList.length === 0 ? html`
         <div class="empty-state">
@@ -763,8 +754,8 @@ export class EcomAgentSourcing extends LitElement {
                 <tr>
                   <td>
                     <div class="product-cell">
-                      <img 
-                        class="product-thumb" 
+                      <img
+                        class="product-thumb"
                         src=${item.local_image_path ? `/images/${item.local_image_path}` : (item.image_url || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"><rect fill="%23ddd" width="50" height="50"/></svg>')}
                         onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22><rect fill=%22%23ddd%22 width=%2250%22 height=%2250%22/></svg>'"
                       >
@@ -782,11 +773,8 @@ export class EcomAgentSourcing extends LitElement {
                     <button class="action-btn action-btn-tiktok" @click=${() => { console.log('[Sourcing] TikTok button clicked!'); this._uploadToTikTok(item); }}>
                       TikTok
                     </button>
-                    <button class="action-btn action-btn-video" @click=${() => this._showModal('video', item)}>
-                      视频
-                    </button>
-                    <button class="action-btn action-btn-detail" @click=${() => this._showModal('detail', item)}>
-                      详情图
+                    <button class="action-btn action-btn-asset" @click=${() => this._showAssetManager(item)}>
+                      素材
                     </button>
                     <button class="action-btn action-btn-view" @click=${() => this._openProduct(item.product_url)}>
                       查看
@@ -800,11 +788,13 @@ export class EcomAgentSourcing extends LitElement {
             </tbody>
           </table>
         </div>
-        
+
         ${this._renderPagination()}
       `}
-      
+
       ${this._renderModal()}
+
+      ${this._renderAssetManager()}
     `;
   }
 }

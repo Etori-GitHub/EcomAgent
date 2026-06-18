@@ -6,6 +6,7 @@ const PAGE_TITLES: Record<PageName, { title: string; subtitle: string }> = {
   'dashboard': { title: '数据概览', subtitle: '查看数据统计和概览' },
   'product-master': { title: '商品总库', subtitle: '统一管理所有平台商品' },
   'sourcing': { title: '货源库', subtitle: '1688货源采集与管理' },
+  'assets': { title: '素材管理', subtitle: '生成和管理商品素材' },
   'tracking': { title: '商品追踪', subtitle: '追踪特定商品的价格、销量变化' },
   'cross-platform': { title: '跨平台分析', subtitle: '对比分析不同平台数据' },
   'today-top': { title: '今日TOP榜', subtitle: '各平台热销产品排行' },

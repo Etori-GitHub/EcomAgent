@@ -1,12 +1,17 @@
 """Flash Image Provider - Google Gemini"""
 import json
 import time
+import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Union
 from PIL import Image
 from google import genai
 from google.genai import types
 from .base import ImageProvider
+
+# 强制禁用 stdout 缓冲
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(line_buffering=True)
 
 
 class FlashImageProvider(ImageProvider):
@@ -37,13 +42,22 @@ class FlashImageProvider(ImageProvider):
         aspect_ratio: str = "1:1",
         resolution: str = "2K",
         input_image: Optional[Union[str, Image.Image]] = None,
-        max_retries: int = 5
+        max_retries: int = 10
     ) -> Dict:
-        """生成单张图片，带重试机制 - VPN不稳定，增加冗余"""
+        """生成单张图片，带指数退避重试机制 - VPN不稳定，增加冗余"""
         last_error = None
         
         for attempt in range(max_retries):
             try:
+                # 指数退避: 2s -> 4s -> 8s -> 16s -> 32s -> 60s（最大）
+                if attempt > 0:
+                    wait_time = min(2 ** attempt, 60)  # 最大等待 60s
+                    print(f"  [FlashImage Retry] Waiting {wait_time}s before retry...")
+                    time.sleep(wait_time)
+                
+                print(f"  [FlashImage] Attempt {attempt + 1}/{max_retries}...")
+                sys.stdout.flush()  # 强制刷新
+                
                 contents = [prompt]
                 if input_image:
                     if isinstance(input_image, str):
@@ -66,25 +80,27 @@ class FlashImageProvider(ImageProvider):
                     if image := part.as_image():
                         Path(output_path).parent.mkdir(parents=True, exist_ok=True)
                         image.save(output_path)
+                        print(f"  [FlashImage] Success! Image saved to {output_path}")
                         return {
                             "status": "success",
                             "output_path": output_path,
                             "provider": "flash_image"
                         }
                 
-                return {"status": "error", "error": {"message": "No image generated"}}
+                # 没有 image part，可能是文本响应
+                text_parts = [part.text for part in response.parts if hasattr(part, 'text') and part.text]
+                if text_parts:
+                    last_error = f"API returned text instead of image: {text_parts[0][:200]}"
+                else:
+                    last_error = "No image generated in response"
+                print(f"  [FlashImage] No image in response")
                     
             except Exception as e:
                 last_error = str(e)
-                error_msg = f"Attempt {attempt + 1}/{max_retries} failed: {last_error}"
-                print(f"  [FlashImage Retry] {error_msg}")
-                
-                if attempt < max_retries - 1:
-                    wait_time = 5 * (attempt + 1)
-                    print(f"  [FlashImage Retry] Waiting {wait_time}s before retry...")
-                    time.sleep(wait_time)
+                print(f"  [FlashImage Retry] Attempt {attempt + 1}/{max_retries} failed: {last_error}")
         
         # 所有重试都失败
+        print(f"  [FlashImage] All {max_retries} attempts failed")
         return {
             "status": "error",
             "error": {"message": f"All {max_retries} attempts failed. Last error: {last_error}"},
