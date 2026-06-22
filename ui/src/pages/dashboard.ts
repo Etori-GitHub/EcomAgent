@@ -83,6 +83,7 @@ export class EaDashboard extends LitElement {
   @state() private categories: { amazon: Category[]; tiktok: Category[] } = { amazon: [], tiktok: [] };
   @state() private categoriesLoading = false;
   @state() private fetchTaskStatus: { amazon: string; tiktok: string } = { amazon: '', tiktok: '' };
+  @state() private importStatus: { amazon: string; tiktok: string } = { amazon: '', tiktok: '' };
 
   connectedCallback() {
     super.connectedCallback();
@@ -179,6 +180,26 @@ export class EaDashboard extends LitElement {
     } catch (e) {
       alert(`启动失败: ${e}`);
       this.fetchTaskStatus = { ...this.fetchTaskStatus, [platform]: '' };
+    }
+  }
+
+  private async _importData(platform: 'amazon' | 'tiktok') {
+    this.importStatus = { ...this.importStatus, [platform]: 'running' };
+    this.requestUpdate();
+    try {
+      const response = await fetch('/api/tasks/data-import', { method: 'POST' });
+      const data = await response.json();
+      if (data.success) {
+        // 导入成功后刷新统计数据
+        await this.loadStats();
+      } else {
+        alert(data.message || '导入失败');
+      }
+    } catch (e) {
+      alert(`导入失败: ${e}`);
+    } finally {
+      this.importStatus = { ...this.importStatus, [platform]: '' };
+      this.requestUpdate();
     }
   }
 
@@ -282,9 +303,11 @@ export class EaDashboard extends LitElement {
             desc="商品总数"
             color="accent"
           >
-            <div style="font-size: 13px; color: var(--muted);">
-              抓取记录: ${amazon.sales.toLocaleString()}<br>
-              今日新增: ${amazon.today.toLocaleString()}
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+              <span style="font-size: 13px; color: var(--muted);">今日新增: ${amazon.today.toLocaleString()}</span>
+              <button class="update-btn amazon" @click=${() => this._importData('amazon')} ?disabled=${this.importStatus.amazon === 'running'}>
+                ${this.importStatus.amazon === 'running' ? '导入中...' : '更新数据'}
+              </button>
             </div>
           </ea-stat-card>
           ${this._renderFetchPanel('amazon')}
@@ -298,9 +321,11 @@ export class EaDashboard extends LitElement {
             desc="商品总数"
             color="info"
           >
-            <div style="font-size: 13px; color: var(--muted);">
-              抓取记录: ${tiktok.sales.toLocaleString()}<br>
-              今日新增: ${tiktok.today.toLocaleString()}
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+              <span style="font-size: 13px; color: var(--muted);">今日新增: ${tiktok.today.toLocaleString()}</span>
+              <button class="update-btn tiktok" @click=${() => this._importData('tiktok')} ?disabled=${this.importStatus.tiktok === 'running'}>
+                ${this.importStatus.tiktok === 'running' ? '导入中...' : '更新数据'}
+              </button>
             </div>
           </ea-stat-card>
           ${this._renderFetchPanel('tiktok')}
