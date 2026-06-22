@@ -31,8 +31,7 @@ source python/bin/activate
 
 # 安装依赖
 echo "安装依赖..."
-pip install --upgrade pip
-pip install -r requirements.txt
+pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r requirements.txt
 
 # 安装 Playwright 浏览器
 echo ""
