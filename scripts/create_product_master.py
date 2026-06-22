@@ -20,7 +20,7 @@ PLATFORM_CODES = {
 
 def create_product_master_db():
     """创建商品主库"""
-    db_path = Path("C:/Users/Etroi/.openclaw/workspace/code/EcomAgent/data/product_master.db")
+    db_path = Path(__file__).parent.parent / "data" / "product_master.db"
     
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -74,7 +74,8 @@ def get_or_create_product(platform: str, platform_id: str, name: str,
     获取或创建商品记录
     返回 id (INTEGER)
     """
-    db_path = Path("C:/Users/Etroi/.openclaw/workspace/code/EcomAgent/data/product_master.db")
+    # 使用相对路径
+    db_path = Path(__file__).parent.parent / "data" / "product_master.db"
     
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -140,8 +141,10 @@ def get_or_create_product(platform: str, platform_id: str, name: str,
 def migrate_existing_products():
     """迁移现有商品数据到商品主库"""
     
+    base_dir = Path(__file__).parent.parent / "data"
+    
     # 迁移 Amazon 商品
-    amazon_db = Path("C:/Users/Etroi/.openclaw/workspace/code/EcomAgent/data/amazon.db")
+    amazon_db = base_dir / "amazon.db"
     if amazon_db.exists():
         conn_amazon = sqlite3.connect(amazon_db)
         cursor_amazon = conn_amazon.cursor()
@@ -168,7 +171,7 @@ def migrate_existing_products():
         print(f"✅ Amazon products migrated")
     
     # 迁移 TikTok 商品
-    tiktok_db = Path("C:/Users/Etroi/.openclaw/workspace/code/EcomAgent/data/tiktok.db")
+    tiktok_db = base_dir / "tiktok.db"
     if tiktok_db.exists():
         conn_tiktok = sqlite3.connect(tiktok_db)
         cursor_tiktok = conn_tiktok.cursor()
