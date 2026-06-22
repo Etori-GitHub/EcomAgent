@@ -1,8 +1,40 @@
 @echo off
+chcp 65001 >nul
 cd /d %~dp0
 echo ============================================================
 echo EcomAgent Data Viewer
 echo ============================================================
+echo.
+
+echo [CHECKING] Database initialization...
+set NEED_INIT=0
+
+if not exist "data\amazon.db" (
+    echo [MISSING] amazon.db
+    set NEED_INIT=1
+)
+if not exist "data\tiktok.db" (
+    echo [MISSING] tiktok.db
+    set NEED_INIT=1
+)
+if not exist "data\product_master.db" (
+    echo [MISSING] product_master.db
+    set NEED_INIT=1
+)
+if not exist "data\categories.db" (
+    echo [MISSING] categories.db
+    set NEED_INIT=1
+)
+
+if "%NEED_INIT%"=="1" (
+    echo.
+    echo [INIT] Initializing databases...
+    python\python.exe scripts\init_all_tables.py
+    python\python.exe scripts\init_category_tables.py
+    echo [OK] Databases initialized
+) else (
+    echo [OK] All databases exist
+)
 echo.
 
 set CHROME_PATH=

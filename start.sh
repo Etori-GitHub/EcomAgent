@@ -19,6 +19,38 @@ if [ -z "$PYTHON_CMD" ]; then
     PYTHON_CMD="python3"
 fi
 
+# 检查数据库初始化
+echo "[CHECKING] Database initialization..."
+NEED_INIT=0
+
+if [ ! -f "data/amazon.db" ]; then
+    echo "[MISSING] amazon.db"
+    NEED_INIT=1
+fi
+if [ ! -f "data/tiktok.db" ]; then
+    echo "[MISSING] tiktok.db"
+    NEED_INIT=1
+fi
+if [ ! -f "data/product_master.db" ]; then
+    echo "[MISSING] product_master.db"
+    NEED_INIT=1
+fi
+if [ ! -f "data/categories.db" ]; then
+    echo "[MISSING] categories.db"
+    NEED_INIT=1
+fi
+
+if [ "$NEED_INIT" -eq 1 ]; then
+    echo ""
+    echo "[INIT] Initializing databases..."
+    $PYTHON_CMD scripts/init_all_tables.py
+    $PYTHON_CMD scripts/init_category_tables.py
+    echo "[OK] Databases initialized"
+else
+    echo "[OK] All databases exist"
+fi
+echo ""
+
 # 查找 Chrome
 CHROME_PATH=""
 if [ -f "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ]; then
