@@ -10,8 +10,18 @@ EcomAgent 每日数据抓取任务
 
 import subprocess
 import sys
+import os
 from pathlib import Path
 from datetime import datetime
+
+# Windows UTF-8 兼容
+if sys.platform == 'win32':
+    if sys.stdout.encoding != 'utf-8':
+        sys.stdout.reconfigure(encoding='utf-8')
+    if sys.stderr.encoding != 'utf-8':
+        sys.stderr.reconfigure(encoding='utf-8')
+    # 子进程也用 UTF-8
+    os.environ['PYTHONIOENCODING'] = 'utf-8'
 
 BASE_DIR = Path(__file__).parent.parent
 
@@ -33,10 +43,21 @@ def run_script(script_path: Path, args: list = None, desc: str = ""):
         cmd.extend(args)
     
     try:
-        result = subprocess.run(cmd, cwd=str(BASE_DIR), capture_output=False)
+        # Windows 下设置环境变量确保 UTF-8
+        env = os.environ.copy()
+        env['PYTHONIOENCODING'] = 'utf-8'
+        env['PYTHONUTF8'] = '1'
+        
+        result = subprocess.run(
+            cmd, 
+            cwd=str(BASE_DIR), 
+            env=env,
+            capture_output=False
+        )
         return result.returncode == 0
     except Exception as e:
         print(f"[ERROR] 运行失败: {e}")
+        return False
         return False
 
 

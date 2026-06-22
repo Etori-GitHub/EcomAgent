@@ -12,12 +12,35 @@ TikTok Shop 热销榜单抓取脚本
 """
 
 import json
+import os
 import random
 import re
 import sys
 import io
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+# Windows UTF-8 兼容
+if sys.platform == 'win32':
+    # 修复控制台编码
+    if sys.stdout.encoding != 'utf-8':
+        sys.stdout.reconfigure(encoding='utf-8')
+    if sys.stderr.encoding != 'utf-8':
+        sys.stderr.reconfigure(encoding='utf-8')
+
+
+def get_chrome_user_data_dir():
+    """获取 Chrome 用户数据目录（跨平台）"""
+    
+    if sys.platform == 'win32':
+        # Windows: 使用 Profile 1
+        return r"C:\Users\Etroi\AppData\Local\Google\Chrome\User Data\Profile 1"
+    elif sys.platform == 'darwin':
+        # macOS: 使用默认配置
+        return os.path.expanduser("~/Library/Application Support/Google/Chrome")
+    else:
+        # Linux: 使用默认配置
+        return os.path.expanduser("~/.config/google-chrome")
 
 # Windows UTF-8 兼容
 if sys.platform == 'win32':
@@ -258,7 +281,10 @@ def fetch_and_save_category(category, page):
     output_dir = base_dir / "output" / "scraping"
     output_dir.mkdir(parents=True, exist_ok=True)
     
-    now = datetime.now()
+    # 强制使用东八区北京时间
+    from datetime import timedelta, timezone
+    beijing_tz = timezone(timedelta(hours=8))
+    now = datetime.now(beijing_tz)
     timestamp = now.strftime("%Y%m%d_%H%M%S")
     
     # 生成文件名
@@ -346,8 +372,12 @@ def fetch_all_categories():
     print(f"[INFO] 开始抓取 TikTok Shop 所有分类...")
     
     with sync_playwright() as p:
-        # 使用 persistent context 复用登录状态
-        user_data_dir = r"C:\Users\Etroi\AppData\Local\Google\Chrome\User Data\Profile 1"
+        # 使用 persistent context 复用登录状态（跨平台）
+        user_data_dir = get_chrome_user_data_dir()
+        print(f"[INFO] Chrome 用户数据目录: {user_data_dir}")
+        
+        if not os.path.exists(user_data_dir):
+            print(f"[WARN] Chrome 用户数据目录不存在，将使用空白配置")
         
         browser = p.chromium.launch_persistent_context(
             user_data_dir=user_data_dir,

@@ -15,8 +15,11 @@ from typing import Optional, Tuple
 
 # Windows UTF-8 兼容
 if sys.platform == 'win32':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+    # 修复控制台编码
+    if sys.stdout.encoding != 'utf-8':
+        sys.stdout.reconfigure(encoding='utf-8')
+    if sys.stderr.encoding != 'utf-8':
+        sys.stderr.reconfigure(encoding='utf-8')
 
 # 导入模块
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "scripts"))
@@ -56,7 +59,10 @@ class DataImporter:
         if match:
             d = match.group(1)
             return f"{d[0:4]}-{d[4:6]}-{d[6:8]}"
-        return datetime.now().strftime("%Y-%m-%d")
+        # 强制使用东八区时间
+        from datetime import datetime, timedelta, timezone
+        beijing_tz = timezone(timedelta(hours=8))
+        return datetime.now(beijing_tz).strftime("%Y-%m-%d")
     
     def record_event(self, cursor, product_id: int, event_type: str, old_value: str = None, new_value: str = None):
         """记录事件"""

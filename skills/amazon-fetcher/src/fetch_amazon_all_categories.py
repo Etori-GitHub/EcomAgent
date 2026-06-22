@@ -17,8 +17,11 @@ from pathlib import Path
 
 # Windows UTF-8 兼容
 if sys.platform == 'win32':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+    # 修复控制台编码
+    if sys.stdout.encoding != 'utf-8':
+        sys.stdout.reconfigure(encoding='utf-8')
+    if sys.stderr.encoding != 'utf-8':
+        sys.stderr.reconfigure(encoding='utf-8')
 
 from playwright.sync_api import sync_playwright
 
@@ -319,7 +322,10 @@ def fetch_and_save_category(category, page, pages=2):
     output_dir = base_dir / "output" / "scraping"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    now = datetime.now()
+    # 强制使用东八区北京时间
+    from datetime import timedelta, timezone
+    beijing_tz = timezone(timedelta(hours=8))
+    now = datetime.now(beijing_tz)
     timestamp = now.strftime("%Y%m%d_%H%M%S")
 
     # 生成文件名

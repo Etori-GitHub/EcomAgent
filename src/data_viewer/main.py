@@ -116,7 +116,10 @@ def get_stats() -> Dict[str, Any]:
         "product_master": {"total": 0, "amazon": 0, "tiktok": 0, "today": 0, "last_updated": None}
     }
 
-    today = datetime.now().strftime("%Y-%m-%d")
+    # 强制使用东八区北京时间
+    from datetime import datetime, timedelta, timezone
+    beijing_tz = timezone(timedelta(hours=8))
+    today = datetime.now(beijing_tz).strftime("%Y-%m-%d")
 
     # Amazon 统计
     amazon_db = DATA_DIR / "amazon.db"
@@ -954,11 +957,11 @@ async def get_amazon_top_by_category():
     conn = get_db_connection(db_path)
     cursor = conn.cursor()
 
-    # 获取今天和昨天的日期
-    today = datetime.now().strftime("%Y-%m-%d")
-    # 计算昨天的日期
-    from datetime import timedelta
-    yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+    # 强制使用东八区北京时间
+    from datetime import datetime, timedelta, timezone
+    beijing_tz = timezone(timedelta(hours=8))
+    today = datetime.now(beijing_tz).strftime("%Y-%m-%d")
+    yesterday = (datetime.now(beijing_tz) - timedelta(days=1)).strftime("%Y-%m-%d")
 
     # 获取所有分类
     cursor.execute("SELECT DISTINCT category FROM products WHERE category IS NOT NULL ORDER BY category")
