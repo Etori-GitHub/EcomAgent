@@ -81,7 +81,30 @@ python -m src.data_viewer.main
 python skills/amazon-fetcher/src/fetch_amazon_main_categories.py
 ```
 
-### TikTok 抓取
+### 每日数据抓取
+
+推荐使用 `daily_fetch.py` 统一入口：
+
+```bash
+# 完整流程（抓取 + 导入 + 图片下载）
+python scripts/daily_fetch.py all
+
+# 只抓取 TikTok
+python scripts/daily_fetch.py tiktok
+
+# 只抓取 Amazon
+python scripts/daily_fetch.py amazon
+
+# 只导入数据（不抓取）
+python scripts/daily_fetch.py import
+
+# 只下载图片
+python scripts/daily_fetch.py images
+```
+
+**注意**：`tiktok` 和 `amazon` 参数**只抓取不导入**，需要单独运行 `import` 或直接用 `all`。
+
+### TikTok 抓取（手动模式）
 
 需先启动 Chrome 调试端口：
 
@@ -96,10 +119,10 @@ chrome.exe --remote-debugging-port=9222 --user-data-dir="C:\chrome-tiktok"
 然后运行：
 
 ```bash
-python skills/tiktok-fetcher/src/fetch_tiktok_cdp.py
+python skills/tiktok-fetcher/src/fetch_tiktok_categories.py
 ```
 
-### 数据导入
+**注意**：手动模式需要单独导入数据：
 
 ```bash
 python skills/db-importer/src/import_to_db.py
