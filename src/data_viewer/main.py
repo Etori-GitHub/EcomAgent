@@ -1864,15 +1864,19 @@ task_status = {
     "data_import": {"running": False, "last_run": None, "message": ""}
 }
 
-def run_script_async(script_path: str, task_name: str):
+def run_script_async(script_path: str, task_name: str, args: list = None):
     """异步运行脚本"""
     global task_status
     task_status[task_name]["running"] = True
     task_status[task_name]["message"] = "正在执行..."
 
     try:
+        cmd = ["python", script_path]
+        if args:
+            cmd.extend(args)
+        
         result = subprocess.run(
-            ["python", script_path],
+            cmd,
             capture_output=True,
             text=True,
             timeout=600,
@@ -1894,35 +1898,37 @@ def run_script_async(script_path: str, task_name: str):
 
 @app.post("/api/tasks/amazon-fetch")
 async def trigger_amazon_fetch():
-    """触发 Amazon 数据抓取"""
+    """触发 Amazon 数据抓取（完成后自动导入）"""
     global task_status
 
     if task_status["amazon_fetch"]["running"]:
         return {"success": False, "message": "Amazon 抓取任务正在运行中"}
 
-    script_path = str(BASE_DIR / "skills" / "amazon-fetcher" / "src" / "fetch_amazon_all_categories.py")
+    # 使用 daily_fetch.py 完成抓取+导入
+    script_path = str(BASE_DIR / "scripts" / "daily_fetch.py")
 
     # 启动后台线程
-    thread = threading.Thread(target=run_script_async, args=(script_path, "amazon_fetch"))
+    thread = threading.Thread(target=run_script_async, args=(script_path, "amazon_fetch", ["amazon", "import"]))
     thread.start()
 
-    return {"success": True, "message": "Amazon 抓取任务已启动"}
+    return {"success": True, "message": "Amazon 抓取任务已启动（完成后自动导入）"}
 
 
 @app.post("/api/tasks/tiktok-fetch")
 async def trigger_tiktok_fetch():
-    """触发 TikTok 数据抓取"""
+    """触发 TikTok 数据抓取（完成后自动导入）"""
     global task_status
 
     if task_status["tiktok_fetch"]["running"]:
         return {"success": False, "message": "TikTok 抓取任务正在运行中"}
 
-    script_path = str(BASE_DIR / "skills" / "tiktok-fetcher" / "src" / "fetch_tiktok_categories.py")
+    # 使用 daily_fetch.py 完成抓取+导入
+    script_path = str(BASE_DIR / "scripts" / "daily_fetch.py")
 
-    thread = threading.Thread(target=run_script_async, args=(script_path, "tiktok_fetch"))
+    thread = threading.Thread(target=run_script_async, args=(script_path, "tiktok_fetch", ["tiktok", "import"]))
     thread.start()
 
-    return {"success": True, "message": "TikTok 抓取任务已启动"}
+    return {"success": True, "message": "TikTok 抓取任务已启动（完成后自动导入）"}
 
 
 @app.post("/api/tasks/data-import")

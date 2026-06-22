@@ -95,8 +95,8 @@ def main():
         else:
             print(f"[SKIP] TikTok 抓取脚本不存在")
     
-    # 数据导入
-    if args.platform in ['import', 'all'] and not args.skip_import:
+    # 数据导入（tiktok/amazon 也触发导入）
+    if args.platform in ['import', 'all', 'tiktok', 'amazon'] and not args.skip_import:
         if DB_IMPORTER.exists():
             if not run_script(DB_IMPORTER, desc="数据导入数据库"):
                 success = False

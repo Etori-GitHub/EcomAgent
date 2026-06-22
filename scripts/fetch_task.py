@@ -8,11 +8,21 @@ import json
 import sqlite3
 import subprocess
 import sys
+import os
 import time
 import random
 from datetime import datetime, date
 from pathlib import Path
 from typing import Optional, List, Dict, Any
+
+# Windows UTF-8 兼容
+if sys.platform == 'win32':
+    if sys.stdout.encoding != 'utf-8':
+        sys.stdout.reconfigure(encoding='utf-8')
+    if sys.stderr.encoding != 'utf-8':
+        sys.stderr.reconfigure(encoding='utf-8')
+    os.environ['PYTHONIOENCODING'] = 'utf-8'
+    os.environ['PYTHONUTF8'] = '1'
 
 BASE_DIR = Path(__file__).parent.parent
 DATA_DIR = BASE_DIR / "data"
@@ -396,12 +406,20 @@ class FetchTask:
         """导入数据到数据库"""
         import_script = BASE_DIR / 'skills' / 'db-importer' / 'src' / 'import_to_db.py'
         
+        # 设置 UTF-8 环境
+        env = os.environ.copy()
+        env['PYTHONIOENCODING'] = 'utf-8'
+        env['PYTHONUTF8'] = '1'
+        
         result = subprocess.run(
             ['python', str(import_script), '--file', json_file],
             capture_output=True,
             text=True,
             cwd=str(BASE_DIR),
-            timeout=120
+            env=env,
+            timeout=120,
+            encoding='utf-8',
+            errors='replace'
         )
         
         if result.returncode == 0:
