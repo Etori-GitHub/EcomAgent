@@ -1904,11 +1904,10 @@ async def trigger_amazon_fetch():
     if task_status["amazon_fetch"]["running"]:
         return {"success": False, "message": "Amazon 抓取任务正在运行中"}
 
-    # 使用 daily_fetch.py 完成抓取+导入
+    # 使用 daily_fetch.py amazon（已改为自动导入）
     script_path = str(BASE_DIR / "scripts" / "daily_fetch.py")
 
-    # 启动后台线程
-    thread = threading.Thread(target=run_script_async, args=(script_path, "amazon_fetch", ["amazon", "import"]))
+    thread = threading.Thread(target=run_script_async, args=(script_path, "amazon_fetch", ["amazon"]))
     thread.start()
 
     return {"success": True, "message": "Amazon 抓取任务已启动（完成后自动导入）"}
@@ -1922,10 +1921,10 @@ async def trigger_tiktok_fetch():
     if task_status["tiktok_fetch"]["running"]:
         return {"success": False, "message": "TikTok 抓取任务正在运行中"}
 
-    # 使用 daily_fetch.py 完成抓取+导入
+    # 使用 daily_fetch.py tiktok（已改为自动导入）
     script_path = str(BASE_DIR / "scripts" / "daily_fetch.py")
 
-    thread = threading.Thread(target=run_script_async, args=(script_path, "tiktok_fetch", ["tiktok", "import"]))
+    thread = threading.Thread(target=run_script_async, args=(script_path, "tiktok_fetch", ["tiktok"]))
     thread.start()
 
     return {"success": True, "message": "TikTok 抓取任务已启动（完成后自动导入）"}
