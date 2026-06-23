@@ -7,8 +7,9 @@ config/backups/
 data/*.db
 !data/.gitkeep
 
-# Images
+# Images and Assets
 data/images/
+data/assets/
 
 # Python
 __pycache__/
@@ -36,6 +37,9 @@ output/scraping/*.json
 
 # Test
 test/
+
+# Test scripts in root
+test*.py
 
 # Skills old files
 skills/*/src/old/

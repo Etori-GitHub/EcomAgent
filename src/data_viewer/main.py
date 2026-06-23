@@ -69,6 +69,12 @@ async def startup_event():
         
         # 检查是否有 ecomagent 任务
         try:
+            # 先停止 Gateway，避免数据库锁定
+            print("[STARTUP] Stopping Gateway to check database...")
+            stop_openclaw_gateway()
+            import time
+            time.sleep(2)
+            
             conn = sqlite3.connect(openclaw_db)
             cursor = conn.cursor()
             cursor.execute("SELECT COUNT(*) FROM cron_jobs WHERE name LIKE 'ecomagent-%'")
@@ -77,10 +83,6 @@ async def startup_event():
             
             if count == 0:
                 print("[STARTUP] No ecomagent tasks found, creating...")
-                # 停止 Gateway
-                stop_openclaw_gateway()
-                import time
-                time.sleep(2)
                 
                 # 创建任务
                 settings = get_openclaw_settings()
@@ -99,11 +101,13 @@ async def startup_event():
                 # 等待数据库完全释放
                 time.sleep(1)
                 
-                # 启动 Gateway
-                start_openclaw_gateway()
                 print("[STARTUP] OpenClaw configuration completed")
             else:
                 print(f"[STARTUP] Found {count} ecomagent tasks, skip creation")
+            
+            # 启动 Gateway
+            start_openclaw_gateway()
+            
         except Exception as e:
             print(f"[STARTUP] Error checking OpenClaw: {e}")
             # 确保连接关闭
@@ -112,6 +116,8 @@ async def startup_event():
                     conn.close()
                 except:
                     pass
+            # 启动 Gateway
+            start_openclaw_gateway()
     
     asyncio.create_task(check_openclaw())
 
@@ -1707,19 +1713,20 @@ TASK_NAME_MAP = {
 }
 
 # 任务定义
+# 任务定义（路径在运行时动态获取）
 TASK_DEFINITIONS = {
     "amazon_fetch": {
         "schedule_kind": "cron",
         "schedule_expr": "0 3 * * *",
         "schedule_tz": "Asia/Shanghai",
         "description": "EcomAgent 每日 Amazon 数据抓取",
-        "message": f"请执行 EcomAgent Amazon 每日数据抓取任务：\n\n1. 先检查配置文件 {BASE_DIR}/config/openclaw_settings.json\n2. 如果 amazon_fetch.enabled 为 false，跳过执行并报告「已禁用」\n3. 否则执行：python {BASE_DIR}/scripts/daily_fetch.py amazon\n\n执行完成后报告结果：\n- 抓取了多少商品\n- 导入了多少记录\n- 下载了多少图片"
+        "message": "请执行 EcomAgent Amazon 每日数据抓取任务：\n\n1. 先找到 EcomAgent 项目路径（通常在 ~/.openclaw/workspace/code/EcomAgent 或用户自定义路径）\n2. 检查配置文件 <项目路径>/config/openclaw_settings.json\n3. 如果 amazon_fetch.enabled 为 false，跳过执行并报告「已禁用」\n4. 否则执行：python <项目路径>/scripts/daily_fetch.py amazon\n\n执行完成后报告结果：\n- 抓取了多少商品\n- 导入了多少记录\n- 下载了多少图片"
     },
     "translation_pipeline": {
         "schedule_kind": "every",
         "every_ms": 1800000,
         "description": "EcomAgent 商品名称翻译流水线（每 30 分钟）",
-        "message": f"请执行 EcomAgent 商品名称翻译任务：\n\n1. 先检查配置文件 {BASE_DIR}/config/openclaw_settings.json\n2. 如果 translation_pipeline.enabled 为 false，跳过执行并报告「已禁用」\n3. 否则执行：python {BASE_DIR}/scripts/generate_pending_names.py\n\n4. 等待 2 分钟后检查 {BASE_DIR}/data/name_processing/processed_names.json 是否存在\n\n5. 如果存在，执行：python {BASE_DIR}/scripts/import_processed_names.py\n\n6. 报告翻译了多少商品"
+        "message": "请执行 EcomAgent 商品名称翻译任务：\n\n1. 先找到 EcomAgent 项目路径（通常在 ~/.openclaw/workspace/code/EcomAgent 或用户自定义路径）\n2. 检查配置文件 <项目路径>/config/openclaw_settings.json\n3. 如果 translation_pipeline.enabled 为 false，跳过执行并报告「已禁用」\n4. 否则执行：python <项目路径>/scripts/generate_pending_names.py\n\n5. 等待 2 分钟后检查 <项目路径>/data/name_processing/processed_names.json 是否存在\n\n6. 如果存在，执行：python <项目路径>/scripts/import_processed_names.py\n\n7. 报告翻译了多少商品"
     }
 }
 
@@ -1791,54 +1798,82 @@ def toggle_cron_job_in_db(job_name: str, enabled: bool) -> bool:
 
 
 def stop_openclaw_gateway() -> bool:
-    """停止 OpenClaw Gateway"""
+    """强制杀掉 Gateway 进程"""
     import subprocess
     import sys
+    import re
     
     try:
         if sys.platform == 'win32':
+            # Windows: 先找到 PID，再杀掉
             result = subprocess.run(
-                "openclaw gateway stop",
+                "netstat -ano | findstr :18789 | findstr LISTENING",
                 shell=True,
                 capture_output=True,
                 text=True,
-                timeout=30
+                timeout=10
             )
+            # 解析 PID
+            match = re.search(r'LISTENING\s+(\d+)', result.stdout)
+            if match:
+                pid = match.group(1)
+                kill_result = subprocess.run(
+                    f"taskkill /F /PID {pid}",
+                    shell=True,
+                    capture_output=True,
+                    text=True,
+                    timeout=10
+                )
+                print(f"[INFO] Kill gateway (PID {pid}): {kill_result.stdout.strip()}")
+            else:
+                print("[INFO] No gateway process found")
         else:
+            # macOS/Linux
             result = subprocess.run(
-                ["openclaw", "gateway", "stop"],
+                "lsof -t -i:18789",
+                shell=True,
                 capture_output=True,
                 text=True,
-                timeout=30
+                timeout=10
             )
-        return result.returncode == 0
+            if result.stdout.strip():
+                pid = result.stdout.strip().split('\n')[0]
+                subprocess.run(f"kill -9 {pid}", shell=True, timeout=10)
+                print(f"[INFO] Kill gateway (PID {pid})")
+            else:
+                print("[INFO] No gateway process found")
+        return True
     except Exception as e:
-        print(f"[ERROR] 停止 Gateway 失败: {e}")
+        print(f"[ERROR] 杀掉 Gateway 失败: {e}")
         return False
 
 
 def start_openclaw_gateway() -> bool:
-    """启动 OpenClaw Gateway"""
+    """独立启动 OpenClaw Gateway"""
     import subprocess
     import sys
+    import time
     
     try:
+        time.sleep(2)  # 等待进程完全释放
+        
         if sys.platform == 'win32':
-            result = subprocess.run(
-                "openclaw gateway start",
+            # Windows: 用 start 在新窗口启动，完全独立
+            subprocess.run(
+                'start "OpenClaw Gateway" cmd /c openclaw gateway',
                 shell=True,
-                capture_output=True,
-                text=True,
-                timeout=30
+                timeout=5
             )
+            print("[INFO] Gateway 已在新窗口独立启动")
         else:
-            result = subprocess.run(
-                ["openclaw", "gateway", "start"],
-                capture_output=True,
-                text=True,
-                timeout=30
+            # macOS: 用 nohup 独立启动
+            subprocess.run(
+                'nohup openclaw gateway > /dev/null 2>&1 &',
+                shell=True,
+                timeout=5
             )
-        return result.returncode == 0
+            print("[INFO] Gateway 已独立启动")
+        return True
     except Exception as e:
         print(f"[ERROR] 启动 Gateway 失败: {e}")
         return False
@@ -2368,6 +2403,8 @@ def run_script_async(script_path: str, task_name: str, args: list = None):
             cmd,
             capture_output=True,
             text=True,
+            encoding='utf-8',
+            errors='replace',
             timeout=600,
             cwd=str(BASE_DIR)
         )

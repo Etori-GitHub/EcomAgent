@@ -400,6 +400,17 @@ def fetch_all_categories():
         # 等待页面加载
         page.wait_for_timeout(random_wait(10000, 15000))
         
+        # 等待用户通过验证
+        print(f"\n{'='*60}")
+        print(f"[重要] 请在浏览器中完成以下操作：")
+        print(f"1. 通过机器人验证（如果有）")
+        print(f"2. 确认页面正常显示商品")
+        print(f"3. 完成后按 Enter 继续抓取...")
+        print(f"{'='*60}\n")
+        input("按 Enter 继续...")
+        
+        print(f"\n[INFO] 开始抓取...")
+        
         # 滚动页面
         print(f"[INFO] 滚动页面加载更多内容...")
         for i in range(5):
