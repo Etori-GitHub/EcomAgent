@@ -6,6 +6,20 @@ echo EcomAgent Data Viewer
 echo ============================================================
 echo.
 
+REM 检查 OpenClaw 安装
+set OPENCLAW_PATH=
+if exist "%USERPROFILE%\.openclaw" (
+    set "OPENCLAW_PATH=%USERPROFILE%\.openclaw"
+    echo [OK] OpenClaw detected: %OPENCLAW_PATH%
+    
+    REM 自动检查配置
+    echo [CHECKING] OpenClaw tasks configuration...
+    python\python.exe scripts\openclaw_config.py setup
+) else (
+    echo [INFO] OpenClaw not installed
+)
+echo.
+
 echo [CHECKING] Database initialization...
 set NEED_INIT=0
 

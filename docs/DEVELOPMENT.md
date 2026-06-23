@@ -162,6 +162,67 @@
 | `/api/config/list` | GET | 配置文件列表 |
 | `/api/config/{name}` | GET | 配置文件内容 |
 
+### OpenClaw 辅助相关
+
+| 端点 | 方法 | 说明 |
+|------|------|------|
+| `/api/openclaw/settings` | GET | 获取 OpenClaw 辅助配置 |
+| `/api/openclaw/settings` | PUT | 更新配置 |
+| `/api/openclaw/setup` | POST | 检查 OpenClaw 安装状态 |
+| `/api/openclaw/toggle` | POST | 启用/禁用定时任务 |
+
+---
+
+## OpenClaw 集成规范
+
+### 任务命名规范
+
+**所有 EcomAgent 相关的定时任务必须遵循以下命名规范：**
+
+- **前缀**：`ecomagent-`
+- **格式**：`ecomagent-<功能名>`
+- **示例**：
+  - `ecomagent-amazon-fetch` - Amazon 数据抓取
+  - `ecomagent-translation` - 商品名称翻译
+  - `ecomagent-image-download` - 图片下载
+
+### 命名规范的原因
+
+1. **便于识别**：所有 EcomAgent 任务一目了然
+2. **便于管理**：可以通过 `WHERE name LIKE 'ecomagent-%'` 查询所有任务
+3. **避免冲突**：与其他定时任务不会混淆
+4. **便于清理**：批量删除或禁用时方便操作
+
+### 添加新任务的流程
+
+1. **定义任务名称**：使用 `ecomagent-` 前缀
+2. **更新 `scripts/openclaw_config.py`**：
+   - 在 `TASKS` 字典中添加新任务定义
+   - 在 `DEFAULT_SETTINGS` 中添加默认配置
+3. **更新 `src/data_viewer/main.py`**：
+   - 在 `TASK_NAME_MAP` 中添加任务映射
+4. **重启 EcomAgent**：启动脚本会自动检查并同步配置
+
+### 配置文件
+
+| 文件 | 说明 |
+|------|------|
+| `config/openclaw_settings.json` | EcomAgent 本地配置 |
+| `~/.openclaw/state/openclaw.sqlite` | OpenClaw 定时任务数据库 |
+
+### 手动命令
+
+```bash
+# 检查配置状态
+python scripts/openclaw_config.py check
+
+# 同步配置（启动时自动执行）
+python scripts/openclaw_config.py setup
+
+# 从 OpenClaw 同步状态到本地
+python scripts/openclaw_config.py sync
+```
+
 ---
 
 ## 前端架构

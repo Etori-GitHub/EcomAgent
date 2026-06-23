@@ -6,6 +6,17 @@ echo "EcomAgent Data Viewer"
 echo "============================================================"
 echo ""
 
+# 检查 OpenClaw 安装
+OPENCLAW_PATH=""
+if [ -d "$HOME/.openclaw" ]; then
+    OPENCLAW_PATH="$HOME/.openclaw"
+    echo "[OK] OpenClaw detected: $OPENCLAW_PATH"
+else
+    echo "[INFO] OpenClaw not installed"
+fi
+export OPENCLAW_PATH
+echo ""
+
 # 激活虚拟环境
 if [ -f "python/bin/activate" ]; then
     source python/bin/activate

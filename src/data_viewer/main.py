@@ -44,6 +44,78 @@ app.add_middleware(
 )
 
 
+# 启动时自动检查 OpenClaw 配置
+@app.on_event("startup")
+async def startup_event():
+    """服务启动时自动检查 OpenClaw 配置"""
+    import asyncio
+    
+    # 延迟 3 秒执行，等待服务完全启动
+    async def check_openclaw():
+        await asyncio.sleep(3)
+        print("\n[STARTUP] Checking OpenClaw configuration...")
+        
+        # 检查 OpenClaw 是否安装
+        openclaw_dir = Path.home() / ".openclaw"
+        if not openclaw_dir.exists():
+            print("[STARTUP] OpenClaw not installed, skip configuration")
+            return
+        
+        # 检查数据库是否存在
+        openclaw_db = openclaw_dir / "state" / "openclaw.sqlite"
+        if not openclaw_db.exists():
+            print("[STARTUP] OpenClaw database not found, skip configuration")
+            return
+        
+        # 检查是否有 ecomagent 任务
+        try:
+            conn = sqlite3.connect(openclaw_db)
+            cursor = conn.cursor()
+            cursor.execute("SELECT COUNT(*) FROM cron_jobs WHERE name LIKE 'ecomagent-%'")
+            count = cursor.fetchone()[0]
+            conn.close()
+            
+            if count == 0:
+                print("[STARTUP] No ecomagent tasks found, creating...")
+                # 停止 Gateway
+                stop_openclaw_gateway()
+                import time
+                time.sleep(2)
+                
+                # 创建任务
+                settings = get_openclaw_settings()
+                conn = sqlite3.connect(openclaw_db)
+                cursor = conn.cursor()
+                
+                for task_key, job_name in TASK_NAME_MAP.items():
+                    task_config = TASK_DEFINITIONS.get(task_key)
+                    if task_config:
+                        job_id = create_cron_job_in_db(cursor, task_key, task_config, settings)
+                        print(f"[STARTUP] Created {job_name}: {job_id}")
+                
+                conn.commit()
+                conn.close()
+                
+                # 等待数据库完全释放
+                time.sleep(1)
+                
+                # 启动 Gateway
+                start_openclaw_gateway()
+                print("[STARTUP] OpenClaw configuration completed")
+            else:
+                print(f"[STARTUP] Found {count} ecomagent tasks, skip creation")
+        except Exception as e:
+            print(f"[STARTUP] Error checking OpenClaw: {e}")
+            # 确保连接关闭
+            if 'conn' in locals():
+                try:
+                    conn.close()
+                except:
+                    pass
+    
+    asyncio.create_task(check_openclaw())
+
+
 # 自定义 JSON 响应,确保 UTF-8
 class UnicodeJSONResponse(JSONResponse):
     def render(self, content: Any) -> bytes:
@@ -1619,6 +1691,423 @@ async def backup_all_configs():
         "message": f"Backed up {len(backed_up)} config files",
         "backups": backed_up,
         "timestamp": timestamp
+    }
+
+
+# ==================== OpenClaw 辅助功能 API ====================
+
+OPENCLAW_SETTINGS_FILE = CONFIG_DIR / "openclaw_settings.json"
+OPENCLAW_DIR = Path.home() / ".openclaw"
+OPENCLAW_STATE_DB = OPENCLAW_DIR / "state" / "openclaw.sqlite"
+
+# 任务名称映射
+TASK_NAME_MAP = {
+    "amazon_fetch": "ecomagent-amazon-fetch",
+    "translation_pipeline": "ecomagent-translation"
+}
+
+# 任务定义
+TASK_DEFINITIONS = {
+    "amazon_fetch": {
+        "schedule_kind": "cron",
+        "schedule_expr": "0 3 * * *",
+        "schedule_tz": "Asia/Shanghai",
+        "description": "EcomAgent 每日 Amazon 数据抓取",
+        "message": f"请执行 EcomAgent Amazon 每日数据抓取任务：\n\n1. 先检查配置文件 {BASE_DIR}/config/openclaw_settings.json\n2. 如果 amazon_fetch.enabled 为 false，跳过执行并报告「已禁用」\n3. 否则执行：python {BASE_DIR}/scripts/daily_fetch.py amazon\n\n执行完成后报告结果：\n- 抓取了多少商品\n- 导入了多少记录\n- 下载了多少图片"
+    },
+    "translation_pipeline": {
+        "schedule_kind": "every",
+        "every_ms": 1800000,
+        "description": "EcomAgent 商品名称翻译流水线（每 30 分钟）",
+        "message": f"请执行 EcomAgent 商品名称翻译任务：\n\n1. 先检查配置文件 {BASE_DIR}/config/openclaw_settings.json\n2. 如果 translation_pipeline.enabled 为 false，跳过执行并报告「已禁用」\n3. 否则执行：python {BASE_DIR}/scripts/generate_pending_names.py\n\n4. 等待 2 分钟后检查 {BASE_DIR}/data/name_processing/processed_names.json 是否存在\n\n5. 如果存在，执行：python {BASE_DIR}/scripts/import_processed_names.py\n\n6. 报告翻译了多少商品"
+    }
+}
+
+# OpenClaw 辅助功能默认配置
+DEFAULT_OPENCLAW_SETTINGS = {
+    "amazon_fetch": {
+        "enabled": True,
+        "schedule": "0 3 * * *",
+        "description": "每日凌晨 3:00 抓取 Amazon 数据"
+    },
+    "translation_pipeline": {
+        "enabled": True,
+        "interval_minutes": 30,
+        "description": "每 30 分钟执行商品名称翻译"
+    }
+}
+
+
+def get_openclaw_settings():
+    """读取 OpenClaw 辅助功能配置"""
+    if OPENCLAW_SETTINGS_FILE.exists():
+        with open(OPENCLAW_SETTINGS_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return DEFAULT_OPENCLAW_SETTINGS
+
+
+def save_openclaw_settings(settings: dict):
+    """保存 OpenClaw 辅助功能配置"""
+    OPENCLAW_SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with open(OPENCLAW_SETTINGS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(settings, f, ensure_ascii=False, indent=2)
+
+
+def check_openclaw_installed() -> str:
+    """检查 OpenClaw 是否安装，返回路径"""
+    if OPENCLAW_DIR.exists():
+        return str(OPENCLAW_DIR)
+    return ""
+
+
+def get_cron_job_id(task_key: str) -> str:
+    """根据任务 key 获取 cron job id"""
+    return TASK_NAME_MAP.get(task_key, "")
+
+
+def toggle_cron_job_in_db(job_name: str, enabled: bool) -> bool:
+    """直接修改 OpenClaw 数据库中的 cron job enabled 字段"""
+    if not OPENCLAW_STATE_DB.exists():
+        return False
+    
+    try:
+        conn = sqlite3.connect(OPENCLAW_STATE_DB)
+        cursor = conn.cursor()
+        
+        # 更新 enabled 字段
+        cursor.execute(
+            "UPDATE cron_jobs SET enabled = ?, updated_at = ? WHERE name = ?",
+            (1 if enabled else 0, int(datetime.now().timestamp() * 1000), job_name)
+        )
+        
+        affected = cursor.rowcount
+        conn.commit()
+        conn.close()
+        
+        return affected > 0
+    except Exception as e:
+        print(f"[ERROR] 更新 cron job 失败: {e}")
+        return False
+
+
+def stop_openclaw_gateway() -> bool:
+    """停止 OpenClaw Gateway"""
+    import subprocess
+    import sys
+    
+    try:
+        if sys.platform == 'win32':
+            result = subprocess.run(
+                "openclaw gateway stop",
+                shell=True,
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+        else:
+            result = subprocess.run(
+                ["openclaw", "gateway", "stop"],
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+        return result.returncode == 0
+    except Exception as e:
+        print(f"[ERROR] 停止 Gateway 失败: {e}")
+        return False
+
+
+def start_openclaw_gateway() -> bool:
+    """启动 OpenClaw Gateway"""
+    import subprocess
+    import sys
+    
+    try:
+        if sys.platform == 'win32':
+            result = subprocess.run(
+                "openclaw gateway start",
+                shell=True,
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+        else:
+            result = subprocess.run(
+                ["openclaw", "gateway", "start"],
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+        return result.returncode == 0
+    except Exception as e:
+        print(f"[ERROR] 启动 Gateway 失败: {e}")
+        return False
+
+
+def restart_openclaw_gateway() -> bool:
+    """重启 OpenClaw Gateway"""
+    import subprocess
+    import sys
+    
+    try:
+        if sys.platform == 'win32':
+            result = subprocess.run(
+                "openclaw gateway restart",
+                shell=True,
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+        else:
+            result = subprocess.run(
+                ["openclaw", "gateway", "restart"],
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+        return result.returncode == 0
+    except Exception as e:
+        print(f"[ERROR] 重启 Gateway 失败: {e}")
+        return False
+
+
+def create_cron_job_in_db(cursor, task_key: str, task_config: dict, settings: dict) -> str:
+    """在数据库中创建定时任务"""
+    import uuid
+    
+    job_id = str(uuid.uuid4())
+    job_name = TASK_NAME_MAP[task_key]
+    now_ms = int(datetime.now().timestamp() * 1000)
+    
+    enabled = settings.get(task_key, {}).get("enabled", True)
+    
+    # store_key 是动态路径，根据操作系统不同
+    cron_jobs_path = OPENCLAW_DIR / "cron" / "jobs.json"
+    store_key = str(cron_jobs_path)
+    
+    # 构建任务 JSON
+    job_json = {
+        "id": job_id,
+        "name": job_name,
+        "description": task_config["description"],
+        "enabled": enabled,
+        "createdAtMs": now_ms,
+        "updatedAtMs": now_ms,
+        "agentId": "main",
+        "sessionKey": "agent:main:main",
+        "schedule": {
+            "kind": task_config["schedule_kind"],
+            "expr": task_config.get("schedule_expr"),
+            "tz": task_config.get("schedule_tz"),
+            "everyMs": task_config.get("every_ms")
+        },
+        "sessionTarget": "isolated",
+        "wakeMode": "now",
+        "payload": {
+            "kind": "agentTurn",
+            "message": task_config["message"]
+        },
+        "delivery": {"mode": "none"}
+    }
+    
+    # 插入数据库
+    cursor.execute("""
+        INSERT INTO cron_jobs (
+            store_key, job_id, name, description, enabled,
+            created_at_ms, agent_id, session_key,
+            schedule_kind, schedule_expr, schedule_tz, every_ms,
+            session_target, wake_mode,
+            payload_kind, payload_message,
+            delivery_mode, job_json, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        store_key, job_id, job_name, task_config["description"], 1 if enabled else 0,
+        now_ms, "main", "agent:main:main",
+        task_config["schedule_kind"],
+        task_config.get("schedule_expr"),
+        task_config.get("schedule_tz"),
+        task_config.get("every_ms"),
+        "isolated", "now",
+        "agentTurn", task_config["message"],
+        "none", json.dumps(job_json), now_ms
+    ))
+    
+    return job_id
+
+
+@app.get("/api/openclaw/check")
+async def check_openclaw_api():
+    """检查 OpenClaw 是否安装"""
+    openclaw_dir = Path.home() / ".openclaw"
+    return {
+        "installed": openclaw_dir.exists(),
+        "path": str(openclaw_dir) if openclaw_dir.exists() else None
+    }
+
+
+@app.get("/api/openclaw/settings")
+async def get_openclaw_settings_api():
+    """获取 OpenClaw 辅助功能配置"""
+    settings = get_openclaw_settings()
+    return {"success": True, "data": settings}
+
+
+@app.put("/api/openclaw/settings")
+async def update_openclaw_settings_api(request: dict):
+    """更新 OpenClaw 辅助功能配置"""
+    current = get_openclaw_settings()
+    
+    # 更新配置
+    for key in request:
+        if key in current:
+            current[key] = request[key]
+    
+    save_openclaw_settings(current)
+    
+    return {"success": True, "message": "配置已更新", "data": current}
+
+
+@app.post("/api/openclaw/setup")
+async def setup_openclaw_jobs_api():
+    """检查 OpenClaw 安装状态并自动创建缺失的任务"""
+    import os
+    
+    # 检查 OpenClaw 是否安装（直接检查目录）
+    openclaw_path = os.environ.get("OPENCLAW_PATH", "")
+    
+    # 如果环境变量为空，尝试默认路径
+    if not openclaw_path:
+        home = Path.home()
+        default_path = home / ".openclaw"
+        if default_path.exists():
+            openclaw_path = str(default_path)
+    
+    if not openclaw_path:
+        return {"success": False, "error": "OpenClaw 未安装", "hint": "请先安装 OpenClaw"}
+    
+    settings = get_openclaw_settings()
+    results = {}
+    
+    # 检查并创建缺失的任务
+    print(f"[DEBUG] OPENCLAW_STATE_DB: {OPENCLAW_STATE_DB}")
+    print(f"[DEBUG] OPENCLAW_STATE_DB.exists(): {OPENCLAW_STATE_DB.exists()}")
+    
+    if OPENCLAW_STATE_DB.exists():
+        # 1. 先停止 Gateway，避免数据库锁定
+        print("[INFO] 停止 Gateway 以避免数据库锁定...")
+        stop_openclaw_gateway()
+        import time
+        time.sleep(2)  # 等待 Gateway 完全停止
+        
+        try:
+            conn = sqlite3.connect(OPENCLAW_STATE_DB)
+            cursor = conn.cursor()
+            
+            # 检查每个任务是否存在
+            for task_key, job_name in TASK_NAME_MAP.items():
+                cursor.execute("SELECT job_id, enabled FROM cron_jobs WHERE name = ?", (job_name,))
+                row = cursor.fetchone()
+                
+                if row:
+                    # 任务已存在
+                    results[task_key] = {
+                        "status": "exists",
+                        "job_id": row[0],
+                        "enabled": bool(row[1])
+                    }
+                    print(f"[INFO] Task {job_name} exists: {row[0]}")
+                else:
+                    # 任务不存在，创建它
+                    task_config = TASK_DEFINITIONS.get(task_key)
+                    if task_config:
+                        job_id = create_cron_job_in_db(cursor, task_key, task_config, settings)
+                        results[task_key] = {
+                            "status": "created",
+                            "job_id": job_id,
+                            "enabled": True
+                        }
+                        print(f"[INFO] Created {job_name}: {job_id}")
+            
+            conn.commit()
+            conn.close()
+            
+            # 3. 启动 Gateway
+            print("[INFO] 启动 Gateway...")
+            start_openclaw_gateway()
+            
+        except Exception as e:
+            print(f"[ERROR] 数据库操作失败: {e}")
+            import traceback
+            traceback.print_exc()
+            # 确保连接关闭
+            if 'conn' in locals():
+                try:
+                    conn.close()
+                except:
+                    pass
+            # 启动 Gateway
+            start_openclaw_gateway()
+            return {"success": False, "error": f"数据库操作失败: {e}"}
+    else:
+        print(f"[WARN] OpenClaw DB 不存在: {OPENCLAW_STATE_DB}")
+    
+    return {
+        "success": True, 
+        "message": "配置已同步", 
+        "tasks": results,
+        "openclaw_path": openclaw_path
+    }
+
+
+@app.post("/api/openclaw/toggle")
+async def toggle_openclaw_task_api(request: dict):
+    """启用/禁用 OpenClaw 定时任务"""
+    task_key = request.get("task_key")
+    enabled = request.get("enabled", False)
+    
+    if task_key not in TASK_NAME_MAP:
+        return {"success": False, "error": "未知任务"}
+    
+    job_name = TASK_NAME_MAP[task_key]
+    
+    # 1. 更新本地配置
+    settings = get_openclaw_settings()
+    if task_key in settings:
+        settings[task_key]["enabled"] = enabled
+    save_openclaw_settings(settings)
+    
+    # 2. 检查 OpenClaw 是否安装
+    if not OPENCLAW_STATE_DB.exists():
+        return {
+            "success": True,
+            "message": "配置已保存，但 OpenClaw 未安装",
+            "task_key": task_key,
+            "enabled": enabled
+        }
+    
+    # 3. 修改 OpenClaw 数据库
+    db_updated = toggle_cron_job_in_db(job_name, enabled)
+    
+    if not db_updated:
+        return {
+            "success": True,
+            "message": "配置已保存，但未找到对应定时任务",
+            "task_key": task_key,
+            "enabled": enabled
+        }
+    
+    # 4. 重启 Gateway
+    gateway_restarted = restart_openclaw_gateway()
+    
+    action = "启用" if enabled else "禁用"
+    
+    return {
+        "success": True,
+        "message": f"已{action}任务",
+        "task_key": task_key,
+        "enabled": enabled,
+        "db_updated": db_updated,
+        "gateway_restarted": gateway_restarted
     }
 
 

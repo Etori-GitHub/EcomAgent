@@ -3,7 +3,7 @@ import { customElement, state } from 'lit/decorators.js';
 
 /**
  * 系统设置页面
- * 简化版本：只保留 API 密钥、软件名称、国家/语言配置
+ * 简化版本：API 密钥、软件名称、国家/语言配置、定时任务配置
  */
 @customElement('ea-settings')
 export class EaSettings extends LitElement {
@@ -15,6 +15,13 @@ export class EaSettings extends LitElement {
   @state() private country = '马来西亚';
   @state() private language = '马来语';
   @state() private apiKeys: { google: string; volcano: string; xai: string } = { google: '', volcano: '', xai: '' };
+  
+  // OpenClaw 辅助配置
+  @state() private openclawInstalled = false;
+  @state() private openclawSettings = {
+    amazon_fetch: { enabled: true, schedule: '0 3 * * *', description: '每日凌晨 3:00 抓取 Amazon 数据' },
+    translation_pipeline: { enabled: true, interval_minutes: 30, description: '每 30 分钟执行商品名称翻译' }
+  };
   
   // 编辑状态
   @state() private editingField = '';
@@ -147,6 +154,66 @@ export class EaSettings extends LitElement {
       color: var(--muted);
       margin-top: 8px;
     }
+    
+    /* Toggle Switch 样式 */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 26px;
+    }
+    
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .3s;
+      border-radius: 26px;
+      border: 2px solid #bbb;
+    }
+    
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .toggle-switch input:checked + .toggle-slider {
+      background-color: #10b981;
+      border-color: #059669;
+    }
+    
+    .toggle-switch input:checked + .toggle-slider:before {
+      transform: translateX(22px);
+    }
+    
+    /* Toast 动画 */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fadeOut {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(10px); }
+    }
   `;
 
   async connectedCallback() {
@@ -178,6 +245,26 @@ export class EaSettings extends LitElement {
           volcano: keys.volcano || '',
           xai: keys.xai || ''
         };
+      }
+      
+      // 加载 OpenClaw 辅助配置
+      const openclawRes = await fetch('/api/openclaw/settings');
+      if (openclawRes.ok) {
+        const openclawData = await openclawRes.json();
+        if (openclawData.data) {
+          this.openclawSettings = openclawData.data;
+        }
+      }
+      
+      // 检查 OpenClaw 是否安装
+      try {
+        const checkRes = await fetch('/api/openclaw/check');
+        if (checkRes.ok) {
+          const checkData = await checkRes.json();
+          this.openclawInstalled = checkData.installed;
+        }
+      } catch (e) {
+        // 忽略错误
       }
     } catch (e) {
       console.error('加载配置失败:', e);
@@ -246,6 +333,83 @@ export class EaSettings extends LitElement {
   private _maskKey(key: string): string {
     if (!key || key.length < 10) return key || '未配置';
     return key.substring(0, 6) + '****' + key.substring(key.length - 4);
+  }
+
+  private async _toggleOpenclawTask(taskKey: string) {
+    const newEnabled = !this.openclawSettings[taskKey as keyof typeof this.openclawSettings]?.enabled;
+    
+    // 先更新本地状态
+    this.openclawSettings = {
+      ...this.openclawSettings,
+      [taskKey]: {
+        ...this.openclawSettings[taskKey as keyof typeof this.openclawSettings],
+        enabled: newEnabled
+      }
+    };
+    this.requestUpdate();
+    
+    // 调用后端 API 同步到 OpenClaw
+    try {
+      const res = await fetch('/api/openclaw/toggle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task_key: taskKey, enabled: newEnabled })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          this._showToast(newEnabled ? '已启用' : '已禁用');
+        } else {
+          this._showToast(data.message || '操作失败', 'error');
+        }
+      }
+    } catch (e) {
+      console.error('操作失败:', e);
+      this._showToast('操作失败', 'error');
+    }
+  }
+
+  private _showToast(message: string, type: 'success' | 'error' = 'success') {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 24px;
+      background: ${type === 'success' ? '#10b981' : '#ef4444'};
+      color: white;
+      border-radius: 8px;
+      font-size: 14px;
+      z-index: 9999;
+      animation: fadeIn 0.3s ease;
+    `;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.style.animation = 'fadeOut 0.3s ease';
+      setTimeout(() => toast.remove(), 300);
+    }, 2000);
+  }
+
+  private async _applyOpenclawSettings() {
+    this._showToast('正在应用配置...', 'success');
+    
+    try {
+      const res = await fetch('/api/openclaw/setup', { method: 'POST' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          this._showToast('配置已保存！请在终端运行以下命令应用定时任务:\npython scripts/openclaw_config.py setup', 'success');
+        } else {
+          this._showToast(data.error || '配置失败', 'error');
+        }
+      }
+    } catch (e) {
+      console.error('应用配置失败:', e);
+      this._showToast('应用配置失败', 'error');
+    }
   }
 
   render() {
@@ -381,6 +545,72 @@ export class EaSettings extends LitElement {
         </div>
         <div class="hint" style="padding: 0 20px 16px;">
           💡 API 密钥用于调用各类 AI 模型生成素材
+        </div>
+      </div>
+      
+      <!-- OpenClaw 辅助功能 -->
+      <div class="section">
+        <div class="section-header">
+          <span class="section-icon">🔗</span>
+          <span class="section-title">OpenClaw 辅助</span>
+        </div>
+        <div class="section-body">
+          ${!this.openclawInstalled 
+            ? html`
+                <div style="text-align: center; padding: 20px; color: var(--muted);">
+                  <p>⚠️ OpenClaw 未安装</p>
+                  <p style="font-size: 12px; margin-top: 8px;">辅助功能需要 OpenClaw 支持</p>
+                </div>
+              `
+            : html`
+                <!-- Amazon 每日抓取 -->
+                <div class="field-row">
+                  <div style="flex: 1;">
+                    <span class="field-label">Amazon 每日抓取</span>
+                    <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                      ${this.openclawSettings.amazon_fetch?.description || '每日凌晨 3:00 抓取 Amazon 数据'}
+                    </div>
+                  </div>
+                  <div class="field-value">
+                    <label class="toggle-switch">
+                      <input 
+                        type="checkbox" 
+                        .checked=${this.openclawSettings.amazon_fetch?.enabled ?? true}
+                        @change=${() => this._toggleOpenclawTask('amazon_fetch')}
+                      />
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+                
+                <!-- 商品翻译流水线 -->
+                <div class="field-row">
+                  <div style="flex: 1;">
+                    <span class="field-label">商品名称翻译</span>
+                    <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">
+                      ${this.openclawSettings.translation_pipeline?.description || '每 30 分钟执行商品名称翻译'}
+                    </div>
+                  </div>
+                  <div class="field-value">
+                    <label class="toggle-switch">
+                      <input 
+                        type="checkbox" 
+                        .checked=${this.openclawSettings.translation_pipeline?.enabled ?? true}
+                        @change=${() => this._toggleOpenclawTask('translation_pipeline')}
+                      />
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+              `
+          }
+        </div>
+        <div class="hint" style="padding: 0 20px 16px;">
+          💡 辅助功能通过 OpenClaw 自动运行数据抓取和翻译
+          ${this.openclawInstalled 
+            ? html`<br /><span style="color: var(--primary); cursor: pointer;" @click=${this._applyOpenclawSettings}>[应用配置到 OpenClaw]</span>`
+            : ''
+          }
         </div>
       </div>
     `;

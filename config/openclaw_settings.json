@@ -1,0 +1,12 @@
+{
+  "amazon_fetch": {
+    "enabled": true,
+    "schedule": "0 3 * * *",
+    "description": "每日凌晨 3:00 抓取 Amazon 数据"
+  },
+  "translation_pipeline": {
+    "enabled": true,
+    "interval_minutes": 30,
+    "description": "每 30 分钟执行商品名称翻译"
+  }
+}
