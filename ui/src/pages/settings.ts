@@ -14,6 +14,9 @@ export class EaSettings extends LitElement {
   @state() private appName = '';
   @state() private country = '马来西亚';
   @state() private language = '马来语';
+  @state() private proxyHost = '127.0.0.1';
+  @state() private proxyPort = 7890;
+  @state() private proxyEnabled = true;
   @state() private apiKeys: { google: string; volcano: string; xai: string } = { google: '', volcano: '', xai: '' };
   
   // OpenClaw 辅助配置
@@ -233,6 +236,12 @@ export class EaSettings extends LitElement {
         this.appName = settings.app_name || '';
         this.country = settings.country || '马来西亚';
         this.language = settings.language || '马来语';
+        
+        // 加载代理配置
+        const proxy = settings.proxy || {};
+        this.proxyHost = proxy.host || '127.0.0.1';
+        this.proxyPort = proxy.port || 7890;
+        this.proxyEnabled = proxy.enabled !== false;
       }
       
       // 加载 api_keys
@@ -287,7 +296,7 @@ export class EaSettings extends LitElement {
     this.saving = true;
     
     try {
-      if (field === 'app_name' || field === 'country' || field === 'language') {
+      if (field === 'app_name' || field === 'country' || field === 'language' || field === 'proxy_host' || field === 'proxy_port' || field === 'proxy_enabled') {
         // 保存到 settings.json
         const res = await fetch('/api/config/settings', {
           method: 'PUT',
@@ -296,6 +305,11 @@ export class EaSettings extends LitElement {
             app_name: this.appName,
             country: this.country,
             language: this.language,
+            proxy: {
+              host: this.proxyHost,
+              port: this.proxyPort,
+              enabled: this.proxyEnabled
+            },
             [field]: this.editValue
           })
         });
@@ -304,6 +318,9 @@ export class EaSettings extends LitElement {
           if (field === 'app_name') this.appName = this.editValue;
           if (field === 'country') this.country = this.editValue;
           if (field === 'language') this.language = this.editValue;
+          if (field === 'proxy_host') this.proxyHost = this.editValue;
+          if (field === 'proxy_port') this.proxyPort = parseInt(this.editValue);
+          if (field === 'proxy_enabled') this.proxyEnabled = this.editValue === 'true';
         }
       } else {
         // 保存到 api_keys.json
@@ -482,6 +499,64 @@ export class EaSettings extends LitElement {
         </div>
         <div class="hint" style="padding: 0 20px 16px;">
           💡 国家和语言配置用于生成素材时的文案语言选择
+        </div>
+      </div>
+      
+      <!-- 代理配置 -->
+      <div class="section">
+        <div class="section-header">
+          <span class="section-icon">🌐</span>
+          <span class="section-title">代理配置</span>
+        </div>
+        <div class="section-body">
+          <div class="field-row">
+            <span class="field-label">启用代理</span>
+            <div class="field-value">
+              <label class="toggle-switch">
+                <input
+                  type="checkbox"
+                  .checked=${this.proxyEnabled}
+                  @change=${async () => { this.proxyEnabled = !this.proxyEnabled; this.editValue = String(this.proxyEnabled); await this._saveField('proxy_enabled'); }}
+                />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          <div class="field-row">
+            <span class="field-label">代理地址</span>
+            <div class="field-value">
+              ${this.editingField === 'proxy_host'
+                ? html`
+                    <input class="field-input" .value=${this.editValue} @input=${(e: Event) => this.editValue = (e.target as HTMLInputElement).value} placeholder="127.0.0.1" />
+                    <button class="btn btn-primary" @click=${() => this._saveField('proxy_host')} ?disabled=${this.saving}>保存</button>
+                    <button class="btn" @click=${this._cancelEdit}>取消</button>
+                  `
+                : html`
+                    <span class="field-text">${this.proxyHost}</span>
+                    <button class="btn" @click=${() => this._editField('proxy_host', this.proxyHost)}>编辑</button>
+                  `
+              }
+            </div>
+          </div>
+          <div class="field-row">
+            <span class="field-label">代理端口</span>
+            <div class="field-value">
+              ${this.editingField === 'proxy_port'
+                ? html`
+                    <input class="field-input" type="number" .value=${this.editValue} @input=${(e: Event) => this.editValue = (e.target as HTMLInputElement).value} placeholder="7890" />
+                    <button class="btn btn-primary" @click=${() => this._saveField('proxy_port')} ?disabled=${this.saving}>保存</button>
+                    <button class="btn" @click=${this._cancelEdit}>取消</button>
+                  `
+                : html`
+                    <span class="field-text">${this.proxyPort}</span>
+                    <button class="btn" @click=${() => this._editField('proxy_port', String(this.proxyPort))}>编辑</button>
+                  `
+              }
+            </div>
+          </div>
+        </div>
+        <div class="hint" style="padding: 0 20px 16px;">
+          💡 代理用于访问国外 API（Google、xAI 等），默认为 Clash 代理端口 7890
         </div>
       </div>
       

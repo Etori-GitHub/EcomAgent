@@ -11,3 +11,13 @@ playwright>=1.40.0
 # Utils
 click>=8.0.0
 colorama>=0.4.0
+
+# Image processing
+Pillow>=10.0.0
+
+# AI providers
+google-genai>=0.3.0
+requests>=2.28.0
+
+# Video processing
+moviepy>=2.0.0

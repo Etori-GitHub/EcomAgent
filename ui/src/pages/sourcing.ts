@@ -771,13 +771,13 @@ export class EcomAgentSourcing extends LitElement {
                   <td>${this._formatDate(item.collected_at)}</td>
                   <td>
                     <button class="action-btn action-btn-tiktok" @click=${() => { console.log('[Sourcing] TikTok button clicked!'); this._uploadToTikTok(item); }}>
-                      TikTok
+                      TK建品
                     </button>
                     <button class="action-btn action-btn-asset" @click=${() => this._showAssetManager(item)}>
-                      素材
+                      生成
                     </button>
                     <button class="action-btn action-btn-view" @click=${() => this._openProduct(item.product_url)}>
-                      查看
+                      素材
                     </button>
                     <button class="action-btn action-btn-delete" @click=${() => this._deleteSourcing(item.ecom_code, item.offer_id)}>
                       删除

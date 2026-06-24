@@ -7,7 +7,7 @@ import sqlite3
 import json
 from pathlib import Path
 from datetime import datetime
-from fastapi import FastAPI, Query, HTTPException, Request
+from fastapi import FastAPI, Query, HTTPException, Request, UploadFile
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -2208,7 +2208,28 @@ def get_sourcing_db():
         conn.execute('ALTER TABLE sourcing_1688 ADD COLUMN local_image_path TEXT')
     except:
         pass  # 字段已存在
-
+    
+    # 迁移:添加 sourcing_code 字段(如果不存在)
+    try:
+        conn.execute('ALTER TABLE sourcing_1688 ADD COLUMN sourcing_code TEXT')
+    except:
+        pass  # 字段已存在
+    
+    # 创建唯一索引
+    try:
+        conn.execute('CREATE UNIQUE INDEX IF NOT EXISTS idx_sourcing_code ON sourcing_1688(sourcing_code)')
+    except:
+        pass
+    
+    # 为现有记录生成 sourcing_code（如果为空）
+    cursor = conn.execute("SELECT id, ecom_code, offer_id FROM sourcing_1688 WHERE sourcing_code IS NULL")
+    rows = cursor.fetchall()
+    for row in rows:
+        sourcing_code = f"{row['ecom_code']}_{row['offer_id']}"
+        conn.execute("UPDATE sourcing_1688 SET sourcing_code = ? WHERE id = ?", (sourcing_code, row['id']))
+    if rows:
+        conn.commit()
+    
     conn.commit()
     return conn
 
@@ -2232,16 +2253,20 @@ async def add_sourcing(request: Request):
             local_image_path = download_sourcing_image(image_url, offer_id)
         except Exception as e:
             print(f"[Sourcing] 图片下载失败: {e}")
+    
+    # 生成 sourcing_code
+    sourcing_code = f"{ecom_code}_{offer_id}"
 
     conn = get_sourcing_db()
     try:
         conn.execute('''
             INSERT OR REPLACE INTO sourcing_1688
-            (ecom_code, offer_id, title, price, min_order, shop_name, shop_url, product_url, image_url, local_image_path, collected_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (ecom_code, offer_id, sourcing_code, title, price, min_order, shop_name, shop_url, product_url, image_url, local_image_path, collected_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             ecom_code,
             offer_id,
+            sourcing_code,
             data.get("title", "")[:200],
             data.get("price", 0),
             data.get("minOrder", 1),
@@ -2867,21 +2892,21 @@ async def api_list_assets(search: str = None):
     if sourcing_db.exists():
         conn.execute(f"ATTACH DATABASE '{str(sourcing_db)}' AS sourcing")
     
-    # 构建查询
+    # 构建查询（使用 sourcing_code 关联）
     if search:
         cursor = conn.execute("""
             SELECT a.*, s.title 
             FROM sourcing_assets a 
-            LEFT JOIN sourcing.sourcing_1688 s ON a.ecom_code = s.ecom_code 
-            WHERE a.ecom_code LIKE ? OR s.title LIKE ?
-            ORDER BY a.created_at DESC
-        """, (f"%{search}%", f"%{search}%"))
+            LEFT JOIN sourcing.sourcing_1688 s ON a.sourcing_code = s.sourcing_code 
+            WHERE a.ecom_code LIKE ? OR s.title LIKE ? OR a.sourcing_code LIKE ?
+            ORDER BY a.ecom_code DESC, a.asset_type, a.group_index
+        """, (f"%{search}%", f"%{search}%", f"%{search}%"))
     else:
         cursor = conn.execute("""
             SELECT a.*, s.title 
             FROM sourcing_assets a 
-            LEFT JOIN sourcing.sourcing_1688 s ON a.ecom_code = s.ecom_code 
-            ORDER BY a.created_at DESC
+            LEFT JOIN sourcing.sourcing_1688 s ON a.sourcing_code = s.sourcing_code 
+            ORDER BY a.ecom_code DESC, a.asset_type, a.group_index
         """)
     
     rows = cursor.fetchall()
@@ -2954,14 +2979,14 @@ async def api_generate_image(request: dict):
     if not ecom_code:
         raise HTTPException(status_code=400, detail="缺少 ecom_code")
     
-    # 获取货源图片路径
+    # 获取货源图片路径和 sourcing_code
     sourcing_db = DATA_DIR / "sourcing.db"
     if not sourcing_db.exists():
         raise HTTPException(status_code=404, detail="货源数据库不存在")
     
     conn = sqlite3.connect(str(sourcing_db))
     conn.row_factory = sqlite3.Row
-    cursor = conn.execute("SELECT local_image_path FROM sourcing_1688 WHERE ecom_code = ?", (ecom_code,))
+    cursor = conn.execute("SELECT local_image_path, sourcing_code FROM sourcing_1688 WHERE ecom_code = ?", (ecom_code,))
     row = cursor.fetchone()
     conn.close()
     
@@ -2972,11 +2997,15 @@ async def api_generate_image(request: dict):
     if not image_path.exists():
         raise HTTPException(status_code=404, detail=f"图片文件不存在: {image_path}")
     
+    # 获取 sourcing_code
+    sourcing_code = row["sourcing_code"] if row["sourcing_code"] else ecom_code
+    
     # 提交任务
     task_id = submit_image_task(
         ecom_code=ecom_code,
         image_path=str(image_path),
-        task_type=asset_type
+        task_type=asset_type,
+        sourcing_code=sourcing_code  # 新增
     )
     
     return {"success": True, "task_id": task_id}
@@ -2994,14 +3023,14 @@ async def api_generate_video(request: dict):
     if not ecom_code:
         raise HTTPException(status_code=400, detail="缺少 ecom_code")
     
-    # 获取货源图片路径
+    # 获取货源图片路径和 sourcing_code
     sourcing_db = DATA_DIR / "sourcing.db"
     if not sourcing_db.exists():
         raise HTTPException(status_code=404, detail="货源数据库不存在")
     
     conn = sqlite3.connect(str(sourcing_db))
     conn.row_factory = sqlite3.Row
-    cursor = conn.execute("SELECT local_image_path FROM sourcing_1688 WHERE ecom_code = ?", (ecom_code,))
+    cursor = conn.execute("SELECT local_image_path, sourcing_code FROM sourcing_1688 WHERE ecom_code = ?", (ecom_code,))
     row = cursor.fetchone()
     conn.close()
     
@@ -3012,12 +3041,16 @@ async def api_generate_video(request: dict):
     if not image_path.exists():
         raise HTTPException(status_code=404, detail=f"图片文件不存在: {image_path}")
     
+    # 获取 sourcing_code
+    sourcing_code = row["sourcing_code"] if row["sourcing_code"] else ecom_code
+    
     # 提交任务
     task_id = submit_video_task(
         ecom_code=ecom_code,
         image_path=str(image_path),
         duration=duration,
-        resolution=resolution
+        resolution=resolution,
+        sourcing_code=sourcing_code  # 新增
     )
     
     return {"success": True, "task_id": task_id}
@@ -3050,6 +3083,121 @@ async def api_delete_asset(ecom_code: str, asset_type: str, group_index: int):
     return {"success": True, "message": f"已删除 {asset_type} 组 {group_index}"}
 
 
+# ==================== 生成产品详情图 ====================
+
+class GenerateProductDetailsRequest(BaseModel):
+    """生成产品详情图请求"""
+    image_path: str
+    output_dir: Optional[str] = None
+    count: int = 9
+    aspect_ratio: str = "1:1"
+    resolution: str = "2K"
+    use_input_image: bool = True
+    custom_prompts: Optional[List[str]] = None
+
+
+# ==================== 上传图片生成素材 ====================
+
+UPLOAD_DIR = DATA_DIR / "uploads"
+UPLOAD_DIR.mkdir(exist_ok=True)
+
+
+@app.post("/api/assets/upload-image")
+async def api_upload_image(file: UploadFile):
+    """上传图片到临时目录"""
+    from fastapi import UploadFile
+    
+    # 验证文件类型
+    if not file.content_type or not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="请上传图片文件")
+    
+    # 验证文件大小（最大 10MB）
+    content = await file.read()
+    if len(content) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="图片大小不能超过 10MB")
+    
+    # 保存文件
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"upload_{timestamp}_{file.filename}"
+    filepath = UPLOAD_DIR / filename
+    
+    with open(filepath, "wb") as f:
+        f.write(content)
+    
+    # 返回路径和 URL
+    return {
+        "success": True,
+        "path": str(filepath),
+        "url": f"/uploads/{filename}",
+        "filename": filename
+    }
+
+
+@app.post("/api/assets/generate/upload")
+async def api_generate_from_upload(request: dict):
+    """从上传的图片生成素材"""
+    from .task_queue import submit_image_task, submit_video_task
+    
+    image_path = request.get("image_path")
+    asset_type = request.get("asset_type", "detail")
+    sourcing_code = request.get("sourcing_code")
+    
+    if not image_path:
+        raise HTTPException(status_code=400, detail="缺少 image_path")
+    
+    # 验证图片文件存在
+    if not Path(image_path).exists():
+        raise HTTPException(status_code=404, detail="图片文件不存在")
+    
+    # 如果没有关联货源，生成新的 sourcing_code
+    if not sourcing_code:
+        from datetime import datetime
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        sourcing_code = f"UPLOAD_{timestamp}"
+    
+    # 提交任务
+    if asset_type == "video":
+        duration = request.get("duration", 5)
+        resolution = request.get("resolution", "480p")
+        
+        task_id = submit_video_task(
+            ecom_code=sourcing_code.split("_")[0] if "_" in sourcing_code else sourcing_code,
+            image_path=image_path,
+            duration=duration,
+            resolution=resolution,
+            sourcing_code=sourcing_code
+        )
+    else:
+        task_id = submit_image_task(
+            ecom_code=sourcing_code.split("_")[0] if "_" in sourcing_code else sourcing_code,
+            image_path=image_path,
+            task_type=asset_type,
+            sourcing_code=sourcing_code
+        )
+    
+    return {"success": True, "task_id": task_id, "sourcing_code": sourcing_code}
+
+
+@app.post("/api/generate-product-details")
+async def api_generate_product_details(request: GenerateProductDetailsRequest):
+    """生成产品详情图 API"""
+    import sys
+    sys.path.insert(0, str(BASE_DIR / "src"))
+    from generate_product_details import generate_product_details
+    
+    result = generate_product_details(
+        image_path=request.image_path,
+        output_dir=request.output_dir,
+        count=request.count,
+        aspect_ratio=request.aspect_ratio,
+        resolution=request.resolution,
+        use_input_image=request.use_input_image,
+        custom_prompts=request.custom_prompts
+    )
+    
+    return result
+
+
 # ==================== 服务启动 ====================
 
 def run_server(host: str = "0.0.0.0", port: int = 8000):
@@ -3075,6 +3223,11 @@ def run_server(host: str = "0.0.0.0", port: int = 8000):
     assets_data_dir = DATA_DIR / "assets"
     if assets_data_dir.exists():
         app.mount("/assets-data", StaticFiles(directory=str(assets_data_dir)), name="assets-data")
+    
+    # 挂载上传目录 - 用于上传图片访问
+    uploads_dir = DATA_DIR / "uploads"
+    uploads_dir.mkdir(exist_ok=True)
+    app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
 
     print(f"\n{'='*60}")
     print(f"EcomAgent Data Viewer")

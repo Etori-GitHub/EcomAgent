@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state, property } from 'lit/decorators.js';
+import './upload-generator';
 
 @customElement('ea-assets-page')
 export class EaAssetsPage extends LitElement {
@@ -8,13 +9,16 @@ export class EaAssetsPage extends LitElement {
   @state() private searchQuery = '';
   @state() private assets: any[] = [];
   @state() private loading = true;
-  @state() private showGenerateModal = false;
-  @state() private generating = false;
-  @state() private generateType = 'showcase';  // 'showcase' | 'video' | 'detail'
-  @state() private selectedEcomCode = '';
-  @state() private sourcingList: any[] = [];
-  @state() private taskInfo: any = null;
-  @state() private pollingTask = false;
+  @state() private showUploadModal = false;  // 上传弹框
+
+  // 保留原有状态变量，暂不删除
+  // @state() private showGenerateModal = false;
+  // @state() private generating = false;
+  // @state() private generateType = 'showcase';
+  // @state() private selectedEcomCode = '';
+  // @state() private sourcingList: any[] = [];
+  // @state() private taskInfo: any = null;
+  // @state() private pollingTask = false;
 
   static styles = css`
     :host {
@@ -423,7 +427,6 @@ export class EaAssetsPage extends LitElement {
       this.searchQuery = this.ecomCode;
     }
     this.loadAssets();
-    this.loadSourcingList();
   }
 
   protected updated(changedProperties: Map<string, any>) {
@@ -455,15 +458,16 @@ export class EaAssetsPage extends LitElement {
     this.requestUpdate();
   }
 
-  async loadSourcingList() {
-    try {
-      const response = await fetch('/api/sourcing/list?limit=100');
-      const data = await response.json();
-      this.sourcingList = data.items || [];
-    } catch (e) {
-      console.error('[AssetsPage] 加载货源列表失败:', e);
-    }
-  }
+  // 保留 loadSourcingList 方法，暂不删除
+  // async loadSourcingList() {
+  //   try {
+  //     const response = await fetch('/api/sourcing/list?limit=100');
+  //     const data = await response.json();
+  //     this.sourcingList = data.items || [];
+  //   } catch (e) {
+  //     console.error('[AssetsPage] 加载货源列表失败:', e);
+  //   }
+  // }
 
   private _onSearch(e: KeyboardEvent) {
     if (e.key === 'Enter') {
@@ -476,99 +480,112 @@ export class EaAssetsPage extends LitElement {
     this.searchQuery = input.value;
   }
 
-  private _openGenerateModal() {
-    this.showGenerateModal = true;
-    this.selectedEcomCode = this.ecomCode || '';
-    this.generateType = 'showcase';
-    this.taskInfo = null;
-    this.generating = false;
+  private _openUploadModal() {
+    this.showUploadModal = true;
+    this.requestUpdate();
+    console.log('[AssetsPage] _openUploadModal called, showUploadModal:', this.showUploadModal);
   }
 
-  private _closeGenerateModal() {
-    this.showGenerateModal = false;
-    this.pollingTask = false;
+  private _closeUploadModal() {
+    this.showUploadModal = false;
+    this.requestUpdate();
+    console.log('[AssetsPage] _closeUploadModal called, showUploadModal:', this.showUploadModal);
   }
 
-  private async _startGenerate() {
-    if (!this.selectedEcomCode) {
-      alert('请选择货源');
-      return;
-    }
+  // 保留原有方法，暂不删除
+  // private _openGenerateModal() {
+  //   this.showGenerateModal = true;
+  //   this.selectedEcomCode = this.ecomCode || '';
+  //   this.generateType = 'showcase';
+  //   this.taskInfo = null;
+  //   this.generating = false;
+  // }
 
-    this.generating = true;
-    
-    try {
-      let endpoint = '/api/assets/generate/image';
-      let body: any = {
-        ecom_code: this.selectedEcomCode,
-        asset_type: this.generateType
-      };
+  // private _closeGenerateModal() {
+  //   this.showGenerateModal = false;
+  //   this.pollingTask = false;
+  // }
 
-      if (this.generateType === 'video') {
-        endpoint = '/api/assets/generate/video';
-        body = {
-          ecom_code: this.selectedEcomCode,
-          duration: 5,
-          resolution: '480p'
-        };
-      }
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        this.taskInfo = {
-          task_id: result.task_id,
-          status: 'pending',
-          progress: 0,
-          message: '任务已提交...'
-        };
-        this.pollingTask = true;
-        this._pollTaskStatus(result.task_id);
-      } else {
-        alert('生成任务提交失败: ' + result.message);
-        this.generating = false;
-      }
-    } catch (e) {
-      console.error('生成失败:', e);
-      alert('生成失败，请检查服务器连接');
-      this.generating = false;
-    }
-  }
-
-  private async _pollTaskStatus(taskId: string) {
-    while (this.pollingTask) {
-      try {
-        const response = await fetch(`/api/tasks/${taskId}`);
-        const task = await response.json();
-        this.taskInfo = task;
-
-        if (task.status === 'success' || task.status === 'failed') {
-          this.pollingTask = false;
-          this.generating = false;
-
-          if (task.status === 'success') {
-            await this.loadAssets();
-            this.showGenerateModal = false;
-          } else {
-            alert('生成失败: ' + task.error);
-          }
-          break;
-        }
-
-        await new Promise(r => setTimeout(r, 2000));
-      } catch (e) {
-        console.error('轮询任务状态失败:', e);
-        this.pollingTask = false;
-        this.generating = false;
-      }
-    }
-  }
+  // private async _startGenerate() {
+  //   if (!this.selectedEcomCode) {
+  //     alert('请选择货源');
+  //     return;
+  //   }
+  //
+  //   this.generating = true;
+  //   
+  //   try {
+  //     let endpoint = '/api/assets/generate/image';
+  //     let body: any = {
+  //       ecom_code: this.selectedEcomCode,
+  //       asset_type: this.generateType
+  //     };
+  //
+  //     if (this.generateType === 'video') {
+  //       endpoint = '/api/assets/generate/video';
+  //       body = {
+  //         ecom_code: this.selectedEcomCode,
+  //         duration: 5,
+  //         resolution: '480p'
+  //       };
+  //     }
+  //
+  //     const response = await fetch(endpoint, {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify(body)
+  //     });
+  //
+  //     const result = await response.json();
+  //
+  //     if (result.success) {
+  //       this.taskInfo = {
+  //         task_id: result.task_id,
+  //         status: 'pending',
+  //         progress: 0,
+  //         message: '任务已提交...'
+  //       };
+  //       this.pollingTask = true;
+  //       this._pollTaskStatus(result.task_id);
+  //     } else {
+  //       alert('生成任务提交失败: ' + result.message);
+  //       this.generating = false;
+  //     }
+  //   } catch (e) {
+  //     console.error('生成失败:', e);
+  //     alert('生成失败，请检查服务器连接');
+  //     this.generating = false;
+  //   }
+  // }
+  //
+  // private async _pollTaskStatus(taskId: string) {
+  //   while (this.pollingTask) {
+  //     try {
+  //       const response = await fetch(`/api/tasks/${taskId}`);
+  //       const task = await response.json();
+  //       this.taskInfo = task;
+  //
+  //       if (task.status === 'success' || task.status === 'failed') {
+  //         this.pollingTask = false;
+  //         this.generating = false;
+  //
+  //         if (task.status === 'success') {
+  //           await this.loadAssets();
+  //           this.showGenerateModal = false;
+  //         } else {
+  //           alert('生成失败: ' + task.error);
+  //         }
+  //         break;
+  //       }
+  //
+  //       await new Promise(r => setTimeout(r, 2000));
+  //     } catch (e) {
+  //       console.error('轮询任务状态失败:', e);
+  //       this.pollingTask = false;
+  //       this.generating = false;
+  //     }
+  //   }
+  // }
 
   private _openFolder(ecomCode: string, assetType: string, groupIndex: number) {
     // 调用后端 API 打开文件夹
@@ -655,8 +672,8 @@ export class EaAssetsPage extends LitElement {
                 @keydown=${this._onSearch}
               />
             </div>
-            <button class="generate-btn" @click=${this._openGenerateModal}>
-              + 生成素材
+            <button class="generate-btn" @click=${() => { console.log('[AssetsPage] 按钮被点击'); this._openUploadModal(); }}>
+              + 上传生成
             </button>
           </div>
         </div>
@@ -735,69 +752,14 @@ export class EaAssetsPage extends LitElement {
         `}
       </div>
 
-      ${this.showGenerateModal ? html`
+      ${this.showUploadModal ? html`
         <div class="modal-overlay" @click=${(e: Event) => {
-          if (e.target === e.currentTarget && !this.generating) this._closeGenerateModal();
+          if (e.target === e.currentTarget) this._closeUploadModal();
         }}>
           <div class="modal-content">
-            <div class="modal-title">生成素材</div>
-            
-            <div class="form-group">
-              <label class="form-label">选择货源</label>
-              <select class="form-select" .value=${this.selectedEcomCode} @change=${(e: Event) => {
-                this.selectedEcomCode = (e.target as HTMLSelectElement).value;
-              }}>
-                <option value="">请选择...</option>
-                ${this.sourcingList.map((item: any) => html`
-                  <option value=${item.ecom_code}>${item.title || item.ecom_code}</option>
-                `)}
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">资源类型</label>
-              <div class="type-options">
-                <button 
-                  class="type-option ${this.generateType === 'showcase' ? 'active' : ''}"
-                  @click=${() => { this.generateType = 'showcase'; }}
-                >
-                  <div class="type-option-label">🖼️ 展示图</div>
-                  <div class="type-option-desc">9张营销图</div>
-                </button>
-                <button 
-                  class="type-option ${this.generateType === 'video' ? 'active' : ''}"
-                  @click=${() => { this.generateType = 'video'; }}
-                >
-                  <div class="type-option-label">🎬 视频</div>
-                  <div class="type-option-desc">宣传视频</div>
-                </button>
-                <button 
-                  class="type-option ${this.generateType === 'detail' ? 'active' : ''}"
-                  @click=${() => { this.generateType = 'detail'; }}
-                >
-                  <div class="type-option-label">📋 详情图</div>
-                  <div class="type-option-desc">详情页图片</div>
-                </button>
-              </div>
-            </div>
-
-            ${this.taskInfo ? html`
-              <div class="task-progress">
-                <div class="task-status">${this.taskInfo.message || '处理中...'}</div>
-                <div class="task-bar">
-                  <div class="task-bar-fill" style="width: ${this.taskInfo.progress || 0}%"></div>
-                </div>
-              </div>
-            ` : ''}
-
-            <div class="modal-actions">
-              <button class="modal-btn cancel" @click=${this._closeGenerateModal} ?disabled=${this.generating}>
-                取消
-              </button>
-              <button class="modal-btn confirm" @click=${this._startGenerate} ?disabled=${this.generating}>
-                ${this.generating ? '生成中...' : '开始生成'}
-              </button>
-            </div>
+            <upload-generator
+              @close=${this._closeUploadModal}
+            ></upload-generator>
           </div>
         </div>
       ` : ''}

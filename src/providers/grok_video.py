@@ -137,6 +137,10 @@ class GrokVideoProvider(VideoProvider):
     ) -> Dict:
         """内部视频生成方法（实际调用API）"""
         try:
+            print(f"[Grok] Starting video generation...")
+            print(f"[Grok] Model: {self.model_name}")
+            print(f"[Grok] Duration: {duration}s, Resolution: {resolution}, Aspect: {aspect_ratio}")
+            
             # 构建请求体
             payload = {
                 "model": self.model_name,
@@ -149,13 +153,15 @@ class GrokVideoProvider(VideoProvider):
             # 如果提供了图片，添加 image_url
             # 注意：grok-imagine-video 只支持 public URL，不支持 base64
             if input_image:
+                print(f"[Grok] Input image provided")
                 if isinstance(input_image, str):
                     if input_image.startswith('http'):
                         # 已经是 URL，直接使用
                         payload["image"] = {"url": input_image}
+                        print(f"[Grok] Using image URL: {input_image[:80]}...")
                     elif Path(input_image).exists():
                         # 本地文件路径，先压缩再上传到 ImgBB 获取 URL
-                        print(f"[Grok] 准备图片...")
+                        print(f"[Grok] Uploading local image...")
                         
                         # 检查并压缩图片（如果太大）
                         image_path = input_image
@@ -246,9 +252,31 @@ class GrokVideoProvider(VideoProvider):
 
             # 第1步：提交生成请求
             url = f"{self.base_url}/videos/generations"
-            print(f"[Grok] 提交视频生成请求...")
-            print(f"[Grok] 参数: duration={duration}, resolution={resolution}, aspect_ratio={aspect_ratio}")
-            response = requests.post(url, headers=headers, json=payload, timeout=60)
+            print(f"[Grok] Submitting video generation request...")
+            print(f"[Grok] API URL: {url}")
+            print(f"[Grok] Payload size: {len(json.dumps(payload))} bytes")
+            
+            # 配置代理
+            proxy_url = None
+            try:
+                settings_file = Path(__file__).parent.parent.parent / "config" / "settings.json"
+                if settings_file.exists():
+                    with open(settings_file, 'r', encoding='utf-8') as f:
+                        settings = json.load(f)
+                        proxy_config = settings.get('proxy', {})
+                        if proxy_config.get('enabled', True):
+                            host = proxy_config.get('host', '127.0.0.1')
+                            port = proxy_config.get('port', 7890)
+                            proxy_url = f"http://{host}:{port}"
+            except:
+                pass
+            
+            if not proxy_url:
+                proxy_url = 'http://127.0.0.1:7891'  # 改用 SOCKS5 端口
+            
+            print(f"[Grok] Using proxy: {proxy_url}")
+            
+            response = requests.post(url, headers=headers, json=payload, timeout=120, proxies={"http": proxy_url, "https": proxy_url})
             response.raise_for_status()
 
             result = response.json()
@@ -262,7 +290,7 @@ class GrokVideoProvider(VideoProvider):
                 }
 
             # 第2步：轮询获取结果
-            poll_result = self._poll_for_result(request_id, headers)
+            poll_result = self._poll_for_result(request_id, headers, proxy_url=proxy_url)
 
             if poll_result['status'] != 'success':
                 return poll_result
@@ -304,17 +332,23 @@ class GrokVideoProvider(VideoProvider):
         request_id: str,
         headers: Dict,
         poll_interval: int = 5,
-        max_wait_time: int = 600
+        max_wait_time: int = 600,
+        proxy_url: str = None
     ) -> Dict:
         """轮询获取视频生成结果"""
         url = f"{self.base_url}/videos/{request_id}"
         start_time = time.time()
+        
+        if not proxy_url:
+            proxy_url = 'http://127.0.0.1:7890'
 
         print(f"[Grok] 开始轮询，Request ID: {request_id}")
+        print(f"[Grok] Polling URL: {url}")
 
         while True:
             try:
-                response = requests.get(url, headers=headers, timeout=60)
+                proxies = {"http": proxy_url, "https": proxy_url}
+                response = requests.get(url, headers=headers, timeout=60, proxies=proxies)
                 response.raise_for_status()
 
                 data = response.json()
@@ -383,11 +417,18 @@ class GrokVideoProvider(VideoProvider):
             except Exception as e:
                 return {"status": "error", "error": {"message": str(e)}}
 
-    def _download_video(self, video_url: str, output_path: str, max_retries: int = 3) -> bool:
+    def _download_video(self, video_url: str, output_path: str, max_retries: int = 3, proxy_url: str = None) -> bool:
         """下载视频到本地，支持重试"""
+        if not proxy_url:
+            proxy_url = 'http://127.0.0.1:7890'
+        
+        proxies = {"http": proxy_url, "https": proxy_url}
+        
         for attempt in range(max_retries):
             try:
                 print(f"[Grok] 下载视频... (尝试 {attempt + 1}/{max_retries})")
+                print(f"[Grok] Video URL: {video_url}")
+                print(f"[Grok] Using proxy: {proxy_url}")
                 
                 # 使用更保守的参数，避免连接中断
                 response = requests.get(
@@ -397,7 +438,8 @@ class GrokVideoProvider(VideoProvider):
                     headers={
                         'Accept': '*/*',
                         'Accept-Encoding': 'identity',  # 禁用压缩，避免解码问题
-                    }
+                    },
+                    proxies=proxies
                 )
                 response.raise_for_status()
 

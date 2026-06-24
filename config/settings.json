@@ -1,3 +1,10 @@
 {
-  "app_name": "麻辣小龙虾"
+  "app_name": "麻辣小龙虾",
+  "country": "马来西亚",
+  "language": "马来语",
+  "proxy": {
+    "host": "127.0.0.1",
+    "port": 7890,
+    "enabled": true
+  }
 }

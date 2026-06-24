@@ -62,6 +62,22 @@ def generate_images(
     """
     logger = get_logger()
     
+    # 加载系统设置（国家/语言）
+    settings_file = Path(__file__).parent.parent / "config" / "settings.json"
+    target_country = None
+    target_language = None
+    
+    if settings_file.exists():
+        try:
+            with open(settings_file, 'r', encoding='utf-8') as f:
+                settings = json.load(f)
+                target_country = settings.get('country')
+                target_language = settings.get('language')
+                if target_country or target_language:
+                    print(f"[Config] 目标国家: {target_country}, 目标语言: {target_language}")
+        except Exception as e:
+            print(f"[Config] 读取设置失败: {e}")
+    
     # 验证输入图片
     if not Path(image_path).exists():
         error_msg = f"输入图片不存在: {image_path}"
@@ -94,7 +110,9 @@ def generate_images(
     prompt_result = prompt_provider.generate_image_prompts(
         image_path=image_path,
         count=9,
-        language="english"
+        language="english",
+        target_country=target_country,
+        target_language=target_language
     )
     
     if prompt_result['status'] != 'success':

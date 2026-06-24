@@ -3,7 +3,7 @@
     "default": "flash_image",
     "available": ["flash_image"],
     "flash_image": {
-      "model": "gemini-3.1-flash-image-preview",
+      "model": "gemini-2.5-flash-image",
       "aspect_ratios": ["1:1", "16:9", "9:16", "4:3", "3:4"],
       "resolutions": ["512px", "1K", "2K", "4K"]
     }

@@ -69,7 +69,25 @@ SCENE_STYLES = [
 SCENE_PROMPT_TEMPLATE = """Photorealistic professional e-commerce lifestyle product photography using the exact reference image as the product source -- the product must remain 100% identical in every single detail: precise shape, exact original colors, perfect logo/text/font placement and spelling, identical packaging, materials, textures, labels, proportions, reflections, no alterations, no redesign, no stylization, no improvements, no hallucinations or changes whatsoever to the product itself. Preserve all original features faithfully with maximum fidelity. Integrate the unchanged product naturally and seamlessly into a premium, aspirational real-life usage scene: {scene_description}. High-end commercial advertising style with premium advertising aesthetic, world-class photography quality, fixed 9:16 vertical aspect ratio composition, subject positioned as the clear focal point commanding viewer attention, sophisticated and balanced composition, ideal hero product placement and flattering angle for online store showcase, professional cinematic lighting: soft diffused key light from {light_direction} + gentle natural fill + subtle realistic rim/highlight on product edges, accurate soft shadows falling naturally on surfaces, realistic reflections and caustics where appropriate, shallow to medium depth of field with creamy background blur (f/2.8-f/4 aesthetic), razor-sharp critical focus exclusively on the product, hyper-realistic materials and surfaces, clean aspirational mood that evokes desire and quality, no text overlays, no watermarks, no distracting or obscuring elements on or covering the product. Ultra-high resolution 8K, RAW photo quality, shot on professional full-frame camera like Canon EOS R5 or Sony A1 with 85mm or 100mm prime lens, subtle film-like color grading."""
 
 # 视频生成提示词模板
-VIDEO_PROMPT_TEMPLATE = """Using the uploaded reference image as the exact product and starting scene, create a premium cinematic product advertisement video with premium advertising aesthetic and world-class photography quality. First analyze the product's theme, design style, colors, materials, and surrounding environment in the image, then craft a natural, engaging, story-driven showcase that feels like a high-end commercial. Feature elegant dynamic product showcase with subtle, realistic interactions relevant to the product (such as gentle handling, natural usage, pouring, wearing, or environmental interaction) while keeping the product perfectly centered and heroically highlighted. Showcase the product through dynamic camera movements and professional cinematography techniques. Use smooth, fluid cinematic camera movements -- slow push-in, gentle tracking shot, subtle elegant orbit, or graceful dolly -- to reveal beautiful details from multiple flattering angles in a seamless, continuous flow. Maintain 100% visual fidelity to the original product in every frame: exact shape, precise colors, perfect logo placement and text, identical materials, textures, reflections, and all details -- no morphing, distortion, hallucination, or added parts whatsoever. CRITICAL: Maintain the exact aspect ratio and proportions of the original product image, strictly prohibit any stretching, squeezing, or distortion of the product shape. Preserve the original width-to-height ratio of all items in the image. Fixed 9:16 vertical aspect ratio composition, subject positioned as the clear focal point commanding viewer attention. Enhance the original scene with consistent premium atmosphere, professional soft studio wrap-around lighting plus natural cinematic enhancements, realistic sliding reflections and soft shadows that perfectly match the motion. Output an ultra-cinematic product advertisement video: ultra-smooth 60fps-like fluid motion, hyper-realistic photorealistic rendering, razor-sharp clarity and ultra-high detail, professional Hollywood color grading, high dynamic range, cinematic depth of field, clean aspirational mood, masterpiece commercial quality, no artifacts, no jitter, no flicker. Negative: choppy transitions, erratic movement, background changes or flicker, excessive zooming, shape distortion, blurry details, low quality, morphing, artifacts, unnatural motion, stretching, squeezing, aspect ratio changes."""
+VIDEO_PROMPT_TEMPLATE = """Using the uploaded reference image as the exact product and starting scene, create a premium cinematic product advertisement video with premium advertising aesthetic and world-class photography quality. First analyze the product's theme, design style, colors, materials, and surrounding environment in the image, then craft a natural, engaging, story-driven showcase that feels like a high-end commercial. Feature elegant dynamic product showcase with subtle, realistic interactions relevant to the product (such as gentle handling, natural usage, pouring, wearing, or environmental interaction) while keeping the product perfectly centered and heroically highlighted. Showcase the product through dynamic camera movements and professional cinematography techniques. Use smooth, fluid cinematic camera movements -- slow push-in, gentle tracking shot, subtle elegant orbit, or graceful dolly -- to reveal beautiful details from multiple flattering angles in a seamless, continuous flow. Maintain 100% visual fidelity to the original product in every frame: exact shape, precise colors, perfect logo placement and text, identical materials, textures, reflections, and all details -- no morphing, distortion, hallucination, or added parts whatsoever. CRITICAL: Maintain the exact aspect ratio and proportions of the original product image, strictly prohibit any stretching, squeezing, or distortion of the product shape. Preserve the original width-to-height ratio of all items in the image. Fixed 9:16 vertical aspect ratio composition, subject positioned as the clear focal point commanding viewer attention. Enhance the original scene with consistent premium atmosphere, professional soft studio wrap-around lighting plus natural cinematic enhancements, realistic sliding reflections and soft shadows that perfectly match the motion. Output an ultra-cinematic product advertisement video: ultra-smooth 60fps-like fluid motion, hyper-realistic photorealistic rendering, razor-sharp clarity and ultra-high detail, professional Hollywood color grading, high dynamic range, cinematic depth of field, clean aspirational mood, masterpiece commercial quality, no artifacts, no jitter, no flicker. IMPORTANT: Any visible text, labels, packaging, or promotional elements in the video should remain consistent with the product's original appearance. Negative: choppy transitions, erratic movement, background changes or flicker, excessive zooming, shape distortion, blurry details, low quality, morphing, artifacts, unnatural motion, stretching, squeezing, aspect ratio changes."""
+
+# 视频生成提示词模板（带语言约束）
+def get_video_prompt_template(target_country: str = None, target_language: str = None) -> str:
+    """获取视频提示词模板，包含目标语言约束"""
+    base_template = VIDEO_PROMPT_TEMPLATE
+    
+    if target_country and target_language:
+        language_constraint = f"""
+
+TARGET AUDIENCE CONSTRAINT:
+- Target market: {target_country}
+- Primary language: {target_language}
+- Any voiceover or narration text should be in {target_language}
+- Any promotional text visible in frames should use {target_language}
+- The overall style should appeal to {target_country} consumers"""
+        return base_template + language_constraint
+    
+    return base_template
 
 
 def generate_scene_prompts(image_path: str, styles: list) -> list:
@@ -137,6 +155,22 @@ def generate_video_v3(image_path: str, user_id: str = None, duration: int = 5,
     """
     logger = get_logger()
     
+    # 加载系统设置（国家/语言）
+    settings_file = Path(__file__).parent.parent / "config" / "settings.json"
+    target_country = None
+    target_language = None
+    
+    if settings_file.exists():
+        try:
+            with open(settings_file, 'r', encoding='utf-8') as f:
+                settings = json.load(f)
+                target_country = settings.get('country')
+                target_language = settings.get('language')
+                if target_country or target_language:
+                    print(f"[Config] 目标国家: {target_country}, 目标语言: {target_language}")
+        except Exception as e:
+            print(f"[Config] 读取设置失败: {e}")
+    
     # 验证输入图片
     if not Path(image_path).exists():
         error_msg = f"输入图片不存在: {image_path}"
@@ -172,8 +206,31 @@ def generate_video_v3(image_path: str, user_id: str = None, duration: int = 5,
     # Step 0: 生成高质量首帧模特图
     print("[步骤0] 生成高质量首帧模特图...")
     
+    # 先把输入图片调整到 9:16 比例（填充白底），这样生成的首帧自然就是 9:16
+    from utils.image_ratio import check_aspect_ratio, pad_to_aspect_ratio
+    
+    ratio_check = check_aspect_ratio(image_path, "9:16")
+    adjusted_image_path = image_path
+    
+    if ratio_check['status'] == 'success' and not ratio_check['matches']:
+        print(f"  [Input] 输入图片比例 {ratio_check['current_ratio']:.2f} 不符合 9:16，正在调整...")
+        adjusted_image_path = str(output_dir / "input_adjusted.png")
+        pad_result = pad_to_aspect_ratio(image_path, "9:16", adjusted_image_path)
+        if pad_result['status'] == 'success':
+            print(f"  [Input] 已填充到 9:16: {pad_result['new_size']}")
+        else:
+            print(f"  [Input] 调整失败，使用原始图片: {pad_result.get('error', {}).get('message')}")
+            adjusted_image_path = image_path
+    else:
+        print(f"  [Input] 输入图片比例符合 9:16")
+    
     gemini = GeminiPromptProvider()
-    model_result = gemini.generate_model_frame(image_path, language="english")
+    model_result = gemini.generate_model_frame(
+        adjusted_image_path, 
+        language="english",
+        target_country=target_country,
+        target_language=target_language
+    )
     
     if model_result['status'] != 'success':
         error_msg = model_result.get('error', {}).get('message', '首帧模特图生成失败')
@@ -186,14 +243,17 @@ def generate_video_v3(image_path: str, user_id: str = None, duration: int = 5,
     flash = FlashImageProvider()
     model_frame_path = str(output_dir / "model_frame.png")
     
+    # 提示词中加入比例要求
+    prompt_with_ratio = model_result['prompt'] + " Output in 9:16 vertical aspect ratio."
+    
     max_retries = 3
     result = None
     for attempt in range(max_retries):
         try:
             result = flash.generate_image(
-                prompt=model_result['prompt'],
+                prompt=prompt_with_ratio,
                 output_path=model_frame_path,
-                input_image=image_path,
+                input_image=adjusted_image_path,  # 使用调整后的 9:16 图片
                 aspect_ratio="9:16",
                 resolution="2K"
             )
@@ -249,8 +309,8 @@ def generate_video_v3(image_path: str, user_id: str = None, duration: int = 5,
         
         video_path = str(output_dir / f"video_{i:02d}.mp4")
         
-        # 构建视频提示词（不带广告词）
-        video_prompt_with_voice = VIDEO_PROMPT_TEMPLATE
+        # 构建视频提示词（带语言约束）
+        video_prompt_with_voice = get_video_prompt_template(target_country, target_language)
         
         result = grok.generate_video(
             prompt=video_prompt_with_voice,
