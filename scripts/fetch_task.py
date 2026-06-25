@@ -524,9 +524,15 @@ class FetchTask:
                 
                 self.save_task(categories)
                 
+                # TikTok 抓取间隔：1-5 分钟（避免被封）
                 if i < len(to_fetch) - 1:
-                    wait = random_wait(3000, 8000)
-                    print(f"[INFO] 等待 {wait}ms...")
+                    if self.platform == 'tiktok':
+                        wait_seconds = random.randint(60, 300)  # 1-5 分钟
+                        print(f"[INFO] TikTok 间隔 {wait_seconds} 秒...")
+                        time.sleep(wait_seconds)
+                    else:
+                        wait = random_wait(3000, 8000)
+                        print(f"[INFO] 等待 {wait}ms...")
                     time.sleep(wait / 1000)
             
             self.status = 'completed'

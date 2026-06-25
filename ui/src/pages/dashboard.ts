@@ -104,8 +104,10 @@ export class EaDashboard extends LitElement {
   }
 
   private async _togglePanel(platform: 'amazon' | 'tiktok') {
+    // 如果点击的是当前已展开的面板，则关闭
     if (this.expandedPanel === platform) {
       this.expandedPanel = null;
+      this.requestUpdate();
       return;
     }
     
@@ -151,7 +153,7 @@ export class EaDashboard extends LitElement {
     }
   }
 
-  private async _toggleCategory(platform: 'amazon' | 'tiktok', categoryId: number, enabled: boolean) {
+  private async _toggleCategory(platform: 'amazon' | 'tik', categoryId: number, enabled: boolean) {
     try {
       await fetch(`/api/categories/${categoryId}/enabled?enabled=${enabled}`, { method: 'PUT' });
       // 更新本地状态
@@ -163,6 +165,41 @@ export class EaDashboard extends LitElement {
       };
     } catch (e) {
       alert(`更新失败: ${e}`);
+    }
+  }
+
+  private async _selectAllCategories(platform: 'amazon' | 'tiktok') {
+    const cats = this.categories[platform];
+    try {
+      // 批量更新
+      await Promise.all(
+        cats.map(cat => 
+          fetch(`/api/categories/${cat.id=true`, { method: 'PUT' })
+        )
+      );
+      // 更新本地状态
+      this        ...this.categories        [platform]: cats.map(c => ({ ...c, enabled: 1 }))
+      };
+    } catch) {
+      alert(`全e}`);
+    }
+  }
+
+  private async _deselectAllCategories(platform: 'amazon' | 'tiktok') {
+    const cats = this.categories[platform];
+    try {
+      // 批量更新
+      await Promise.all(
+        cats.map(cat => 
+          fetch(`/api/categories/${cat.id}/enabled?enabled=false`, { method: 'PUT' })
+        )
+      );
+      // 更新本地状态
+      this.categories = {
+]: cats.map(c => ({ ...c, enabled: 0 }))
+      };
+    } catch (e) {
+      alert(`取消全选失败: ${e}`);
     }
   }
 
@@ -257,6 +294,12 @@ export class EaDashboard extends LitElement {
           <div class="fetch-actions">
             <button @click=${() => this._refreshCategories(platform)} ?disabled=${isLoading}>
               刷新类目
+            </button>
+            <button @click=${() => this._selectAllCategories(platform)} ?disabled=${isLoading || cats.length === 0}>
+              全选
+            </button>
+            <button @click=${() => this._deselectAllCategories(platform)} ?disabled=${isLoading || cats.length === 0}>
+              取消全选
             </button>
             <button
               class="primary"
