@@ -26,14 +26,6 @@ def random_wait(min_ms=1000, max_ms=3000):
     return wait_ms
 
 
-def human_like_scroll(page):
-    """模拟人类滚动"""
-    for _ in range(random.randint(3, 6)):
-        scroll_amount = random.randint(300, 800)
-        page.evaluate(f"window.scrollBy(0, {scroll_amount})")
-        time.sleep(random.uniform(0.5, 1.5))
-
-
 def extract_categories(page):
     """提取类目列表"""
     print(f"\n[INFO] 提取类目列表...")
@@ -72,7 +64,10 @@ def fetch_category_products(page, category_name, category_url):
     
     # 关键：也用 Google Referer！
     page.goto(category_url, timeout=60000, referer="https://www.google.com/")
-    random_wait(3000, 5000)
+    
+    # 等待页面加载（增加等待时间）
+    print(f"[INFO] 等待页面加载...")
+    random_wait(8000, 12000)  # 增加等待时间到 8-12 秒
     
     # 检查是否被封
     content = page.content()
@@ -80,56 +75,100 @@ def fetch_category_products(page, category_name, category_url):
         print(f"[ERROR] 类目页面被封")
         return None
     
-    # 滚动加载
-    human_like_scroll(page)
+    # 滚动加载更多商品
+    print(f"[INFO] 滚动加载商品...")
+    for i in range(8):  # 多滚动几次
+        page.evaluate(f"window.scrollBy(0, {600 + random.randint(100, 400)})")
+        time.sleep(0.8)
+    
+    # 再等待一下让商品渲染
+    random_wait(3000, 5000)
     
     # 提取商品
     print(f"[INFO] 提取商品...")
     
+    # 先检查页面内容
+    page_text = page.content()
+    print(f"[DEBUG] 页面长度: {len(page_text)} chars")
+    
     products = page.evaluate("""
         () => {
             const items = [];
-            const priceElements = Array.from(document.querySelectorAll('*')).filter(el => {
-                const text = el.innerText || el.textContent || '';
-                return text.includes('$') && /\\$\\d+\\.\\d+/.test(text);
-            });
             
-            priceElements.forEach(priceEl => {
+            // 方法1: 找所有商品链接
+            const productLinks = document.querySelectorAll('a[href*="/shop/pdp/"]');
+            
+            productLinks.forEach(link => {
                 try {
-                    const text = priceEl.innerText.trim();
-                    if (text.includes('Orders') || text.includes('销售')) return;
+                    // 找商品名称
+                    let name = '';
                     
-                    let container = priceEl.parentElement;
-                    let depth = 0;
+                    // 尝试从链接本身获取文本
+                    const linkText = link.innerText.trim();
+                    if (linkText && linkText.length >= 5 && linkText.length < 100) {
+                        name = linkText;
+                    }
                     
-                    while (container && depth < 6) {
-                        const nameEl = container.querySelector('h3');
-                        if (nameEl) {
-                            const name = nameEl.innerText.trim();
-                            if (name && name.length >= 5) {
-                                const priceMatch = text.match(/\\$(\\d+\\.\\d+)/);
-                                const price = priceMatch ? parseFloat(priceMatch[1]) : null;
-                                
-                                const linkEl = container.querySelector('a[href*="/shop/pdp/"]');
-                                const productUrl = linkEl?.href || null;
-                                
-                                if (name && price) {
-                                    items.push({ name, price, productUrl });
+                    // 如果链接没有文本，从父容器找
+                    if (!name) {
+                        const parent = link.closest('[class*="product"]') || 
+                                      link.closest('[class*="item"]') || 
+                                      link.parentElement?.parentElement;
+                        if (parent) {
+                            // 找所有文本元素
+                            const textEls = parent.querySelectorAll('span, div, p, h3, h4');
+                            for (const el of textEls) {
+                                const t = el.innerText.trim();
+                                // 商品名称通常是中等长度的文本
+                                if (t.length >= 5 && t.length < 100 && !t.includes('$') && !t.includes('已售')) {
+                                    name = t;
+                                    break;
                                 }
-                                break;
                             }
                         }
-                        container = container.parentElement;
-                        depth++;
                     }
+                    
+                    if (!name || name.length < 5) return;
+                    
+                    // 找价格
+                    let price = null;
+                    const container = link.closest('[class*="product"]') || 
+                                     link.closest('[class*="item"]') || 
+                                     link.parentElement?.parentElement;
+                    if (container) {
+                        const allText = container.innerText;
+                        const priceMatch = allText.match(/\\$(\\d+\\.\\d+)/);
+                        if (priceMatch) {
+                            price = parseFloat(priceMatch[1]);
+                        }
+                    }
+                    
+                    items.push({
+                        name: name.substring(0, 100),
+                        price: price,
+                        productUrl: link.href
+                    });
                 } catch (e) {}
             });
             
-            return items.slice(0, 30);
+            // 去重
+            const seen = new Set();
+            return items.filter(item => {
+                if (seen.has(item.productUrl)) return false;
+                seen.add(item.productUrl);
+                return true;
+            }).slice(0, 30);
         }
     """)
     
     print(f"[OK] 找到 {len(products)} 个商品")
+    
+    # 打印前几个商品名称用于调试
+    if products:
+        print(f"[示例] 前3个商品:")
+        for i, p in enumerate(products[:3]):
+            print(f"  {i+1}. {p['name'][:50]}... - ${p['price']}")
+    
     return products
 
 
@@ -166,7 +205,7 @@ def save_category_data(category, products):
 def fetch_all_categories():
     """主函数"""
     print(f"[INFO] 启动 TikTok Shop 抓取...")
-    print(f"[关键] 使用 Google Referer 绑过封禁")
+    print(f"[关键] 使用 Google Referer 绕过封禁")
     
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)
@@ -212,7 +251,7 @@ def fetch_all_categories():
         categories_file.parent.mkdir(parents=True, exist_ok=True)
         with open(categories_file, "w", encoding="utf-8") as f:
             json.dump(categories, f, ensure_ascii=False, indent=2)
-        print(f"[OK] 类目列表已保存")
+        print(f"[OK] 类目列表已保存: {categories_file}")
         
         # 抓取所有类目
         print(f"\n[步骤 2] 抓取 {len(categories)} 个类目...")
@@ -224,6 +263,8 @@ def fetch_all_categories():
             
             if products:
                 save_category_data(category, products)
+            else:
+                print(f"[WARN] 该类目没有抓到商品")
             
             if i < len(categories) - 1:
                 wait = random.randint(3000, 6000)

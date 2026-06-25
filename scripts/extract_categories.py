@@ -123,63 +123,28 @@ def extract_tiktok_categories():
     
     try:
         print("[INFO] 访问 TikTok Shop...")
-        page.goto("https://www.tiktok.com/shop", timeout=60000, wait_until='domcontentloaded')
+        # 关键：带上 Google Referer！
+        page.goto("https://shop.tiktok.com/us", timeout=60000, referer="https://www.google.com/")
         print(f"[OK] 页面已加载: {page.url}")
+        
+        # 检查是否被封
+        page_content = page.content()
+        if '{"code":100000}' in page_content:
+            print("[ERROR] 页面被封 (code:100000)")
+            print("[INFO] 请检查：")
+            print("  1. Referer 是否正确")
+            print("  2. 是否需要更换 IP")
+            browser.close()
+            p.stop()
+            return []
         
         # 等待页面稳定
         print("[INFO] 等待页面稳定...")
-        try:
-            page.wait_for_load_state('networkidle', timeout=15000)
-        except:
-            print("[WARN] networkidle 超时，继续...")
+        time.sleep(5)
         
-        # 检查是否被重定向
+        # 当前 URL
         current_url = page.url
         print(f"[INFO] 当前 URL: {current_url}")
-        
-        # 等待人机验证（最多30秒）
-        print("[INFO] 检查人机验证...")
-        for i in range(15):
-            try:
-                has_captcha = page.evaluate('''() => {
-                    const captcha = document.querySelector('.captcha_verify_container');
-                    return captcha && captcha.style.visibility === 'visible';
-                }''')
-            except:
-                has_captcha = False
-            
-            if has_captcha:
-                if i == 0:
-                    print("[INFO] 检测到人机验证，请在浏览器中手动完成...")
-                time.sleep(2)
-                print(f"[INFO] 等待验证... {i*2+2}秒")
-            else:
-                if i > 0:
-                    print("[OK] 人机验证已完成")
-                break
-        else:
-            print("[WARN] 人机验证等待超时，继续尝试提取...")
-        
-        # 等待页面内容加载
-        print("[INFO] 等待页面内容加载...")
-        page.wait_for_timeout(5000)
-        
-        # 等待链接出现（最多等30秒）
-        print("[INFO] 等待页面内容渲染...")
-        for i in range(30):
-            try:
-                link_count = page.evaluate("document.querySelectorAll('a').length")
-                if link_count > 0:
-                    print(f"[OK] 页面已加载，找到 {link_count} 个链接")
-                    break
-            except:
-                pass
-            page.wait_for_timeout(1000)
-            print(f"[INFO] 等待中... {i+1}秒")
-        else:
-            print("[WARN] 等待超时，尝试提取...")
-        
-        # 提取类目链接...
         
         try:
             # 先检查页面有多少链接
@@ -198,31 +163,30 @@ def extract_tiktok_categories():
             print(f"[INFO] 页面URL: {page.url}")
         
         # 提取所有链接
+        # 提取所有类目链接
         try:
             categories = page.evaluate('''() => {
-                const categories = [];
+                const cats = [];
                 
-                // 方法1: 直接找类目容器中的链接
-                const categoryLinks = document.querySelectorAll('a[href*="shop.tiktok.com/us/c/"]');
-                categoryLinks.forEach(link => {
-                    const href = link.href || '';
-                    const name = (link.textContent || '').trim();
-                    const dataId = link.getAttribute('data-id') || '';
+                // 找所有包含 /c/ 的链接
+                document.querySelectorAll('a').forEach(a => {
+                    const href = a.href || '';
+                    const text = (a.innerText || '').trim();
                     
-                    if (href && name && dataId) {
-                        categories.push({ 
-                            name: name, 
+                    if (href.includes('/c/') && text && text.length > 0 && text.length < 50) {
+                        cats.push({
+                            name: text,
                             url: href,
-                            id: dataId
+                            id: href.split('/c/')[1]?.split('/')[0] || ''
                         });
                     }
                 });
                 
                 // 去重
                 const seen = new Set();
-                return categories.filter(c => {
-                    if (seen.has(c.id) || !c.name) return false;
-                    seen.add(c.id);
+                return cats.filter(c => {
+                    if (seen.has(c.url) || !c.name) return false;
+                    seen.add(c.url);
                     return true;
                 });
             }''')
@@ -232,17 +196,11 @@ def extract_tiktok_categories():
         
         print(f"[OK] 找到 {len(categories)} 个类目")
         
-        # 如果没找到，打印一些链接用于调试
-        if len(categories) == 0 and link_count > 0:
-            sample_links = page.evaluate('''() => {
-                return Array.from(document.querySelectorAll('a')).slice(0, 30).map(a => ({
-                    href: a.href,
-                    text: a.textContent.trim().substring(0, 40)
-                })).filter(l => l.text.length > 0);
-            }''')
-            print("[DEBUG] 页面链接示例:")
-            for link in sample_links[:15]:
-                print(f"  {link['text']} -> {link['href'][:70]}")
+        # 打印示例
+        if categories:
+            print("[示例] 前5个类目:")
+            for i, cat in enumerate(categories[:5]):
+                print(f"  {i+1}. {cat['name']}")
         
     except Exception as e:
         print(f"[ERROR] 提取失败: {e}")

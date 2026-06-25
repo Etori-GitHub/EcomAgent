@@ -270,7 +270,8 @@ class FetchTask:
         products = []
         
         try:
-            self.page.goto(category['url'], timeout=120000)
+            # 关键：带上 Google Referer！
+            self.page.goto(category['url'], timeout=120000, referer="https://www.google.com/")
             self.page.wait_for_timeout(random_wait(10000, 15000))
             
             for _ in range(3):
