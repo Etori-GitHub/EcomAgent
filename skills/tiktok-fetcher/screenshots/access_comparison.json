@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-06-25T16:14:13.690343",
+  "test1_direct": {
+    "success": false,
+    "cookies": [],
+    "storage_keys": []
+  },
+  "test2_google": {
+    "success": true,
+    "cookies": [],
+    "storage_keys": [
+      "rc::a",
+      "sb_wiz.qc",
+      "sb_wiz.zpc.gws-wiz."
+    ]
+  },
+  "differences": {
+    "new_cookies": [],
+    "new_storage_keys": [
+      "rc::a",
+      "sb_wiz.qc",
+      "sb_wiz.zpc.gws-wiz."
+    ]
+  }
+}

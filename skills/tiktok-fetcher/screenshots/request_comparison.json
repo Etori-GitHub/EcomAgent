@@ -1,0 +1,586 @@
+{
+  "timestamp": "2026-06-25T16:39:31.402699",
+  "results": {
+    "direct_homepage": {
+      "success": false,
+      "requests": [
+        {
+          "url": "https://shop.tiktok.com/us",
+          "method": "GET",
+          "headers": {
+            "upgrade-insecure-requests": "1",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "sec-ch-ua": "\"Chromium\";v=\"145\", \"Not:A-Brand\";v=\"99\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\""
+          },
+          "post_data": null,
+          "resource_type": "document",
+          "query_params": {},
+          "path": "/us",
+          "domain": "shop.tiktok.com"
+        }
+      ]
+    },
+    "google_homepage": {
+      "success": true,
+      "requests": [
+        {
+          "url": "https://www.google.com/complete/s?q=tiktok%20shop&cp=11&client=gws-wiz&xssi=t&gs_pcrt=undefined&hl=zh-CN&authuser=0&psi=cOg8apuJGennkPIP7LDouQ4.1782376561905&dpr=1",
+          "method": "GET",
+          "headers": {
+            "sec-ch-ua-full-version-list": "\"Chromium\";v=\"145.0.7632.6\", \"Not:A-Brand\";v=\"99.0.0.0\"",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-ch-ua": "\"Chromium\";v=\"145\", \"Not:A-Brand\";v=\"99\"",
+            "sec-ch-ua-bitness": "\"64\"",
+            "sec-ch-ua-model": "\"\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-form-factors": "\"Desktop\"",
+            "sec-ch-ua-wow64": "?0",
+            "sec-ch-ua-arch": "\"x86\"",
+            "sec-ch-ua-full-version": "\"145.0.7632.6\"",
+            "downlink": "1.3",
+            "referer": "https://www.google.com/",
+            "sec-ch-prefers-color-scheme": "light",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "rtt": "400",
+            "sec-ch-ua-platform-version": "\"10.0.0\""
+          },
+          "post_data": null,
+          "resource_type": "xhr",
+          "query_params": {
+            "q": [
+              "tiktok shop"
+            ],
+            "cp": [
+              "11"
+            ],
+            "client": [
+              "gws-wiz"
+            ],
+            "xssi": [
+              "t"
+            ],
+            "gs_pcrt": [
+              "undefined"
+            ],
+            "hl": [
+              "zh-CN"
+            ],
+            "authuser": [
+              "0"
+            ],
+            "psi": [
+              "cOg8apuJGennkPIP7LDouQ4.1782376561905"
+            ],
+            "dpr": [
+              "1"
+            ]
+          },
+          "path": "/complete/s",
+          "domain": "www.google.com"
+        },
+        {
+          "url": "https://www.google.com/search?q=tiktok+shop&sca_esv=438a8a06e5127aad&source=hp&ei=cOg8apuJGennkPIP7LDouQ4&iflsig=ABILxe8AAAAAajz2gM32ZcOqFD6bksnFjA6amptAV42u&ved=0ahUKEwibgfWN_qGVAxXpM0QIHWwYOucQ4dUDCC4&uact=5&oq=tiktok+shop&gs_lp=Egdnd3Mtd2l6Igt0aWt0b2sgc2hvcEgOUABYAHAAeACQAQCYAQCgAQCqAQC4AQPIAQD4AQGYAgCgAgCYAwCSBwCgBwCyBwC4BwDCBwDIBwCACAE&sclient=gws-wiz",
+          "method": "GET",
+          "headers": {
+            "referer": "https://www.google.com/",
+            "upgrade-insecure-requests": "1",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "downlink": "1.35",
+            "rtt": "400",
+            "sec-ch-prefers-color-scheme": "light",
+            "sec-ch-ua": "\"Chromium\";v=\"145\", \"Not:A-Brand\";v=\"99\"",
+            "sec-ch-ua-arch": "\"x86\"",
+            "sec-ch-ua-bitness": "\"64\"",
+            "sec-ch-ua-form-factors": "\"Desktop\"",
+            "sec-ch-ua-full-version": "\"145.0.7632.6\"",
+            "sec-ch-ua-full-version-list": "\"Chromium\";v=\"145.0.7632.6\", \"Not:A-Brand\";v=\"99.0.0.0\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-model": "\"\"",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-ch-ua-platform-version": "\"10.0.0\"",
+            "sec-ch-ua-wow64": "?0"
+          },
+          "post_data": null,
+          "resource_type": "document",
+          "query_params": {
+            "q": [
+              "tiktok shop"
+            ],
+            "sca_esv": [
+              "438a8a06e5127aad"
+            ],
+            "source": [
+              "hp"
+            ],
+            "ei": [
+              "cOg8apuJGennkPIP7LDouQ4"
+            ],
+            "iflsig": [
+              "ABILxe8AAAAAajz2gM32ZcOqFD6bksnFjA6amptAV42u"
+            ],
+            "ved": [
+              "0ahUKEwibgfWN_qGVAxXpM0QIHWwYOucQ4dUDCC4"
+            ],
+            "uact": [
+              "5"
+            ],
+            "oq": [
+              "tiktok shop"
+            ],
+            "gs_lp": [
+              "Egdnd3Mtd2l6Igt0aWt0b2sgc2hvcEgOUABYAHAAeACQAQCYAQCgAQCqAQC4AQPIAQD4AQGYAgCgAgCYAwCSBwCgBwCyBwC4BwDCBwDIBwCACAE"
+            ],
+            "sclient": [
+              "gws-wiz"
+            ]
+          },
+          "path": "/search",
+          "domain": "www.google.com"
+        },
+        {
+          "url": "https://www.google.com/search?q=tiktok+shop&sca_esv=438a8a06e5127aad&source=hp&ei=cOg8apuJGennkPIP7LDouQ4&iflsig=ABILxe8AAAAAajz2gM32ZcOqFD6bksnFjA6amptAV42u&ved=0ahUKEwibgfWN_qGVAxXpM0QIHWwYOucQ4dUDCC4&uact=5&oq=tiktok+shop&gs_lp=Egdnd3Mtd2l6Igt0aWt0b2sgc2hvcEgOUABYAHAAeACQAQCYAQCgAQCqAQC4AQPIAQD4AQGYAgCgAgCYAwCSBwCgBwCyBwC4BwDCBwDIBwCACAE&sclient=gws-wiz&sei=d-g8atyDAc3LkPIPjKyOsAE",
+          "method": "GET",
+          "headers": {
+            "referer": "https://www.google.com/search?q=tiktok+shop&sca_esv=438a8a06e5127aad&source=hp&ei=cOg8apuJGennkPIP7LDouQ4&iflsig=ABILxe8AAAAAajz2gM32ZcOqFD6bksnFjA6amptAV42u&ved=0ahUKEwibgfWN_qGVAxXpM0QIHWwYOucQ4dUDCC4&uact=5&oq=tiktok+shop&gs_lp=Egdnd3Mtd2l6Igt0aWt0b2sgc2hvcEgOUABYAHAAeACQAQCYAQCgAQCqAQC4AQPIAQD4AQGYAgCgAgCYAwCSBwCgBwCyBwC4BwDCBwDIBwCACAE&sclient=gws-wiz",
+            "upgrade-insecure-requests": "1",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "downlink": "1.35",
+            "rtt": "400",
+            "sec-ch-prefers-color-scheme": "light",
+            "sec-ch-ua": "\"Chromium\";v=\"145\", \"Not:A-Brand\";v=\"99\"",
+            "sec-ch-ua-arch": "\"x86\"",
+            "sec-ch-ua-bitness": "\"64\"",
+            "sec-ch-ua-form-factors": "\"Desktop\"",
+            "sec-ch-ua-full-version": "\"145.0.7632.6\"",
+            "sec-ch-ua-full-version-list": "\"Chromium\";v=\"145.0.7632.6\", \"Not:A-Brand\";v=\"99.0.0.0\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-model": "\"\"",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-ch-ua-platform-version": "\"10.0.0\"",
+            "sec-ch-ua-wow64": "?0"
+          },
+          "post_data": null,
+          "resource_type": "document",
+          "query_params": {
+            "q": [
+              "tiktok shop"
+            ],
+            "sca_esv": [
+              "438a8a06e5127aad"
+            ],
+            "source": [
+              "hp"
+            ],
+            "ei": [
+              "cOg8apuJGennkPIP7LDouQ4"
+            ],
+            "iflsig": [
+              "ABILxe8AAAAAajz2gM32ZcOqFD6bksnFjA6amptAV42u"
+            ],
+            "ved": [
+              "0ahUKEwibgfWN_qGVAxXpM0QIHWwYOucQ4dUDCC4"
+            ],
+            "uact": [
+              "5"
+            ],
+            "oq": [
+              "tiktok shop"
+            ],
+            "gs_lp": [
+              "Egdnd3Mtd2l6Igt0aWt0b2sgc2hvcEgOUABYAHAAeACQAQCYAQCgAQCqAQC4AQPIAQD4AQGYAgCgAgCYAwCSBwCgBwCyBwC4BwDCBwDIBwCACAE"
+            ],
+            "sclient": [
+              "gws-wiz"
+            ],
+            "sei": [
+              "d-g8atyDAc3LkPIPjKyOsAE"
+            ]
+          },
+          "path": "/search",
+          "domain": "www.google.com"
+        },
+        {
+          "url": "https://www.google.com/sorry/index?continue=https://www.google.com/search%3Fq%3Dtiktok%2Bshop%26sca_esv%3D438a8a06e5127aad%26source%3Dhp%26ei%3DcOg8apuJGennkPIP7LDouQ4%26iflsig%3DABILxe8AAAAAajz2gM32ZcOqFD6bksnFjA6amptAV42u%26ved%3D0ahUKEwibgfWN_qGVAxXpM0QIHWwYOucQ4dUDCC4%26uact%3D5%26oq%3Dtiktok%2Bshop%26gs_lp%3DEgdnd3Mtd2l6Igt0aWt0b2sgc2hvcEgOUABYAHAAeACQAQCYAQCgAQCqAQC4AQPIAQD4AQGYAgCgAgCYAwCSBwCgBwCyBwC4BwDCBwDIBwCACAE%26sclient%3Dgws-wiz%26sei%3Dd-g8atyDAc3LkPIPjKyOsAE&q=EgRCXf_pGPfQ89EGIjAkoOzlpbmP5MZRiEi1_fwIDj6AxcpUSZgUNsURwC8Ex8nNsg0AQixbsFuOhsHRsvoyAVJaAUM",
+          "method": "GET",
+          "headers": {
+            "referer": "https://www.google.com/search?q=tiktok+shop&sca_esv=438a8a06e5127aad&source=hp&ei=cOg8apuJGennkPIP7LDouQ4&iflsig=ABILxe8AAAAAajz2gM32ZcOqFD6bksnFjA6amptAV42u&ved=0ahUKEwibgfWN_qGVAxXpM0QIHWwYOucQ4dUDCC4&uact=5&oq=tiktok+shop&gs_lp=Egdnd3Mtd2l6Igt0aWt0b2sgc2hvcEgOUABYAHAAeACQAQCYAQCgAQCqAQC4AQPIAQD4AQGYAgCgAgCYAwCSBwCgBwCyBwC4BwDCBwDIBwCACAE&sclient=gws-wiz",
+            "upgrade-insecure-requests": "1",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "downlink": "1.35",
+            "rtt": "400",
+            "sec-ch-prefers-color-scheme": "light",
+            "sec-ch-ua": "\"Chromium\";v=\"145\", \"Not:A-Brand\";v=\"99\"",
+            "sec-ch-ua-arch": "\"x86\"",
+            "sec-ch-ua-bitness": "\"64\"",
+            "sec-ch-ua-form-factors": "\"Desktop\"",
+            "sec-ch-ua-full-version": "\"145.0.7632.6\"",
+            "sec-ch-ua-full-version-list": "\"Chromium\";v=\"145.0.7632.6\", \"Not:A-Brand\";v=\"99.0.0.0\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-model": "\"\"",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-ch-ua-platform-version": "\"10.0.0\"",
+            "sec-ch-ua-wow64": "?0"
+          },
+          "post_data": null,
+          "resource_type": "document",
+          "query_params": {
+            "continue": [
+              "https://www.google.com/search?q=tiktok+shop&sca_esv=438a8a06e5127aad&source=hp&ei=cOg8apuJGennkPIP7LDouQ4&iflsig=ABILxe8AAAAAajz2gM32ZcOqFD6bksnFjA6amptAV42u&ved=0ahUKEwibgfWN_qGVAxXpM0QIHWwYOucQ4dUDCC4&uact=5&oq=tiktok+shop&gs_lp=Egdnd3Mtd2l6Igt0aWt0b2sgc2hvcEgOUABYAHAAeACQAQCYAQCgAQCqAQC4AQPIAQD4AQGYAgCgAgCYAwCSBwCgBwCyBwC4BwDCBwDIBwCACAE&sclient=gws-wiz&sei=d-g8atyDAc3LkPIPjKyOsAE"
+            ],
+            "q": [
+              "EgRCXf_pGPfQ89EGIjAkoOzlpbmP5MZRiEi1_fwIDj6AxcpUSZgUNsURwC8Ex8nNsg0AQixbsFuOhsHRsvoyAVJaAUM"
+            ]
+          },
+          "path": "/sorry/index",
+          "domain": "www.google.com"
+        },
+        {
+          "url": "https://www.google.com/search?q=tiktok+shop&sca_esv=438a8a06e5127aad&source=hp&ei=cOg8apuJGennkPIP7LDouQ4&iflsig=ABILxe8AAAAAajz2gM32ZcOqFD6bksnFjA6amptAV42u&ved=0ahUKEwibgfWN_qGVAxXpM0QIHWwYOucQ4dUDCC4&uact=5&oq=tiktok+shop&gs_lp=Egdnd3Mtd2l6Igt0aWt0b2sgc2hvcEgOUABYAHAAeACQAQCYAQCgAQCqAQC4AQPIAQD4AQGYAgCgAgCYAwCSBwCgBwCyBwC4BwDCBwDIBwCACAE&sclient=gws-wiz&sei=d-g8atyDAc3LkPIPjKyOsAE&google_abuse=GOOGLE_ABUSE_EXEMPTION%3DID%3Df45640065faebf6c:TM%3D1782376567:C%3DR:IP%3D66.93.255.233-:S%3DL1z-xcRO3qkuOLD4odZC-JE%3B+path%3D/%3B+domain%3Dgoogle.com%3B+expires%3DThu,+25-Jun-2026+11:36:07+GMT",
+          "method": "GET",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+            "origin": "https://www.google.com",
+            "referer": "https://www.google.com/sorry/index?continue=https://www.google.com/search%3Fq%3Dtiktok%2Bshop%26sca_esv%3D438a8a06e5127aad%26source%3Dhp%26ei%3DcOg8apuJGennkPIP7LDouQ4%26iflsig%3DABILxe8AAAAAajz2gM32ZcOqFD6bksnFjA6amptAV42u%26ved%3D0ahUKEwibgfWN_qGVAxXpM0QIHWwYOucQ4dUDCC4%26uact%3D5%26oq%3Dtiktok%2Bshop%26gs_lp%3DEgdnd3Mtd2l6Igt0aWt0b2sgc2hvcEgOUABYAHAAeACQAQCYAQCgAQCqAQC4AQPIAQD4AQGYAgCgAgCYAwCSBwCgBwCyBwC4BwDCBwDIBwCACAE%26sclient%3Dgws-wiz%26sei%3Dd-g8atyDAc3LkPIPjKyOsAE&q=EgRCXf_pGPfQ89EGIjAkoOzlpbmP5MZRiEi1_fwIDj6AxcpUSZgUNsURwC8Ex8nNsg0AQixbsFuOhsHRsvoyAVJaAUM",
+            "upgrade-insecure-requests": "1",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "downlink": "1.35",
+            "rtt": "450",
+            "sec-ch-prefers-color-scheme": "light",
+            "sec-ch-ua": "\"Chromium\";v=\"145\", \"Not:A-Brand\";v=\"99\"",
+            "sec-ch-ua-arch": "\"x86\"",
+            "sec-ch-ua-bitness": "\"64\"",
+            "sec-ch-ua-form-factors": "\"Desktop\"",
+            "sec-ch-ua-full-version": "\"145.0.7632.6\"",
+            "sec-ch-ua-full-version-list": "\"Chromium\";v=\"145.0.7632.6\", \"Not:A-Brand\";v=\"99.0.0.0\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-model": "\"\"",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-ch-ua-platform-version": "\"10.0.0\"",
+            "sec-ch-ua-wow64": "?0"
+          },
+          "post_data": null,
+          "resource_type": "document",
+          "query_params": {
+            "q": [
+              "tiktok shop"
+            ],
+            "sca_esv": [
+              "438a8a06e5127aad"
+            ],
+            "source": [
+              "hp"
+            ],
+            "ei": [
+              "cOg8apuJGennkPIP7LDouQ4"
+            ],
+            "iflsig": [
+              "ABILxe8AAAAAajz2gM32ZcOqFD6bksnFjA6amptAV42u"
+            ],
+            "ved": [
+              "0ahUKEwibgfWN_qGVAxXpM0QIHWwYOucQ4dUDCC4"
+            ],
+            "uact": [
+              "5"
+            ],
+            "oq": [
+              "tiktok shop"
+            ],
+            "gs_lp": [
+              "Egdnd3Mtd2l6Igt0aWt0b2sgc2hvcEgOUABYAHAAeACQAQCYAQCgAQCqAQC4AQPIAQD4AQGYAgCgAgCYAwCSBwCgBwCyBwC4BwDCBwDIBwCACAE"
+            ],
+            "sclient": [
+              "gws-wiz"
+            ],
+            "sei": [
+              "d-g8atyDAc3LkPIPjKyOsAE"
+            ],
+            "google_abuse": [
+              "GOOGLE_ABUSE_EXEMPTION=ID=f45640065faebf6c:TM=1782376567:C=R:IP=66.93.255.233-:S=L1z-xcRO3qkuOLD4odZC-JE; path=/; domain=google.com; expires=Thu, 25-Jun-2026 11:36:07 GMT"
+            ]
+          },
+          "path": "/search",
+          "domain": "www.google.com"
+        },
+        {
+          "url": "https://www.google.com/search?q=tiktok+shop&sca_esv=438a8a06e5127aad&source=hp&ei=cOg8apuJGennkPIP7LDouQ4&iflsig=ABILxe8AAAAAajz2gM32ZcOqFD6bksnFjA6amptAV42u&ved=0ahUKEwibgfWN_qGVAxXpM0QIHWwYOucQ4dUDCC4&uact=5&oq=tiktok+shop&gs_lp=Egdnd3Mtd2l6Igt0aWt0b2sgc2hvcEgOUABYAHAAeACQAQCYAQCgAQCqAQC4AQPIAQD4AQGYAgCgAgCYAwCSBwCgBwCyBwC4BwDCBwDIBwCACAE&sclient=gws-wiz&google_abuse=GOOGLE_ABUSE_EXEMPTION%3DID%3Df45640065faebf6c:TM%3D1782376567:C%3DR:IP%3D66.93.255.233-:S%3DL1z-xcRO3qkuOLD4odZC-JE%3B+path%3D/%3B+domain%3Dgoogle.com%3B+expires%3DThu,+25-Jun-2026+11:36:07+GMT&sg_ss=*ECyaLEjyAAYclsnRPJZ98SwwMjwxFJ0EAEABEArZ1PA6u34s3hFUuV6gg5Wf7hP2kviYGiae4JeXAM_L4r-_aU3L03RlIL2kxUgF8LowyBv9_iG-44lUJADmPQAAABdtAAAABFcBB0EANYu9hb-Dewer-VwgRRvAim1TaV3-gB93iegZB9W2X_EpRbbzi0NCXnVKjWOON8gdePDSo7zepgRODDskSjQsIRI8MBxogBgnx5We6RbKZl8bG4-1rI3QK5eofbPLU0tONm7rnVG-_Qytha0SHum2ehYdPYSmVnJwjmXBty4rMe3Sv3SuUlVTpLtq9syhxXO8hFQh875bNo91V8M0AIR43pxb1pe4Ej4qlQ52UMZKYsU-HNACcKlTVRH_V_EvUQyj6fxpCdPSxk8lv3jz-H7Eqs4R5yrJjZjmkVQ2sa8L8qqxr4IYru-KySqy2Pqto33fgrA9gIJPohD42xMflvzB8iPIBNo4k9B1cz2LCP02DeIONtd_jQsqGhnBcd6AnzN4W6qop2G0Wxu5ykiXizljtQA1f_X6eNfjTed3RaXEs2V0qW2m99n6_TV_P921VBCAI_0uIjj4uvi4bL9Dkxfo2PCY4CUBn15G5ydOSWBr-zp3JNCq0QddNxJGeN-q08D6Fw0BEzlgz4UDOewsCNij22NcXsZJj7j39NPYRTbpzFP1Jg1hfT3L3n3fDSJiKOnsZMcqZcRlXGXEjF0lZHqy6zpCUyceeUAWA8Q_vogKlcXbf_M7FzhlOdqrqtBP1Bp8Pz4v3xbqePPkVfVZ1g6BX1VU1i4MhA-lgIx1UMFvQnyOHCeBKBFzz2-n0i7FeagM_6iLRw9ppRUvF2eL3Ay3KjaTasKzZRmTAyQEpkfeJJS8sjIou0rFz9yAXk6qFrF_KEHROr9nhDeSrFNu2vLdYuwDLLXny1rmW8eeRAcsWlqVG9JCr8m_9QrBXNMFkFsGyN6IyGcDa4NaOxuQDiWph17IVl2WtlOrmhSaigrdkU94BuobHLmOUh3xPt91HwW36UEESyghmxkp24Uk3FNFaBxY0X5P3hWWmC4u7cRylZtD1wF8sy5kouytNe63YpGestf1D2CsRfcd_LrvIKLsRlcOWhKpLDMRERqLRoCBW1vbsYlBi7a12wW2v_ZUqWfZ_0uVyQ37LprwckOc4ZLs05zViNxawktaU6timLhpsDWRbtWL3X78_zateyaHsdobcpnbXXXJl7R0uzpwo_A6MQhHoogM1T7IOYvNPVNAeLeTiuJxOI-Sl4z8gYPmTf8pc44NIK6l-dJn08cKml-vYdhhgPEx1fO8C7RvyNA8UPqJwZVpLys2KflLp1I7m1w7qVnLeuQ7VIIlo0Gn-tE5YNTqjdds5V7OQZKXqZ_YznR4-JUP3I8qUS3h2W6_W_udxO2Z13K4pTpu9KJIKweyOWYbLMJ7LNjf9Qo4brpsaouVoEHWYJoh9-Gxhk3xEdZA1D1ISqUYUrD-cAXmpLPXc5cIxkWbn6oFORbiAG-0K9Kq6ungIkJ17XqSSyn4SVT8vKWzNzXxuLRpL5CgLTNYCUpW9b8nAdmHcEqB45LjBedCnWDo9gH_eHUaaWEO8rJwmy09j7VcerqN5j-bYZHnGTzJnQe5gRXnpynBn2B9Do_asPRGt7O_1GyphDDH3etJkOU6zpA_gw&sei=KOk8atDoO-rNkPIPnvTX-AM",
+          "method": "GET",
+          "headers": {
+            "referer": "https://www.google.com/search?q=tiktok+shop&sca_esv=438a8a06e5127aad&source=hp&ei=cOg8apuJGennkPIP7LDouQ4&iflsig=ABILxe8AAAAAajz2gM32ZcOqFD6bksnFjA6amptAV42u&ved=0ahUKEwibgfWN_qGVAxXpM0QIHWwYOucQ4dUDCC4&uact=5&oq=tiktok+shop&gs_lp=Egdnd3Mtd2l6Igt0aWt0b2sgc2hvcEgOUABYAHAAeACQAQCYAQCgAQCqAQC4AQPIAQD4AQGYAgCgAgCYAwCSBwCgBwCyBwC4BwDCBwDIBwCACAE&sclient=gws-wiz&sei=d-g8atyDAc3LkPIPjKyOsAE&google_abuse=GOOGLE_ABUSE_EXEMPTION%3DID%3Df45640065faebf6c:TM%3D1782376567:C%3DR:IP%3D66.93.255.233-:S%3DL1z-xcRO3qkuOLD4odZC-JE%3B+path%3D/%3B+domain%3Dgoogle.com%3B+expires%3DThu,+25-Jun-2026+11:36:07+GMT",
+            "upgrade-insecure-requests": "1",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "downlink": "1.35",
+            "rtt": "450",
+            "sec-ch-prefers-color-scheme": "light",
+            "sec-ch-ua": "\"Chromium\";v=\"145\", \"Not:A-Brand\";v=\"99\"",
+            "sec-ch-ua-arch": "\"x86\"",
+            "sec-ch-ua-bitness": "\"64\"",
+            "sec-ch-ua-form-factors": "\"Desktop\"",
+            "sec-ch-ua-full-version": "\"145.0.7632.6\"",
+            "sec-ch-ua-full-version-list": "\"Chromium\";v=\"145.0.7632.6\", \"Not:A-Brand\";v=\"99.0.0.0\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-model": "\"\"",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-ch-ua-platform-version": "\"10.0.0\"",
+            "sec-ch-ua-wow64": "?0"
+          },
+          "post_data": null,
+          "resource_type": "document",
+          "query_params": {
+            "q": [
+              "tiktok shop"
+            ],
+            "sca_esv": [
+              "438a8a06e5127aad"
+            ],
+            "source": [
+              "hp"
+            ],
+            "ei": [
+              "cOg8apuJGennkPIP7LDouQ4"
+            ],
+            "iflsig": [
+              "ABILxe8AAAAAajz2gM32ZcOqFD6bksnFjA6amptAV42u"
+            ],
+            "ved": [
+              "0ahUKEwibgfWN_qGVAxXpM0QIHWwYOucQ4dUDCC4"
+            ],
+            "uact": [
+              "5"
+            ],
+            "oq": [
+              "tiktok shop"
+            ],
+            "gs_lp": [
+              "Egdnd3Mtd2l6Igt0aWt0b2sgc2hvcEgOUABYAHAAeACQAQCYAQCgAQCqAQC4AQPIAQD4AQGYAgCgAgCYAwCSBwCgBwCyBwC4BwDCBwDIBwCACAE"
+            ],
+            "sclient": [
+              "gws-wiz"
+            ],
+            "google_abuse": [
+              "GOOGLE_ABUSE_EXEMPTION=ID=f45640065faebf6c:TM=1782376567:C=R:IP=66.93.255.233-:S=L1z-xcRO3qkuOLD4odZC-JE; path=/; domain=google.com; expires=Thu, 25-Jun-2026 11:36:07 GMT"
+            ],
+            "sg_ss": [
+              "*ECyaLEjyAAYclsnRPJZ98SwwMjwxFJ0EAEABEArZ1PA6u34s3hFUuV6gg5Wf7hP2kviYGiae4JeXAM_L4r-_aU3L03RlIL2kxUgF8LowyBv9_iG-44lUJADmPQAAABdtAAAABFcBB0EANYu9hb-Dewer-VwgRRvAim1TaV3-gB93iegZB9W2X_EpRbbzi0NCXnVKjWOON8gdePDSo7zepgRODDskSjQsIRI8MBxogBgnx5We6RbKZl8bG4-1rI3QK5eofbPLU0tONm7rnVG-_Qytha0SHum2ehYdPYSmVnJwjmXBty4rMe3Sv3SuUlVTpLtq9syhxXO8hFQh875bNo91V8M0AIR43pxb1pe4Ej4qlQ52UMZKYsU-HNACcKlTVRH_V_EvUQyj6fxpCdPSxk8lv3jz-H7Eqs4R5yrJjZjmkVQ2sa8L8qqxr4IYru-KySqy2Pqto33fgrA9gIJPohD42xMflvzB8iPIBNo4k9B1cz2LCP02DeIONtd_jQsqGhnBcd6AnzN4W6qop2G0Wxu5ykiXizljtQA1f_X6eNfjTed3RaXEs2V0qW2m99n6_TV_P921VBCAI_0uIjj4uvi4bL9Dkxfo2PCY4CUBn15G5ydOSWBr-zp3JNCq0QddNxJGeN-q08D6Fw0BEzlgz4UDOewsCNij22NcXsZJj7j39NPYRTbpzFP1Jg1hfT3L3n3fDSJiKOnsZMcqZcRlXGXEjF0lZHqy6zpCUyceeUAWA8Q_vogKlcXbf_M7FzhlOdqrqtBP1Bp8Pz4v3xbqePPkVfVZ1g6BX1VU1i4MhA-lgIx1UMFvQnyOHCeBKBFzz2-n0i7FeagM_6iLRw9ppRUvF2eL3Ay3KjaTasKzZRmTAyQEpkfeJJS8sjIou0rFz9yAXk6qFrF_KEHROr9nhDeSrFNu2vLdYuwDLLXny1rmW8eeRAcsWlqVG9JCr8m_9QrBXNMFkFsGyN6IyGcDa4NaOxuQDiWph17IVl2WtlOrmhSaigrdkU94BuobHLmOUh3xPt91HwW36UEESyghmxkp24Uk3FNFaBxY0X5P3hWWmC4u7cRylZtD1wF8sy5kouytNe63YpGestf1D2CsRfcd_LrvIKLsRlcOWhKpLDMRERqLRoCBW1vbsYlBi7a12wW2v_ZUqWfZ_0uVyQ37LprwckOc4ZLs05zViNxawktaU6timLhpsDWRbtWL3X78_zateyaHsdobcpnbXXXJl7R0uzpwo_A6MQhHoogM1T7IOYvNPVNAeLeTiuJxOI-Sl4z8gYPmTf8pc44NIK6l-dJn08cKml-vYdhhgPEx1fO8C7RvyNA8UPqJwZVpLys2KflLp1I7m1w7qVnLeuQ7VIIlo0Gn-tE5YNTqjdds5V7OQZKXqZ_YznR4-JUP3I8qUS3h2W6_W_udxO2Z13K4pTpu9KJIKweyOWYbLMJ7LNjf9Qo4brpsaouVoEHWYJoh9-Gxhk3xEdZA1D1ISqUYUrD-cAXmpLPXc5cIxkWbn6oFORbiAG-0K9Kq6ungIkJ17XqSSyn4SVT8vKWzNzXxuLRpL5CgLTNYCUpW9b8nAdmHcEqB45LjBedCnWDo9gH_eHUaaWEO8rJwmy09j7VcerqN5j-bYZHnGTzJnQe5gRXnpynBn2B9Do_asPRGt7O_1GyphDDH3etJkOU6zpA_gw"
+            ],
+            "sei": [
+              "KOk8atDoO-rNkPIPnvTX-AM"
+            ]
+          },
+          "path": "/search",
+          "domain": "www.google.com"
+        },
+        {
+          "url": "https://www.google.com/search?q=tiktok+shop&sca_esv=438a8a06e5127aad&source=hp&ei=cOg8apuJGennkPIP7LDouQ4&iflsig=ABILxe8AAAAAajz2gM32ZcOqFD6bksnFjA6amptAV42u&ved=0ahUKEwibgfWN_qGVAxXpM0QIHWwYOucQ4dUDCC4&uact=5&oq=tiktok+shop&gs_lp=Egdnd3Mtd2l6Igt0aWt0b2sgc2hvcEgOUABYAHAAeACQAQCYAQCgAQCqAQC4AQPIAQD4AQGYAgCgAgCYAwCSBwCgBwCyBwC4BwDCBwDIBwCACAE&sclient=gws-wiz&sg_ss=*ECyaLEjyAAYclsnRPJZ98SwwMjwxFJ0EAEABEArZ1PA6u34s3hFUuV6gg5Wf7hP2kviYGiae4JeXAM_L4r-_aU3L03RlIL2kxUgF8LowyBv9_iG-44lUJADmPQAAABdtAAAABFcBB0EANYu9hb-Dewer-VwgRRvAim1TaV3-gB93iegZB9W2X_EpRbbzi0NCXnVKjWOON8gdePDSo7zepgRODDskSjQsIRI8MBxogBgnx5We6RbKZl8bG4-1rI3QK5eofbPLU0tONm7rnVG-_Qytha0SHum2ehYdPYSmVnJwjmXBty4rMe3Sv3SuUlVTpLtq9syhxXO8hFQh875bNo91V8M0AIR43pxb1pe4Ej4qlQ52UMZKYsU-HNACcKlTVRH_V_EvUQyj6fxpCdPSxk8lv3jz-H7Eqs4R5yrJjZjmkVQ2sa8L8qqxr4IYru-KySqy2Pqto33fgrA9gIJPohD42xMflvzB8iPIBNo4k9B1cz2LCP02DeIONtd_jQsqGhnBcd6AnzN4W6qop2G0Wxu5ykiXizljtQA1f_X6eNfjTed3RaXEs2V0qW2m99n6_TV_P921VBCAI_0uIjj4uvi4bL9Dkxfo2PCY4CUBn15G5ydOSWBr-zp3JNCq0QddNxJGeN-q08D6Fw0BEzlgz4UDOewsCNij22NcXsZJj7j39NPYRTbpzFP1Jg1hfT3L3n3fDSJiKOnsZMcqZcRlXGXEjF0lZHqy6zpCUyceeUAWA8Q_vogKlcXbf_M7FzhlOdqrqtBP1Bp8Pz4v3xbqePPkVfVZ1g6BX1VU1i4MhA-lgIx1UMFvQnyOHCeBKBFzz2-n0i7FeagM_6iLRw9ppRUvF2eL3Ay3KjaTasKzZRmTAyQEpkfeJJS8sjIou0rFz9yAXk6qFrF_KEHROr9nhDeSrFNu2vLdYuwDLLXny1rmW8eeRAcsWlqVG9JCr8m_9QrBXNMFkFsGyN6IyGcDa4NaOxuQDiWph17IVl2WtlOrmhSaigrdkU94BuobHLmOUh3xPt91HwW36UEESyghmxkp24Uk3FNFaBxY0X5P3hWWmC4u7cRylZtD1wF8sy5kouytNe63YpGestf1D2CsRfcd_LrvIKLsRlcOWhKpLDMRERqLRoCBW1vbsYlBi7a12wW2v_ZUqWfZ_0uVyQ37LprwckOc4ZLs05zViNxawktaU6timLhpsDWRbtWL3X78_zateyaHsdobcpnbXXXJl7R0uzpwo_A6MQhHoogM1T7IOYvNPVNAeLeTiuJxOI-Sl4z8gYPmTf8pc44NIK6l-dJn08cKml-vYdhhgPEx1fO8C7RvyNA8UPqJwZVpLys2KflLp1I7m1w7qVnLeuQ7VIIlo0Gn-tE5YNTqjdds5V7OQZKXqZ_YznR4-JUP3I8qUS3h2W6_W_udxO2Z13K4pTpu9KJIKweyOWYbLMJ7LNjf9Qo4brpsaouVoEHWYJoh9-Gxhk3xEdZA1D1ISqUYUrD-cAXmpLPXc5cIxkWbn6oFORbiAG-0K9Kq6ungIkJ17XqSSyn4SVT8vKWzNzXxuLRpL5CgLTNYCUpW9b8nAdmHcEqB45LjBedCnWDo9gH_eHUaaWEO8rJwmy09j7VcerqN5j-bYZHnGTzJnQe5gRXnpynBn2B9Do_asPRGt7O_1GyphDDH3etJkOU6zpA_gw&sei=KOk8atDoO-rNkPIPnvTX-AM",
+          "method": "GET",
+          "headers": {
+            "referer": "https://www.google.com/search?q=tiktok+shop&sca_esv=438a8a06e5127aad&source=hp&ei=cOg8apuJGennkPIP7LDouQ4&iflsig=ABILxe8AAAAAajz2gM32ZcOqFD6bksnFjA6amptAV42u&ved=0ahUKEwibgfWN_qGVAxXpM0QIHWwYOucQ4dUDCC4&uact=5&oq=tiktok+shop&gs_lp=Egdnd3Mtd2l6Igt0aWt0b2sgc2hvcEgOUABYAHAAeACQAQCYAQCgAQCqAQC4AQPIAQD4AQGYAgCgAgCYAwCSBwCgBwCyBwC4BwDCBwDIBwCACAE&sclient=gws-wiz&sei=d-g8atyDAc3LkPIPjKyOsAE&google_abuse=GOOGLE_ABUSE_EXEMPTION%3DID%3Df45640065faebf6c:TM%3D1782376567:C%3DR:IP%3D66.93.255.233-:S%3DL1z-xcRO3qkuOLD4odZC-JE%3B+path%3D/%3B+domain%3Dgoogle.com%3B+expires%3DThu,+25-Jun-2026+11:36:07+GMT",
+            "upgrade-insecure-requests": "1",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "downlink": "1.35",
+            "rtt": "450",
+            "sec-ch-prefers-color-scheme": "light",
+            "sec-ch-ua": "\"Chromium\";v=\"145\", \"Not:A-Brand\";v=\"99\"",
+            "sec-ch-ua-arch": "\"x86\"",
+            "sec-ch-ua-bitness": "\"64\"",
+            "sec-ch-ua-form-factors": "\"Desktop\"",
+            "sec-ch-ua-full-version": "\"145.0.7632.6\"",
+            "sec-ch-ua-full-version-list": "\"Chromium\";v=\"145.0.7632.6\", \"Not:A-Brand\";v=\"99.0.0.0\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-model": "\"\"",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-ch-ua-platform-version": "\"10.0.0\"",
+            "sec-ch-ua-wow64": "?0"
+          },
+          "post_data": null,
+          "resource_type": "document",
+          "query_params": {
+            "q": [
+              "tiktok shop"
+            ],
+            "sca_esv": [
+              "438a8a06e5127aad"
+            ],
+            "source": [
+              "hp"
+            ],
+            "ei": [
+              "cOg8apuJGennkPIP7LDouQ4"
+            ],
+            "iflsig": [
+              "ABILxe8AAAAAajz2gM32ZcOqFD6bksnFjA6amptAV42u"
+            ],
+            "ved": [
+              "0ahUKEwibgfWN_qGVAxXpM0QIHWwYOucQ4dUDCC4"
+            ],
+            "uact": [
+              "5"
+            ],
+            "oq": [
+              "tiktok shop"
+            ],
+            "gs_lp": [
+              "Egdnd3Mtd2l6Igt0aWt0b2sgc2hvcEgOUABYAHAAeACQAQCYAQCgAQCqAQC4AQPIAQD4AQGYAgCgAgCYAwCSBwCgBwCyBwC4BwDCBwDIBwCACAE"
+            ],
+            "sclient": [
+              "gws-wiz"
+            ],
+            "sg_ss": [
+              "*ECyaLEjyAAYclsnRPJZ98SwwMjwxFJ0EAEABEArZ1PA6u34s3hFUuV6gg5Wf7hP2kviYGiae4JeXAM_L4r-_aU3L03RlIL2kxUgF8LowyBv9_iG-44lUJADmPQAAABdtAAAABFcBB0EANYu9hb-Dewer-VwgRRvAim1TaV3-gB93iegZB9W2X_EpRbbzi0NCXnVKjWOON8gdePDSo7zepgRODDskSjQsIRI8MBxogBgnx5We6RbKZl8bG4-1rI3QK5eofbPLU0tONm7rnVG-_Qytha0SHum2ehYdPYSmVnJwjmXBty4rMe3Sv3SuUlVTpLtq9syhxXO8hFQh875bNo91V8M0AIR43pxb1pe4Ej4qlQ52UMZKYsU-HNACcKlTVRH_V_EvUQyj6fxpCdPSxk8lv3jz-H7Eqs4R5yrJjZjmkVQ2sa8L8qqxr4IYru-KySqy2Pqto33fgrA9gIJPohD42xMflvzB8iPIBNo4k9B1cz2LCP02DeIONtd_jQsqGhnBcd6AnzN4W6qop2G0Wxu5ykiXizljtQA1f_X6eNfjTed3RaXEs2V0qW2m99n6_TV_P921VBCAI_0uIjj4uvi4bL9Dkxfo2PCY4CUBn15G5ydOSWBr-zp3JNCq0QddNxJGeN-q08D6Fw0BEzlgz4UDOewsCNij22NcXsZJj7j39NPYRTbpzFP1Jg1hfT3L3n3fDSJiKOnsZMcqZcRlXGXEjF0lZHqy6zpCUyceeUAWA8Q_vogKlcXbf_M7FzhlOdqrqtBP1Bp8Pz4v3xbqePPkVfVZ1g6BX1VU1i4MhA-lgIx1UMFvQnyOHCeBKBFzz2-n0i7FeagM_6iLRw9ppRUvF2eL3Ay3KjaTasKzZRmTAyQEpkfeJJS8sjIou0rFz9yAXk6qFrF_KEHROr9nhDeSrFNu2vLdYuwDLLXny1rmW8eeRAcsWlqVG9JCr8m_9QrBXNMFkFsGyN6IyGcDa4NaOxuQDiWph17IVl2WtlOrmhSaigrdkU94BuobHLmOUh3xPt91HwW36UEESyghmxkp24Uk3FNFaBxY0X5P3hWWmC4u7cRylZtD1wF8sy5kouytNe63YpGestf1D2CsRfcd_LrvIKLsRlcOWhKpLDMRERqLRoCBW1vbsYlBi7a12wW2v_ZUqWfZ_0uVyQ37LprwckOc4ZLs05zViNxawktaU6timLhpsDWRbtWL3X78_zateyaHsdobcpnbXXXJl7R0uzpwo_A6MQhHoogM1T7IOYvNPVNAeLeTiuJxOI-Sl4z8gYPmTf8pc44NIK6l-dJn08cKml-vYdhhgPEx1fO8C7RvyNA8UPqJwZVpLys2KflLp1I7m1w7qVnLeuQ7VIIlo0Gn-tE5YNTqjdds5V7OQZKXqZ_YznR4-JUP3I8qUS3h2W6_W_udxO2Z13K4pTpu9KJIKweyOWYbLMJ7LNjf9Qo4brpsaouVoEHWYJoh9-Gxhk3xEdZA1D1ISqUYUrD-cAXmpLPXc5cIxkWbn6oFORbiAG-0K9Kq6ungIkJ17XqSSyn4SVT8vKWzNzXxuLRpL5CgLTNYCUpW9b8nAdmHcEqB45LjBedCnWDo9gH_eHUaaWEO8rJwmy09j7VcerqN5j-bYZHnGTzJnQe5gRXnpynBn2B9Do_asPRGt7O_1GyphDDH3etJkOU6zpA_gw"
+            ],
+            "sei": [
+              "KOk8atDoO-rNkPIPnvTX-AM"
+            ]
+          },
+          "path": "/search",
+          "domain": "www.google.com"
+        },
+        {
+          "url": "https://www.google.com/complete/s?q&cp=0&client=gws-wiz-serp&xssi=t&gs_pcrt=2&hl=zh-CN&authuser=0&pq=tiktok%20shop&psi=L-k8av3mHdaxur8PxcnIyAc.1782376753514&dpr=1&ofp=GIWN8PXyn9Xn7wEY3q-03uGM952nARi5xMmHlvPenmgY_9T7w-_BlbJWGIWz47GqpI2JCw&nolsbt=1",
+          "method": "GET",
+          "headers": {
+            "sec-ch-ua-full-version-list": "\"Chromium\";v=\"145.0.7632.6\", \"Not:A-Brand\";v=\"99.0.0.0\"",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-ch-ua": "\"Chromium\";v=\"145\", \"Not:A-Brand\";v=\"99\"",
+            "sec-ch-ua-bitness": "\"64\"",
+            "sec-ch-ua-model": "\"\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-form-factors": "\"Desktop\"",
+            "sec-ch-ua-wow64": "?0",
+            "sec-ch-ua-arch": "\"x86\"",
+            "sec-ch-ua-full-version": "\"145.0.7632.6\"",
+            "downlink": "1.3",
+            "referer": "https://www.google.com/",
+            "sec-ch-prefers-color-scheme": "light",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "rtt": "450",
+            "sec-ch-ua-platform-version": "\"10.0.0\""
+          },
+          "post_data": null,
+          "resource_type": "xhr",
+          "query_params": {
+            "cp": [
+              "0"
+            ],
+            "client": [
+              "gws-wiz-serp"
+            ],
+            "xssi": [
+              "t"
+            ],
+            "gs_pcrt": [
+              "2"
+            ],
+            "hl": [
+              "zh-CN"
+            ],
+            "authuser": [
+              "0"
+            ],
+            "pq": [
+              "tiktok shop"
+            ],
+            "psi": [
+              "L-k8av3mHdaxur8PxcnIyAc.1782376753514"
+            ],
+            "dpr": [
+              "1"
+            ],
+            "ofp": [
+              "GIWN8PXyn9Xn7wEY3q-03uGM952nARi5xMmHlvPenmgY_9T7w-_BlbJWGIWz47GqpI2JCw"
+            ],
+            "nolsbt": [
+              "1"
+            ]
+          },
+          "path": "/complete/s",
+          "domain": "www.google.com"
+        },
+        {
+          "url": "https://www.google.com/complete/s?q=tiktok%20shop&cp=0&client=desktop-gws-wiz-on-focus-serp&xssi=t&gs_pcrt=3&hl=zh-CN&authuser=0&pq=tiktok%20shop&psi=L-k8av3mHdaxur8PxcnIyAc.1782376753514&dpr=1&ofp=EAEYhY3w9fKf1efvARjer7Te4Yz3nacBGLnEyYeW896eaBj_1PvD78GVslYYhbPjsaqkjYkLMv8BChgKFnRpa3RvayBzaG9wIOe9kemhtSDniYgKFAoSdGlrdG9rIHNob3Ag5a6Y572RChQKEnRpa3RvayBzaG9wIOeZu-W9lQoUChJ0aWt0b2sgc2hvcCDkuIvovb0KHAoadGlrdG9rIHNob3Ag6LeoIOWigyDlrpjnvZEKGwoZdGlrdG9rIHNob3Ag5Y2W5a62IOWFpeWPowobChl0aWt0b2sgc2hvcCDljZblrrYg5Lit5b-DChsKGXRpa3RvayBzaG9wIOWuieWNkyDkuIvovb0KFAoSdGlrdG9rIHNob3Ag6KmQ6aiZChQKEnRpa3RvayBzaG9wIOi0reeJqRBHMnoKIgogSG93IGRvIEkgYWNjZXNzIHRoZSBUaWtUb2sgU2hvcD8KKwopV2hhdCBpcyB0aGUgbW9zdCB2aXJhbCBwcm9kdWN0IHJpZ2h0IG5vdz8KJAoiV2hhdCdzIHRoZSBjYXRjaCB3aXRoIFRpa1RvayBTaG9wPxDkAg",
+          "method": "GET",
+          "headers": {
+            "sec-ch-ua-full-version-list": "\"Chromium\";v=\"145.0.7632.6\", \"Not:A-Brand\";v=\"99.0.0.0\"",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-ch-ua": "\"Chromium\";v=\"145\", \"Not:A-Brand\";v=\"99\"",
+            "sec-ch-ua-bitness": "\"64\"",
+            "sec-ch-ua-model": "\"\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-form-factors": "\"Desktop\"",
+            "sec-ch-ua-wow64": "?0",
+            "sec-ch-ua-arch": "\"x86\"",
+            "sec-ch-ua-full-version": "\"145.0.7632.6\"",
+            "downlink": "1.3",
+            "referer": "https://www.google.com/",
+            "sec-ch-prefers-color-scheme": "light",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "rtt": "450",
+            "sec-ch-ua-platform-version": "\"10.0.0\""
+          },
+          "post_data": null,
+          "resource_type": "xhr",
+          "query_params": {
+            "q": [
+              "tiktok shop"
+            ],
+            "cp": [
+              "0"
+            ],
+            "client": [
+              "desktop-gws-wiz-on-focus-serp"
+            ],
+            "xssi": [
+              "t"
+            ],
+            "gs_pcrt": [
+              "3"
+            ],
+            "hl": [
+              "zh-CN"
+            ],
+            "authuser": [
+              "0"
+            ],
+            "pq": [
+              "tiktok shop"
+            ],
+            "psi": [
+              "L-k8av3mHdaxur8PxcnIyAc.1782376753514"
+            ],
+            "dpr": [
+              "1"
+            ],
+            "ofp": [
+              "EAEYhY3w9fKf1efvARjer7Te4Yz3nacBGLnEyYeW896eaBj_1PvD78GVslYYhbPjsaqkjYkLMv8BChgKFnRpa3RvayBzaG9wIOe9kemhtSDniYgKFAoSdGlrdG9rIHNob3Ag5a6Y572RChQKEnRpa3RvayBzaG9wIOeZu-W9lQoUChJ0aWt0b2sgc2hvcCDkuIvovb0KHAoadGlrdG9rIHNob3Ag6LeoIOWigyDlrpjnvZEKGwoZdGlrdG9rIHNob3Ag5Y2W5a62IOWFpeWPowobChl0aWt0b2sgc2hvcCDljZblrrYg5Lit5b-DChsKGXRpa3RvayBzaG9wIOWuieWNkyDkuIvovb0KFAoSdGlrdG9rIHNob3Ag6KmQ6aiZChQKEnRpa3RvayBzaG9wIOi0reeJqRBHMnoKIgogSG93IGRvIEkgYWNjZXNzIHRoZSBUaWtUb2sgU2hvcD8KKwopV2hhdCBpcyB0aGUgbW9zdCB2aXJhbCBwcm9kdWN0IHJpZ2h0IG5vdz8KJAoiV2hhdCdzIHRoZSBjYXRjaCB3aXRoIFRpa1RvayBTaG9wPxDkAg"
+            ]
+          },
+          "path": "/complete/s",
+          "domain": "www.google.com"
+        }
+      ]
+    },
+    "direct_category": {
+      "success": true,
+      "requests": [
+        {
+          "url": "https://shop.tiktok.com/c/beauty-personal-care/601450",
+          "method": "GET",
+          "headers": {
+            "upgrade-insecure-requests": "1",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+            "sec-ch-ua": "\"Chromium\";v=\"145\", \"Not:A-Brand\";v=\"99\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\""
+          },
+          "post_data": null,
+          "resource_type": "document",
+          "query_params": {},
+          "path": "/c/beauty-personal-care/601450",
+          "domain": "shop.tiktok.com"
+        }
+      ],
+      "url": "https://shop.tiktok.com/c/beauty-personal-care/601450"
+    }
+  }
+}

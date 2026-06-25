@@ -1,0 +1,45 @@
+{
+  "homepage_blocked": true,
+  "category_results": [
+    {
+      "url": "https://shop.tiktok.com/c/beauty-personal-care/601450",
+      "success": true,
+      "products_count": 0
+    },
+    {
+      "url": "https://shop.tiktok.com/c/womens-clothing/601451",
+      "success": true,
+      "products_count": 0
+    },
+    {
+      "url": "https://shop.tiktok.com/c/mens-clothing/601452",
+      "success": true,
+      "products_count": 0
+    },
+    {
+      "url": "https://shop.tiktok.com/c/electronics/601453",
+      "success": true,
+      "products_count": 0
+    },
+    {
+      "url": "https://shop.tiktok.com/c/home-kitchen/601455",
+      "success": true,
+      "products_count": 0
+    },
+    {
+      "url": "https://shop.tiktok.com/c/jewelry-accessories/601456",
+      "success": true,
+      "products_count": 0
+    },
+    {
+      "url": "https://shop.tiktok.com/c/shoes/601457",
+      "success": true,
+      "products_count": 0
+    },
+    {
+      "url": "https://shop.tiktok.com/c/sports-outdoors/601458",
+      "success": true,
+      "products_count": 0
+    }
+  ]
+}

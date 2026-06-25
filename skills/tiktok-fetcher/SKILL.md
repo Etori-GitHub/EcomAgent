@@ -67,6 +67,45 @@ tiktok_womenswear_underwear_20260509_104800.json
 - `metadata.total_items`: 商品总数
 - `products`: 商品列表数组
 
+## 反爬对策（重要）
+
+TikTok Shop 有严格的反爬机制，如果遇到 `code:100000` 封禁响应，请使用以下方案：
+
+### 方案 1：Playwright Stealth（推荐先试）
+
+```bash
+# 安装依赖
+pip install playwright-stealth
+
+# 运行脚本
+python code/EcomAgent/skills/tiktok-fetcher/src/fetch_tiktok_stealth.py
+```
+
+**特点**：
+- 使用 playwright-stealth 插件隐藏自动化特征
+- 强化反检测参数
+- 模拟真实用户行为
+
+### 方案 2：undetected-chromedriver（效果最强）
+
+```bash
+# 安装依赖
+pip install undetected-chromedriver
+
+# 运行脚本
+python code/EcomAgent/skills/tiktok-fetcher/src/fetch_tiktok_uc.py
+```
+
+**特点**：
+- 专门绑过反爬检测
+- 效果最强，但需要换用 Selenium 语法
+
+### 方案 3：Android App 抓包（终极方案）
+
+如果以上方案都失败，可以考虑通过 TikTok Shop Android App 抓包分析 API。
+
+---
+
 ## 使用步骤
 
 ### 1. 安装依赖
@@ -75,13 +114,22 @@ tiktok_womenswear_underwear_20260509_104800.json
 cd code/EcomAgent/skills/tiktok-fetcher
 pip install -r requirements.txt
 playwright install chromium
+
+# 可选：安装反爬增强
+pip install playwright-stealth undetected-chromedriver
 ```
 
 ### 2. 运行抓取脚本
 
 ```bash
-# 抓取所有 28 个分类
+# 标准版（可能被封）
 python code/EcomAgent/skills/tiktok-fetcher/src/fetch_tiktok_categories.py
+
+# Stealth 版（推荐）
+python code/EcomAgent/skills/tiktok-fetcher/src/fetch_tiktok_stealth.py
+
+# UC 版（效果最强）
+python code/EcomAgent/skills/tiktok-fetcher/src/fetch_tiktok_uc.py
 ```
 
 ### 3. 数据自动保存

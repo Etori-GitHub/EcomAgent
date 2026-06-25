@@ -71,7 +71,7 @@ for item in data['items']:
     processed_items.append({
         'id': item['id'],
         'name': item['name'],
-        'translated_name': translated_name
+        'short_name': translated_name
     })
 
 result = {
