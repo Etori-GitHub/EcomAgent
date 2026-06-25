@@ -41,6 +41,9 @@ test/
 # Test scripts in root
 test*.py
 
+# Skills screenshots (test outputs)
+skills/*/screenshots/
+
 # Skills old files
 skills/*/src/old/
 
