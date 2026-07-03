@@ -82,10 +82,10 @@ python -m src.data_viewer.main
 # 完整流程（抓取 + 导入 + 图片下载）
 python scripts/daily_fetch.py all
 
-# 只抓取 TikTok
+# 只抓取 TikTok（会自动导入和下载图片）
 python scripts/daily_fetch.py tiktok
 
-# 只抓取 Amazon
+# 只抓取 Amazon（会自动导入和下载图片）
 python scripts/daily_fetch.py amazon
 
 # 只导入数据（不抓取）
@@ -93,9 +93,12 @@ python scripts/daily_fetch.py import
 
 # 只下载图片
 python scripts/daily_fetch.py images
+
+# 跳过图片下载
+python scripts/daily_fetch.py all --skip-images
 ```
 
-**注意**：`tiktok` 和 `amazon` 参数**只抓取不导入**，需要单独运行 `import` 或直接用 `all`。
+**注意**：`tiktok` 和 `amazon` 参数现在会自动执行导入和图片下载。
 
 ### 技能文档
 
