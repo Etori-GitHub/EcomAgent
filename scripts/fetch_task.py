@@ -561,7 +561,7 @@ class FetchTask:
                     else:
                         wait = random_wait(3000, 8000)
                         print(f"[INFO] 等待 {wait}ms...")
-                    time.sleep(wait / 1000)
+                        time.sleep(wait / 1000)
             
             self.status = 'completed'
             self.save_task(categories)
