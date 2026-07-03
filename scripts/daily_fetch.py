@@ -103,8 +103,8 @@ def main():
         else:
             print(f"[SKIP] 数据导入脚本不存在")
     
-    # 图片下载
-    if args.platform in ['images', 'all'] and not args.skip_images:
+    # 图片下载（all/tiktok/amazon 都触发，除非指定 skip-images）
+    if args.platform in ['images', 'all', 'tiktok', 'amazon'] and not args.skip_images:
         if IMAGE_DOWNLOADER.exists():
             if not run_script(IMAGE_DOWNLOADER, ['all'], desc="下载商品图片"):
                 success = False
