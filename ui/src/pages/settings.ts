@@ -1002,69 +1002,6 @@ export class EaSettings extends LitElement {
         </div>
       </div>
       
-      <!-- API 密钥 -->
-      <div class="section">
-        <div class="section-header">
-          <span class="section-icon">🔑</span>
-          <span class="section-title">API 密钥</span>
-        </div>
-        <div class="section-body">
-          <div class="field-row">
-            <span class="field-label">Google API Key</span>
-            <div class="field-value">
-              ${this.editingField === 'google' 
-                ? html`
-                    <input class="field-input" type="password" .value=${this.editValue} @input=${(e: Event) => this.editValue = (e.target as HTMLInputElement).value} />
-                    <button class="btn btn-primary" @click=${() => this._saveField('google')} ?disabled=${this.saving}>保存</button>
-                    <button class="btn" @click=${this._cancelEdit}>取消</button>
-                  `
-                : html`
-                    <span class="field-text api-key-masked">${this._maskKey(this.apiKeys.google)}</span>
-                    <button class="btn" @click=${() => this._editField('google', this.apiKeys.google)}>编辑</button>
-                  `
-              }
-            </div>
-          </div>
-          
-          <div class="field-row">
-            <span class="field-label">火山引擎 API Key</span>
-            <div class="field-value">
-              ${this.editingField === 'volcano' 
-                ? html`
-                    <input class="field-input" type="password" .value=${this.editValue} @input=${(e: Event) => this.editValue = (e.target as HTMLInputElement).value} />
-                    <button class="btn btn-primary" @click=${() => this._saveField('volcano')} ?disabled=${this.saving}>保存</button>
-                    <button class="btn" @click=${this._cancelEdit}>取消</button>
-                  `
-                : html`
-                    <span class="field-text api-key-masked">${this._maskKey(this.apiKeys.volcano)}</span>
-                    <button class="btn" @click=${() => this._editField('volcano', this.apiKeys.volcano)}>编辑</button>
-                  `
-              }
-            </div>
-          </div>
-          
-          <div class="field-row">
-            <span class="field-label">xAI API Key</span>
-            <div class="field-value">
-              ${this.editingField === 'xai' 
-                ? html`
-                    <input class="field-input" type="password" .value=${this.editValue} @input=${(e: Event) => this.editValue = (e.target as HTMLInputElement).value} />
-                    <button class="btn btn-primary" @click=${() => this._saveField('xai')} ?disabled=${this.saving}>保存</button>
-                    <button class="btn" @click=${this._cancelEdit}>取消</button>
-                  `
-                : html`
-                    <span class="field-text api-key-masked">${this._maskKey(this.apiKeys.xai)}</span>
-                    <button class="btn" @click=${() => this._editField('xai', this.apiKeys.xai)}>编辑</button>
-                  `
-              }
-            </div>
-          </div>
-        </div>
-        <div class="hint" style="padding: 0 20px 16px;">
-          💡 API 密钥用于调用各类 AI 模型生成素材
-        </div>
-      </div>
-      
       <!-- OpenClaw 辅助功能 -->
       <div class="section">
         <div class="section-header">
