@@ -5,15 +5,26 @@ echo EcomAgent Setup
 echo ============================================================
 echo.
 
-REM Check if python directory exists
-if exist "python\python.exe" (
-    echo [OK] Python environment already exists.
+REM Step 1: Check if Python exists
+if not exist "python\python.exe" (
+    echo [INSTALLING] Setting up Python environment...
+    echo.
+    goto :install_python
+)
+
+REM Step 2: Check if dependencies are installed
+python\python.exe -c "import fastapi" 2>nul
+if %errorlevel%==0 (
+    echo [OK] Dependencies already installed.
     goto :install_playwright
 )
 
-echo [INSTALLING] Setting up Python environment...
+REM Dependencies missing, install them
+echo [INFO] Dependencies not found, installing...
 echo.
+goto :install_deps
 
+:install_python
 REM Download Python embeddable package (3.11.9)
 set PYTHON_VERSION=3.11.9
 set PYTHON_URL=https://www.python.org/ftp/python/%PYTHON_VERSION%/python-%PYTHON_VERSION%-embed-amd64.zip
@@ -42,20 +53,17 @@ echo Installing pip...
 powershell -Command "Invoke-WebRequest -Uri 'https://bootstrap.pypa.io/get-pip.py' -OutFile 'python\get-pip.py' -UseBasicParsing"
 python\python.exe python\get-pip.py --no-warn-script-location
 
-REM Install dependencies
-echo Installing dependencies...
-python\python.exe -m pip install --no-warn-script-location -r requirements.txt
-
-REM Install Playwright Chromium
-echo Installing Playwright Chromium...
-python\python.exe -m playwright install chromium
-
-REM Clean up
 del %PYTHON_ZIP%
 del python\get-pip.py
 
 echo.
-echo [OK] Python environment setup complete.
+echo [OK] Python installed.
+echo.
+
+:install_deps
+REM Install dependencies
+echo [INSTALLING] Dependencies...
+python\python.exe -m pip install --no-warn-script-location -r requirements.txt
 echo.
 
 :install_playwright
