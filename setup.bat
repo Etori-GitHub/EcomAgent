@@ -12,7 +12,15 @@ if not exist "python\python.exe" (
     goto :install_python
 )
 
-REM Step 2: Check if dependencies are installed
+REM Step 2: Check if pip exists
+python\python.exe -c "import pip" 2>nul
+if %errorlevel% neq 0 (
+    echo [INFO] pip not found, installing pip...
+    echo.
+    goto :install_pip
+)
+
+REM Step 3: Check if dependencies are installed
 python\python.exe -c "import fastapi" 2>nul
 if %errorlevel%==0 (
     echo [OK] Dependencies already installed.
@@ -48,17 +56,35 @@ echo Lib>> python\python311._pth
 echo Lib\site-packages>> python\python311._pth
 echo.>> python\python311._pth
 
-REM Download get-pip.py
-echo Installing pip...
-powershell -Command "Invoke-WebRequest -Uri 'https://bootstrap.pypa.io/get-pip.py' -OutFile 'python\get-pip.py' -UseBasicParsing"
-python\python.exe python\get-pip.py --no-warn-script-location
-
 del %PYTHON_ZIP%
-del python\get-pip.py
 
 echo.
 echo [OK] Python installed.
 echo.
+goto :install_pip
+
+:install_pip
+REM Ensure _pth is configured
+if exist "python\python311._pth" (
+    findstr "Lib\\site-packages" python\python311._pth >nul
+    if %errorlevel% neq 0 (
+        echo Configuring python311._pth...
+        echo Lib>> python\python311._pth
+        echo Lib\site-packages>> python\python311._pth
+        echo.>> python\python311._pth
+    )
+)
+
+REM Download and install pip
+echo Installing pip...
+powershell -Command "Invoke-WebRequest -Uri 'https://bootstrap.pypa.io/get-pip.py' -OutFile 'python\get-pip.py' -UseBasicParsing"
+python\python.exe python\get-pip.py --no-warn-script-location
+del python\get-pip.py
+
+echo.
+echo [OK] pip installed.
+echo.
+goto :install_deps
 
 :install_deps
 REM Install dependencies
