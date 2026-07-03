@@ -98,6 +98,26 @@ echo [CHECKING] Playwright Chromium...
 python\python.exe -m playwright install chromium
 echo.
 
+:init_database
+REM Initialize databases if not exist
+echo [CHECKING] Database initialization...
+set NEED_INIT=0
+
+if not exist "data\amazon.db" set NEED_INIT=1
+if not exist "data\tiktok.db" set NEED_INIT=1
+if not exist "data\product_master.db" set NEED_INIT=1
+if not exist "data\categories.db" set NEED_INIT=1
+
+if "%NEED_INIT%"=="1" (
+    echo [INIT] Initializing databases...
+    python\python.exe scripts\init_all_tables.py
+    python\python.exe scripts\init_category_tables.py
+    echo [OK] Databases initialized
+) else (
+    echo [OK] All databases exist
+)
+echo.
+
 :start_server
 echo ============================================================
 echo Starting EcomAgent...
