@@ -430,6 +430,34 @@ class FetchTask:
             print(f"[ERROR] 导入失败: {result.stderr}")
             return False
     
+    def download_images(self, platform: str):
+        """下载商品图片"""
+        download_script = BASE_DIR / 'scripts' / 'download_images.py'
+        
+        if not download_script.exists():
+            print(f"[SKIP] 图片下载脚本不存在")
+            return
+        
+        env = os.environ.copy()
+        env['PYTHONIOENCODING'] = 'utf-8'
+        env['PYTHONUTF8'] = '1'
+        
+        result = subprocess.run(
+            ['python', str(download_script), platform, '--limit', '50'],
+            capture_output=True,
+            text=True,
+            cwd=str(BASE_DIR),
+            env=env,
+            timeout=300,
+            encoding='utf-8',
+            errors='replace'
+        )
+        
+        if result.returncode == 0:
+            print(f"[OK] 图片下载完成")
+        else:
+            print(f"[WARN] 图片下载部分失败: {result.stderr}")
+    
     def update_category_status(self, category_id: int, products_count: int):
         """更新类目抓取状态"""
         conn = get_db(CATEGORIES_DB)
@@ -538,6 +566,10 @@ class FetchTask:
             self.status = 'completed'
             self.save_task(categories)
             self.update_db_status('completed')
+            
+            # 下载图片
+            print(f"\n[INFO] 开始下载商品图片...")
+            self.download_images(self.platform)
             
             print(f"\n{'='*60}")
             print(f"任务完成!")
