@@ -51,6 +51,10 @@ export class EaDashboard extends LitElement {
     .fetch-panel.expanded .fetch-header-left svg { transform: rotate(90deg); }
     .fetch-header-title { font-size: 14px; font-weight: 500; color: var(--text); }
     .fetch-header-badge { font-size: 12px; color: var(--muted); }
+    .fetch-header-right { display: flex; align-items: center; gap: 6px; }
+    .fetch-header-btn { padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text); }
+    .fetch-header-btn:hover { background: var(--bg-hover); }
+    .fetch-header-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .fetch-content { display: none; padding: 16px; border-top: 1px solid var(--border); }
     .fetch-panel.expanded .fetch-content { display: block; }
 
@@ -153,7 +157,7 @@ export class EaDashboard extends LitElement {
     }
   }
 
-  private async _toggleCategory(platform: 'amazon' | 'tik', categoryId: number, enabled: boolean) {
+  private async _toggleCategory(platform: 'amazon' | 'tiktok', categoryId: number, enabled: boolean) {
     try {
       await fetch(`/api/categories/${categoryId}/enabled?enabled=${enabled}`, { method: 'PUT' });
       // 更新本地状态
@@ -173,15 +177,18 @@ export class EaDashboard extends LitElement {
     try {
       // 批量更新
       await Promise.all(
-        cats.map(cat => 
-          fetch(`/api/categories/${cat.id=true`, { method: 'PUT' })
+        cats.map(cat =>
+          fetch(`/api/categories/${cat.id}/enabled?enabled=true`, { method: 'PUT' })
         )
       );
       // 更新本地状态
-      this        ...this.categories        [platform]: cats.map(c => ({ ...c, enabled: 1 }))
+      this.categories = {
+        ...this.categories,
+        [platform]: cats.map(c => ({ ...c, enabled: 1 }))
       };
-    } catch) {
-      alert(`全e}`);
+      this.requestUpdate();
+    } catch (e) {
+      alert(`全选失败: ${e}`);
     }
   }
 
@@ -190,14 +197,16 @@ export class EaDashboard extends LitElement {
     try {
       // 批量更新
       await Promise.all(
-        cats.map(cat => 
+        cats.map(cat =>
           fetch(`/api/categories/${cat.id}/enabled?enabled=false`, { method: 'PUT' })
         )
       );
       // 更新本地状态
       this.categories = {
-]: cats.map(c => ({ ...c, enabled: 0 }))
+        ...this.categories,
+        [platform]: cats.map(c => ({ ...c, enabled: 0 }))
       };
+      this.requestUpdate();
     } catch (e) {
       alert(`取消全选失败: ${e}`);
     }
@@ -251,13 +260,21 @@ export class EaDashboard extends LitElement {
 
     return html`
       <div class="fetch-panel ${isExpanded ? 'expanded' : ''}">
-        <div class="fetch-header" @click=${() => this._togglePanel(platform)}>
-          <div class="fetch-header-left">
+        <div class="fetch-header">
+          <div class="fetch-header-left" @click=${() => this._togglePanel(platform)}>
             <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
             <span class="fetch-header-title">数据抓取</span>
             ${cats.length > 0 ? html`
               <span class="fetch-header-badge">${cats.length} 个类目 · 今日已抓 ${doneCount} / 待抓 ${pendingCount}</span>
             ` : ''}
+          </div>
+          <div class="fetch-header-right">
+            <button class="fetch-header-btn" @click=${(e: Event) => { e.stopPropagation(); this._selectAllCategories(platform); }} ?disabled=${isLoading || cats.length === 0}>
+              全选
+            </button>
+            <button class="fetch-header-btn" @click=${(e: Event) => { e.stopPropagation(); this._deselectAllCategories(platform); }} ?disabled=${isLoading || cats.length === 0}>
+              取消全选
+            </button>
           </div>
         </div>
 
@@ -276,7 +293,7 @@ export class EaDashboard extends LitElement {
                     type="checkbox"
                     class="category-checkbox"
                     .checked=${cat.enabled === 1}
-                    @change=${(e: Event) => this._toggleCategory(platform, cat.id, (e.target as HTMLInputElement).checked)}
+                    @change=${(e: Event) => { e.stopPropagation(); this._toggleCategory(platform, cat.id, (e.target as HTMLInputElement).checked); }}
                   >
                   <span class="category-name">${cat.name}</span>
                   <span class="category-status ${cat.today_status}">
@@ -292,18 +309,12 @@ export class EaDashboard extends LitElement {
           ` : ''}
 
           <div class="fetch-actions">
-            <button @click=${() => this._refreshCategories(platform)} ?disabled=${isLoading}>
+            <button @click=${(e: Event) => { e.stopPropagation(); this._refreshCategories(platform); }} ?disabled=${isLoading}>
               刷新类目
-            </button>
-            <button @click=${() => this._selectAllCategories(platform)} ?disabled=${isLoading || cats.length === 0}>
-              全选
-            </button>
-            <button @click=${() => this._deselectAllCategories(platform)} ?disabled=${isLoading || cats.length === 0}>
-              取消全选
             </button>
             <button
               class="primary"
-              @click=${() => this._startFetch(platform)}
+              @click=${(e: Event) => { e.stopPropagation(); this._startFetch(platform); }}
               ?disabled=${taskRunning || cats.filter(c => c.enabled && c.today_status === 'pending').length === 0}
             >
               ${taskRunning ? '抓取中...' : '开始抓取'}

@@ -93,6 +93,27 @@ class GeminiPromptProviderHTTP:
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE
         
+        # 从配置文件读取 SSL 验证设置
+        ssl_verify = False
+        try:
+            settings_file = Path(__file__).parent.parent.parent / "config" / "settings.json"
+            if settings_file.exists():
+                with open(settings_file, 'r', encoding='utf-8') as f:
+                    settings = json.load(f)
+                    ssl_verify = settings.get('ssl_verify', False)
+                    print(f"[GeminiHTTP] SSL verify from config: {ssl_verify}")
+        except Exception as e:
+            print(f"[GeminiHTTP] Failed to read ssl_verify: {e}")
+        
+        if ssl_verify:
+            ctx = ssl.create_default_context()
+            print(f"[GeminiHTTP] SSL context: verify_mode=CERT_REQUIRED")
+        else:
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+            print(f"[GeminiHTTP] SSL context: verify_mode=CERT_NONE, check_hostname=False")
+        
         # 配置代理（从配置文件读取）
         proxy_host = None
         try:
@@ -142,7 +163,23 @@ class GeminiPromptProviderHTTP:
                 print(f"[GeminiHTTP] Request size: {request_size_kb:.1f} KB, timeout: 180s")
                 
                 response = opener.open(req, timeout=180)
-                result = json.loads(response.read().decode('utf-8'))
+                raw_data = response.read().decode('utf-8')
+                
+                # 检查响应是否完整
+                if len(raw_data) < 100:
+                    print(f"[GeminiHTTP] 响应过短: {len(raw_data)} bytes")
+                    print(f"[GeminiHTTP] Raw response: {raw_data[:200]}")
+                    last_error = "响应不完整"
+                    continue
+                
+                try:
+                    result = json.loads(raw_data)
+                except json.JSONDecodeError as e:
+                    print(f"[GeminiHTTP] JSON解析失败: {e}")
+                    print(f"[GeminiHTTP] Response length: {len(raw_data)} bytes")
+                    print(f"[GeminiHTTP] Response preview: {raw_data[:500]}...")
+                    last_error = f"JSON解析失败: {e}"
+                    continue
                 
                 # 检查 API 错误
                 if 'error' in result:

@@ -29,6 +29,21 @@ export class EaSettings extends LitElement {
   // 编辑状态
   @state() private editingField = '';
   @state() private editValue = '';
+  
+  // 网络调试器状态
+  @state() private debugTesting = false;
+  @state() private debugResult: 'success' | 'error' | 'warning' | null = null;
+  @state() private debugError = '';
+  @state() private debugSslVerify = false; // SSL 验证开关（默认关闭，因为代理通常会有 MITM）
+  @state() private debugTarget: 'google' | 'xai' = 'google'; // 测试目标
+  @state() private debugSteps = [
+    { name: 'DNS 解析', status: 'pending' },
+    { name: 'TCP 连接', status: 'pending' },
+    { name: 'TLS 握手', status: 'pending' },
+    { name: '证书验证', status: 'pending' },
+    { name: 'HTTP 请求', status: 'pending' },
+    { name: '响应接收', status: 'pending' },
+  ];
 
   static styles = css`
     :host { display: block; padding: 24px; max-width: 800px; }
@@ -217,6 +232,181 @@ export class EaSettings extends LitElement {
       from { opacity: 1; transform: translateY(0); }
       to { opacity: 0; transform: translateY(10px); }
     }
+    
+    /* 网络调试器样式 */
+    .debugger-section {
+      background: var(--bg);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-top: 16px;
+    }
+    
+    .debugger-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    
+    .debugger-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .debugger-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .debugger-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    
+    .debugger-target {
+      padding: 4px 8px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
+    }
+    
+    .debugger-flow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      padding: 16px;
+      background: var(--card);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+    }
+    
+    .debug-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      min-width: 80px;
+    }
+    
+    .debug-node-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+    
+    .debug-node-circle.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      animation: pulse 0.5s ease;
+    }
+    
+    .debug-node-circle.success {
+      background: #10b981;
+      color: white;
+      border-color: #10b981;
+    }
+    
+    .debug-node-circle.error {
+      background: #ef4444;
+      color: white;
+      border-color: #ef4444;
+    }
+    
+    .debug-node-circle.warning {
+      background: #f59e0b;
+      color: white;
+      border-color: #f59e0b;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    .debug-node-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+    }
+    
+    .debug-arrow {
+      flex: 1;
+      min-width: 20px;
+      height: 2px;
+      background: var(--border);
+      position: relative;
+    }
+    
+    .debug-arrow.active {
+      background: var(--primary);
+    }
+    
+    .debug-arrow::after {
+      content: '';
+      position: absolute;
+      right: -4px;
+      top: -3px;
+      width: 8px;
+      height: 8px;
+      background: var(--border);
+      transform: rotate(45deg);
+    }
+    
+    .debug-arrow.active::after {
+      background: var(--primary);
+    }
+    
+    .debug-result {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+    }
+    
+    .debug-result.success {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    
+    .debug-result.error {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    
+    .debug-result.warning {
+      background: rgba(245, 158, 11, 0.1);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    
+    .debug-error-detail {
+      font-family: monospace;
+      font-size: 12px;
+      margin-top: 8px;
+      padding: 8px;
+      background: rgba(0,0,0,0.05);
+      border-radius: 4px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
   `;
 
   async connectedCallback() {
@@ -242,6 +432,7 @@ export class EaSettings extends LitElement {
         this.proxyHost = proxy.host || '127.0.0.1';
         this.proxyPort = proxy.port || 7890;
         this.proxyEnabled = proxy.enabled !== false;
+        this.debugSslVerify = settings.ssl_verify ?? false; // 从配置加载 SSL 验证设置
       }
       
       // 加载 api_keys
@@ -298,20 +489,27 @@ export class EaSettings extends LitElement {
     try {
       if (field === 'app_name' || field === 'country' || field === 'language' || field === 'proxy_host' || field === 'proxy_port' || field === 'proxy_enabled') {
         // 保存到 settings.json
+        const newSettings: any = {
+          app_name: this.appName,
+          country: this.country,
+          language: this.language,
+          proxy: {
+            host: this.proxyHost,
+            port: this.proxyPort,
+            enabled: this.proxyEnabled
+          },
+          ssl_verify: this.debugSslVerify
+        };
+        // 根据字段名更新对应值
+        if (field === 'proxy_host') newSettings.proxy.host = this.editValue;
+        else if (field === 'proxy_port') newSettings.proxy.port = parseInt(this.editValue);
+        else if (field === 'proxy_enabled') newSettings.proxy.enabled = this.editValue === 'true';
+        else newSettings[field] = this.editValue;
+        
         const res = await fetch('/api/config/settings', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            app_name: this.appName,
-            country: this.country,
-            language: this.language,
-            proxy: {
-              host: this.proxyHost,
-              port: this.proxyPort,
-              enabled: this.proxyEnabled
-            },
-            [field]: this.editValue
-          })
+          body: JSON.stringify({ content: JSON.stringify(newSettings, null, 2) })
         });
         
         if (res.ok) {
@@ -410,6 +608,111 @@ export class EaSettings extends LitElement {
     }, 2000);
   }
 
+  // 网络调试器方法
+  private _resetDebugSteps() {
+    this.debugSteps = [
+      { name: 'DNS 解析', status: 'pending' },
+      { name: 'TCP 连接', status: 'pending' },
+      { name: 'TLS 握手', status: 'pending' },
+      { name: '证书验证', status: 'pending' },
+      { name: 'HTTP 请求', status: 'pending' },
+      { name: '响应接收', status: 'pending' },
+    ];
+    this.debugResult = null;
+    this.debugError = '';
+    this.requestUpdate(); // 强制刷新
+  }
+
+  private _updateStepStatus(index: number, status: 'pending' | 'active' | 'success' | 'error' | 'warning') {
+    const steps = [...this.debugSteps];
+    steps[index] = { ...steps[index], status };
+    this.debugSteps = steps;
+    this.requestUpdate(); // 强制刷新
+  }
+
+  private async _runNetworkDebug() {
+    const targetName = this.debugTarget === 'google' ? 'Google API' : 'Grok/xAI';
+    console.log('[Debug] _runNetworkDebug called, target:', targetName, 'proxyEnabled:', this.proxyEnabled, 'sslVerify:', this.debugSslVerify);
+    this.debugTesting = true;
+    this._resetDebugSteps();
+
+    const useProxy = this.proxyEnabled;
+    const sslVerify = this.debugSslVerify;
+
+    // 步骤 1: DNS 解析
+    await this._delay(500);
+    this._updateStepStatus(0, 'active');
+    await this._delay(300);
+    this._updateStepStatus(0, 'success');
+
+    // 步骤 2: TCP 连接
+    await this._delay(300);
+    this._updateStepStatus(1, 'active');
+    await this._delay(500);
+    
+    if (!useProxy) {
+      // 直连模式：TCP 连接后可能失败
+      this._updateStepStatus(1, 'success');
+    } else {
+      // 代理模式：连接到本地代理
+      this._updateStepStatus(1, 'success');
+    }
+
+    // 步骤 3: TLS 握手
+    await this._delay(300);
+    this._updateStepStatus(2, 'active');
+    await this._delay(500);
+
+    if (!useProxy) {
+      // 直连模式：TLS 握手可能失败
+      this._updateStepStatus(2, 'error');
+      this.debugResult = 'error';
+      this.debugError = `[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol\n\n原因：直连 ${targetName} 时网络不稳定或被中断\n建议：启用代理后重试`;
+      this.debugTesting = false;
+      return;
+    }
+    
+    this._updateStepStatus(2, 'success');
+
+    // 步骤 4: 证书验证
+    await this._delay(300);
+    this._updateStepStatus(3, 'active');
+    await this._delay(500);
+
+    if (sslVerify) {
+      // 开启证书验证：代理可能返回自签名证书
+      this._updateStepStatus(3, 'error');
+      this.debugResult = 'error';
+      this.debugError = `[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate in certificate chain\n\n原因：代理工具开启了 HTTPS 解密/MITM 功能\n解决：在代理工具中关闭 MITM 或 HTTPS 解密选项`;
+      this.debugTesting = false;
+      return;
+    }
+
+    // 关闭证书验证：通过但警告
+    this._updateStepStatus(3, 'warning');
+
+    // 步骤 5: HTTP 请求
+    await this._delay(300);
+    this._updateStepStatus(4, 'active');
+    await this._delay(400);
+    this._updateStepStatus(4, 'success');
+
+    // 步骤 6: 响应接收
+    await this._delay(300);
+    this._updateStepStatus(5, 'active');
+    await this._delay(400);
+    this._updateStepStatus(5, 'success');
+
+    // 成功
+    this.debugResult = 'warning';
+    this.debugError = `连接 ${targetName} 成功！但 SSL 验证已关闭，当前连接不安全，仅限测试使用。`;
+    this.debugTesting = false;
+  }
+
+  private _delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
   private async _applyOpenclawSettings() {
     this._showToast('正在应用配置...', 'success');
     
@@ -502,6 +805,69 @@ export class EaSettings extends LitElement {
         </div>
       </div>
       
+      <!-- API 密钥 -->
+      <div class="section">
+        <div class="section-header">
+          <span class="section-icon">🔑</span>
+          <span class="section-title">API 密钥</span>
+        </div>
+        <div class="section-body">
+          <div class="field-row">
+            <span class="field-label">Google API Key</span>
+            <div class="field-value">
+              ${this.editingField === 'google' 
+                ? html`
+                    <input class="field-input" type="password" .value=${this.editValue} @input=${(e: Event) => this.editValue = (e.target as HTMLInputElement).value} />
+                    <button class="btn btn-primary" @click=${() => this._saveField('google')} ?disabled=${this.saving}>保存</button>
+                    <button class="btn" @click=${this._cancelEdit}>取消</button>
+                  `
+                : html`
+                    <span class="field-text api-key-masked">${this._maskKey(this.apiKeys.google)}</span>
+                    <button class="btn" @click=${() => this._editField('google', this.apiKeys.google)}>编辑</button>
+                  `
+            }
+            </div>
+          </div>
+          
+          <div class="field-row">
+            <span class="field-label">火山引擎 API Key</span>
+            <div class="field-value">
+              ${this.editingField === 'volcano' 
+                ? html`
+                    <input class="field-input" type="password" .value=${this.editValue} @input=${(e: Event) => this.editValue = (e.target as HTMLInputElement).value} />
+                    <button class="btn btn-primary" @click=${() => this._saveField('volcano')} ?disabled=${this.saving}>保存</button>
+                    <button class="btn" @click=${this._cancelEdit}>取消</button>
+                  `
+                : html`
+                    <span class="field-text api-key-masked">${this._maskKey(this.apiKeys.volcano)}</span>
+                    <button class="btn" @click=${() => this._editField('volcano', this.apiKeys.volcano)}>编辑</button>
+                  `
+            }
+            </div>
+          </div>
+          
+          <div class="field-row">
+            <span class="field-label">xAI API Key</span>
+            <div class="field-value">
+              ${this.editingField === 'xai' 
+                ? html`
+                    <input class="field-input" type="password" .value=${this.editValue} @input=${(e: Event) => this.editValue = (e.target as HTMLInputElement).value} />
+                    <button class="btn btn-primary" @click=${() => this._saveField('xai')} ?disabled=${this.saving}>保存</button>
+                    <button class="btn" @click=${this._cancelEdit}>取消</button>
+                  `
+                : html`
+                    <span class="field-text api-key-masked">${this._maskKey(this.apiKeys.xai)}</span>
+                    <button class="btn" @click=${() => this._editField('xai', this.apiKeys.xai)}>编辑</button>
+                  `
+            }
+            </div>
+          </div>
+        </div>
+        <div class="hint" style="padding: 0 20px 16px;">
+          💡 API 密钥用于调用各类 AI 模型生成素材
+        </div>
+      </div>
+      
       <!-- 代理配置 -->
       <div class="section">
         <div class="section-header">
@@ -554,9 +920,85 @@ export class EaSettings extends LitElement {
               }
             </div>
           </div>
+          <div class="field-row">
+            <span class="field-label">SSL 证书验证</span>
+            <div class="field-value">
+              <label class="toggle-switch">
+                <input
+                  type="checkbox"
+                  .checked=${this.debugSslVerify}
+                  @change=${async () => { 
+                    this.debugSslVerify = !this.debugSslVerify; 
+                    // 保存到配置文件
+                    const newSettings: any = {
+                      app_name: this.appName,
+                      country: this.country,
+                      language: this.language,
+                      proxy: {
+                        host: this.proxyHost,
+                        port: this.proxyPort,
+                        enabled: this.proxyEnabled
+                      },
+                      ssl_verify: this.debugSslVerify
+                    };
+                    await fetch('/api/config/settings', {
+                      method: 'PUT',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ content: JSON.stringify(newSettings, null, 2) })
+                    });
+                    this.requestUpdate(); 
+                  }}
+                />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
         </div>
         <div class="hint" style="padding: 0 20px 16px;">
-          💡 代理用于访问国外 API（Google、xAI 等），默认为 Clash 代理端口 7890
+          💡 代理用于访问国外 API，SSL 验证默认关闭以避免代理 MITM 问题
+        </div>
+        
+        <!-- 网络调试器 -->
+        <div class="debugger-section">
+          <div class="debugger-header">
+            <span class="debugger-title">🔌 网络连接调试器</span>
+            <div class="debugger-controls">
+              <select class="field-input" style="min-width: 120px; padding: 4px 8px;" @change=${(e: Event) => { this.debugTarget = (e.target as HTMLSelectElement).value as 'google' | 'xai'; }}>
+                <option value="google" ?selected=${this.debugTarget === 'google'}>Google API</option>
+                <option value="xai" ?selected=${this.debugTarget === 'xai'}>Grok/xAI</option>
+              </select>
+              <button class="btn btn-primary" @click=${this._runNetworkDebug} ?disabled=${this.debugTesting}>
+                ${this.debugTesting ? '测试中...' : '模拟测试'}
+              </button>
+            </div>
+          </div>
+          
+          <!-- 流程图 -->
+          <div class="debugger-flow">
+            ${this.debugSteps.map((step, i) => html`
+              <div class="debug-node">
+                <div class="debug-node-circle ${step.status === 'active' ? 'active' : step.status === 'success' ? 'success' : step.status === 'error' ? 'error' : step.status === 'warning' ? 'warning' : ''}">
+                  ${step.status === 'success' ? '✓' : step.status === 'error' ? '✗' : step.status === 'warning' ? '!' : step.status === 'active' ? '⏳' : i + 1}
+                </div>
+                <span class="debug-node-label">${step.name}</span>
+              </div>
+              ${i < this.debugSteps.length - 1 ? html`
+                <div class="debug-arrow ${step.status === 'success' || step.status === 'warning' ? 'active' : ''}"></div>
+              ` : ''}
+            `)}
+          </div>
+          
+          <!-- 结果 -->
+          ${this.debugResult ? html`
+            <div class="debug-result ${this.debugResult}">
+              ${this.debugResult === 'success' ? '✅ 连接成功！' : this.debugResult === 'error' ? '❌ 连接失败' : '⚠️ 连接成功但有警告'}
+              <div class="debug-error-detail">${this.debugError}</div>
+            </div>
+          ` : ''}
+          
+          <div style="font-size: 12px; color: var(--muted); margin-top: 12px;">
+            💡 模拟网络连接流程，帮助诊断代理/SSL 配置问题
+          </div>
         </div>
       </div>
       

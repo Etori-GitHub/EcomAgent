@@ -97,6 +97,7 @@ def upload_image(
         # 发送请求，禁用代理，增加超时时间
         # 读取代理配置
         proxy_url = None
+        ssl_verify = True
         try:
             settings_file = Path(__file__).parent.parent.parent / "config" / "settings.json"
             if settings_file.exists():
@@ -108,11 +109,16 @@ def upload_image(
                         host = proxy_config.get('host', '127.0.0.1')
                         port = proxy_config.get('port', 7890)
                         proxy_url = f"http://{host}:{port}"
-        except:
+                        print(f"[ImgBB] Proxy from config: {proxy_url}")
+                    # 读取 SSL 验证配置
+                    ssl_verify = settings.get('ssl_verify', False)
+                    print(f"[ImgBB] SSL verify: {ssl_verify}")
+        except Exception as e:
+            print(f"[ImgBB] Failed to read config: {e}")
             pass
         
         if not proxy_url:
-            proxy_url = 'http://127.0.0.1:7890'
+            proxy_url = 'http://127.0.0.1:7897'  # 默认使用新端口
         
         print(f"[ImgBB] Using proxy: {proxy_url}")
         
@@ -124,13 +130,15 @@ def upload_image(
                     print(f"[ImgBB] Retry {retry_attempt}/3, waiting {wait_time}s...")
                     time.sleep(wait_time)
                 
+                upload_start = time.time()
                 # 先尝试用代理
                 try:
                     response = requests.post(
                         IMGBB_UPLOAD_URL, 
                         data=payload, 
-                        timeout=120,
-                        proxies={"http": proxy_url, "https": proxy_url}
+                        timeout=300,  # 增加到 5 分钟
+                        proxies={"http": proxy_url, "https": proxy_url},
+                        verify=ssl_verify
                     )
                 except requests.exceptions.ProxyError:
                     # 代理失败，直连尝试
@@ -138,11 +146,14 @@ def upload_image(
                     response = requests.post(
                         IMGBB_UPLOAD_URL, 
                         data=payload, 
-                        timeout=120,
-                        proxies={"http": None, "https": None}
+                        timeout=300,  # 增加到 5 分钟
+                        proxies={"http": None, "https": None},
+                        verify=ssl_verify
                     )
                 
                 response.raise_for_status()
+                upload_time = time.time() - upload_start
+                print(f"[ImgBB] Upload completed in {upload_time:.1f}s")
                 break  # 成功则跳出重试循环
                 
             except (requests.exceptions.RequestException, requests.exceptions.ProxyError) as e:

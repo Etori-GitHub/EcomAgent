@@ -68,7 +68,8 @@ def get_pending_products(limit: int = BATCH_SIZE) -> list:
         cursor.execute("""
             SELECT ecom_code, name, short_name
             FROM product_master
-            WHERE translation_status = 'pending' AND name IS NOT NULL AND name != ''
+            WHERE (translation_status IS NULL OR translation_status = 'pending')
+                  AND name IS NOT NULL AND name != ''
             ORDER BY id ASC
             LIMIT ?
         """, (limit,))

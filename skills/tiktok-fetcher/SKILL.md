@@ -108,6 +108,39 @@ python code/EcomAgent/skills/tiktok-fetcher/src/fetch_tiktok_uc.py
 
 ## 使用步骤
 
+### 快速抓取（推荐）
+
+使用项目根目录的 `daily_fetch.py` 统一入口：
+
+```bash
+# 完整流程（抓取 + 导入 + 图片下载）
+python scripts/daily_fetch.py tiktok
+```
+
+### 手动抓取（开发调试）
+
+需先启动 Chrome 调试端口：
+
+```bash
+# Windows
+chrome.exe --remote-debugging-port=9222 --user-data-dir="C:\chrome-tiktok"
+
+# macOS
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir="/tmp/chrome-tiktok"
+```
+
+然后运行：
+
+```bash
+python skills/tiktok-fetcher/src/fetch_tiktok_categories.py
+```
+
+**注意**：手动模式需要单独导入数据：
+
+```bash
+python scripts/daily_fetch.py import
+```
+
 ### 1. 安装依赖
 
 ```bash

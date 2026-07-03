@@ -46,6 +46,10 @@ REM Install dependencies
 echo Installing dependencies...
 python\python.exe -m pip install --no-warn-script-location -r requirements.txt
 
+REM Install Playwright Chromium
+echo Installing Playwright Chromium...
+python\python.exe -m playwright install chromium
+
 REM Clean up
 del %PYTHON_ZIP%
 del python\get-pip.py

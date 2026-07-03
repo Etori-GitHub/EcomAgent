@@ -138,10 +138,24 @@ class FlashImageProvider(ImageProvider):
                 else:
                     print(f"  [FlashImage] Input image provided, aspect_ratio controlled by prompt")
                 
-                # SSL 配置
-                ctx = ssl.create_default_context()
-                ctx.check_hostname = False
-                ctx.verify_mode = ssl.CERT_NONE
+                # SSL 配置 - 从配置文件读取
+                ssl_verify = False
+                try:
+                    settings_file = Path(__file__).parent.parent.parent / "config" / "settings.json"
+                    if settings_file.exists():
+                        with open(settings_file, 'r', encoding='utf-8') as f:
+                            settings = json.load(f)
+                            ssl_verify = settings.get('ssl_verify', False)
+                            print(f"  [FlashImage] SSL verify from config: {ssl_verify}")
+                except Exception as e:
+                    print(f"  [FlashImage] Failed to read ssl_verify: {e}")
+                
+                if ssl_verify:
+                    ctx = ssl.create_default_context()
+                else:
+                    ctx = ssl.create_default_context()
+                    ctx.check_hostname = False
+                    ctx.verify_mode = ssl.CERT_NONE
                 
                 # 配置代理（从配置文件读取）
                 proxy_url = None
@@ -155,11 +169,12 @@ class FlashImageProvider(ImageProvider):
                                 host = proxy_config.get('host', '127.0.0.1')
                                 port = proxy_config.get('port', 7890)
                                 proxy_url = f"http://{host}:{port}"
-                except:
-                    pass
+                                print(f"  [FlashImage] Proxy from config: {proxy_url}")
+                except Exception as e:
+                    print(f"  [FlashImage] Failed to read proxy config: {e}")
                 
                 if not proxy_url:
-                    proxy_url = 'http://127.0.0.1:7891'  # 改用 SOCKS5 端口
+                    proxy_url = 'http://127.0.0.1:7897'
                 
                 print(f"  [FlashImage] Using proxy: {proxy_url}")
                 

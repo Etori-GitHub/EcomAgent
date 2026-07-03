@@ -80,7 +80,7 @@ def check_port_in_use(port: int) -> bool:
 
 
 def find_chrome_path() -> Optional[Path]:
-    """查找 Chrome 安装路径"""
+    """查找 Chrome 安装路径（可选，CDP 连接用）"""
     for path in CHROME_PATHS:
         p = Path(path) if isinstance(path, str) else path
         if p.exists():
@@ -88,15 +88,28 @@ def find_chrome_path() -> Optional[Path]:
     return None
 
 
+def get_playwright_chromium_path() -> Optional[Path]:
+    """获取 Playwright 内置 Chromium 路径"""
+    try:
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as p:
+            # 获取 chromium executable path
+            return Path(p.chromium.executable_path)
+    except Exception as e:
+        logger.warning(f"[TikTok] 无法获取 Playwright Chromium 路径: {e}")
+        return None
+
+
 def start_debug_chrome(port: int = 9222, open_webui: bool = True) -> bool:
-    """启动调试 Chrome"""
+    """启动调试 Chrome（需用户已安装系统 Chrome）"""
     if check_port_in_use(port):
         logger.info(f"[TikTok] Chrome already running on port {port}")
         return True
     
     chrome_path = find_chrome_path()
     if not chrome_path:
-        logger.error("[TikTok] Chrome not found")
+        logger.error("[TikTok] 未找到系统 Chrome，请安装 Chrome 或手动启动：")
+        logger.error("[TikTok]   chrome.exe --remote-debugging-port=9222 --user-data-dir=C:\chrome-tiktok")
         return False
     
     # 创建数据目录
