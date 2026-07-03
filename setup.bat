@@ -116,6 +116,11 @@ if "%NEED_INIT%"=="1" (
 ) else (
     echo [OK] All databases exist
 )
+
+REM Create images directories
+if not exist "data\images\amazon" mkdir "data\images\amazon"
+if not exist "data\images\tiktok" mkdir "data\images\tiktok"
+echo [OK] Images directories created
 echo.
 
 :start_server

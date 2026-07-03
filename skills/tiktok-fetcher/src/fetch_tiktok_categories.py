@@ -124,11 +124,17 @@ def fetch_category_products(page, category_name, category_url):
                     
                     if (!name || name.length < 5) return;
                     
+                    // 找图片
+                    let imageUrl = '';
+                    if (container) {
+                        const img = container.querySelector('img');
+                        if (img && img.src) {
+                            imageUrl = img.src;
+                        }
+                    }
+                    
                     // 找价格
                     let price = null;
-                    const container = link.closest('[class*="product"]') || 
-                                     link.closest('[class*="item"]') || 
-                                     link.parentElement?.parentElement;
                     if (container) {
                         const allText = container.innerText;
                         const priceMatch = allText.match(/\\$(\\d+\\.\\d+)/);
@@ -137,10 +143,16 @@ def fetch_category_products(page, category_name, category_url):
                         }
                     }
                     
+                    // 提取 tiktokshop_id
+                    const idMatch = link.href.match(/\/shop\/pdp\/([A-Za-z0-9]+)/);
+                    const tiktokshopId = idMatch ? idMatch[1] : '';
+                    
                     items.push({
                         name: name.substring(0, 100),
                         price: price,
-                        productUrl: link.href
+                        image_url: imageUrl,
+                        product_url: link.href,
+                        tiktokshop_id: tiktokshopId
                     });
                 } catch (e) {}
             });

@@ -3216,8 +3216,8 @@ def run_server(host: str = "0.0.0.0", port: int = 8000):
 
     # 挂载图片目录 - 用于商品图片访问
     images_dir = DATA_DIR / "images"
-    if images_dir.exists():
-        app.mount("/images", StaticFiles(directory=str(images_dir)), name="images")
+    images_dir.mkdir(parents=True, exist_ok=True)  # 确保目录存在
+    app.mount("/images", StaticFiles(directory=str(images_dir)), name="images")
 
     # 挂载素材目录 - 用于素材缩略图访问
     assets_data_dir = DATA_DIR / "assets"
