@@ -8,7 +8,7 @@ echo.
 REM Check if python directory exists
 if exist "python\python.exe" (
     echo [OK] Python environment already exists.
-    goto :start_server
+    goto :install_playwright
 )
 
 echo [INSTALLING] Setting up Python environment...
@@ -56,6 +56,12 @@ del python\get-pip.py
 
 echo.
 echo [OK] Python environment setup complete.
+echo.
+
+:install_playwright
+REM Install/Update Playwright Chromium
+echo [CHECKING] Playwright Chromium...
+python\python.exe -m playwright install chromium
 echo.
 
 :start_server
