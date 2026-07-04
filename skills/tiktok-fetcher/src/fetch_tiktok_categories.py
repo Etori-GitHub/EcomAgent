@@ -96,6 +96,12 @@ def fetch_category_products(page, category_name, category_url):
             
             productLinks.forEach(link => {
                 try {
+                    // 找商品容器 - 修复：先定义 container
+                    const container = link.closest('[class*="product"]') || 
+                                     link.closest('[class*="item"]') || 
+                                     link.closest('[class*="card"]') ||
+                                     link.parentElement?.parentElement?.parentElement;
+                    
                     // 找商品名称
                     let name = '';
                     
@@ -105,26 +111,21 @@ def fetch_category_products(page, category_name, category_url):
                         name = linkText;
                     }
                     
-                    // 如果链接没有文本，从父容器找
-                    if (!name) {
-                        const parent = link.closest('[class*="product"]') || 
-                                      link.closest('[class*="item"]') || 
-                                      link.parentElement?.parentElement;
-                        if (parent) {
-                            const textEls = parent.querySelectorAll('span, div, p, h3, h4');
-                            for (const el of textEls) {
-                                const t = el.innerText.trim();
-                                if (t.length >= 5 && t.length < 100 && !t.includes('$') && !t.includes('已售')) {
-                                    name = t;
-                                    break;
-                                }
+                    // 如果链接没有文本，从容器找
+                    if (!name && container) {
+                        const textEls = container.querySelectorAll('span, div, p, h3, h4');
+                        for (const el of textEls) {
+                            const t = el.innerText.trim();
+                            if (t.length >= 5 && t.length < 100 && !t.includes('$') && !t.includes('已售') && !t.includes('sold')) {
+                                name = t;
+                                break;
                             }
                         }
                     }
                     
                     if (!name || name.length < 5) return;
                     
-                    // 找图片
+                    // 找图片 - 修复：container 已定义
                     let imageUrl = '';
                     if (container) {
                         const img = container.querySelector('img');
@@ -133,13 +134,31 @@ def fetch_category_products(page, category_name, category_url):
                         }
                     }
                     
-                    // 找价格
+                    // 找价格 - 修复：container 已定义
                     let price = null;
                     if (container) {
                         const allText = container.innerText;
-                        const priceMatch = allText.match(/\\$(\\d+\\.\\d+)/);
+                        const priceMatch = allText.match(/\\$([\\d.]+)/);
                         if (priceMatch) {
                             price = parseFloat(priceMatch[1]);
+                        }
+                    }
+                    
+                    // 找评分
+                    let rating = null;
+                    if (container) {
+                        const ratingMatch = container.innerText.match(/([\\d.]+)\\s*(stars?|星)/i);
+                        if (ratingMatch) {
+                            rating = parseFloat(ratingMatch[1]);
+                        }
+                    }
+                    
+                    // 找销量
+                    let sold = null;
+                    if (container) {
+                        const soldMatch = container.innerText.match(/([\\d.]+[KkMm]?)\\s*(sold|已售|Sold)/i);
+                        if (soldMatch) {
+                            sold = soldMatch[0];
                         }
                     }
                     
@@ -150,6 +169,8 @@ def fetch_category_products(page, category_name, category_url):
                     items.push({
                         name: name.substring(0, 100),
                         price: price,
+                        rating: rating,
+                        sold: sold,
                         image_url: imageUrl,
                         product_url: link.href,
                         tiktokshop_id: tiktokshopId
@@ -160,10 +181,10 @@ def fetch_category_products(page, category_name, category_url):
             // 去重
             const seen = new Set();
             return items.filter(item => {
-                if (seen.has(item.productUrl)) return false;
-                seen.add(item.productUrl);
+                if (seen.has(item.tiktokshop_id)) return false;
+                seen.add(item.tiktokshop_id);
                 return true;
-            }).slice(0, 30);
+            }).slice(0, 50);
         }
     """)
     
@@ -172,7 +193,7 @@ def fetch_category_products(page, category_name, category_url):
     if products:
         print(f"[示例] 前3个商品:")
         for i, p in enumerate(products[:3]):
-            print(f"  {i+1}. {p['name'][:50]}... - ${p['price']}")
+            print(f"  {i+1}. {p['name'][:50]}... - ${p.get('price')} - {p.get('sold')} - {p.get('rating')}★")
     
     return products
 

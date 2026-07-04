@@ -27,6 +27,7 @@ def init_amazon_db():
             product_url TEXT,
             category TEXT,
             master_id INTEGER,
+            local_image_path TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
@@ -89,6 +90,7 @@ def init_tiktok_db():
             product_url TEXT,
             category TEXT,
             master_id INTEGER,
+            local_image_path TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )

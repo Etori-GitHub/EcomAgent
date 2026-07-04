@@ -167,6 +167,7 @@ export class EaDashboard extends LitElement {
           c.id === categoryId ? { ...c, enabled: enabled ? 1 : 0 } : c
         )
       };
+      this.requestUpdate(); // 强制刷新按钮状态
     } catch (e) {
       alert(`更新失败: ${e}`);
     }

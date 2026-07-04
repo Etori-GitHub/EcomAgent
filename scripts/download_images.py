@@ -6,9 +6,17 @@
 
 import sqlite3
 import urllib.request
+import sys
 import time
 from pathlib import Path
 from datetime import datetime
+
+# Windows UTF-8 兼容
+if sys.platform == 'win32':
+    if sys.stdout.encoding != 'utf-8':
+        sys.stdout.reconfigure(encoding='utf-8')
+    if sys.stderr.encoding != 'utf-8':
+        sys.stderr.reconfigure(encoding='utf-8')
 
 BASE_DIR = Path(__file__).parent.parent
 DATA_DIR = BASE_DIR / "data"
@@ -100,7 +108,8 @@ def download_amazon_images(limit: int = 0):
         save_path = AMAZON_IMG_DIR / filename
         relative_path = f"amazon/{filename}"
         
-        print(f"[{i+1}/{total}] {asin}...", end='', flush=True)
+        print(f"[{i+1}/{total}] {asin}...", end='')
+        sys.stdout.flush()
         
         if download_image(image_url, save_path, 'https://www.amazon.com/'):
             cursor.execute('UPDATE products SET local_image_path = ? WHERE id = ?', (relative_path, item_id))
@@ -167,7 +176,8 @@ def download_tiktok_images(limit: int = 0):
         save_path = TIKTOK_IMG_DIR / filename
         relative_path = f"tiktok/{filename}"
         
-        print(f"[{i+1}/{total}] {tiktok_id}...", end='', flush=True)
+        print(f"[{i+1}/{total}] {tiktok_id}...", end='')
+        sys.stdout.flush()
         
         if download_image(image_url, save_path, 'https://www.tiktok.com/'):
             cursor.execute('UPDATE tiktok_products SET local_image_path = ? WHERE id = ?', (relative_path, item_id))

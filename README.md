@@ -2,8 +2,8 @@
 
 电商数据抓取与分析平台，支持 Amazon 和 TikTok Shop 数据抓取、存储、可视化。
 
-**最后更新**：2026-06-25  
-**版本**：v2.2  
+**最后更新**：2026-07-04  
+**版本**：v2.3  
 **状态**：生产环境可用
 
 ---
@@ -235,6 +235,20 @@ EcomAgent/
 ---
 
 ## 更新日志
+
+### 2026-07-04
+- ✅ **数据库表结构修复**
+  - 添加 `local_image_path` 字段到 `products` 和 `tiktok_products` 表
+  - 修复图片下载脚本报错问题
+- ✅ **跨平台兼容修复**
+  - `download_images.py` UTF-8 编码兼容
+  - `sys.stdout.flush()` 替代 `flush=True` 兼容更多终端
+- ✅ **TikTok 抓取脚本修复**
+  - 修复 JavaScript `container` 变量未定义 bug
+  - 添加 `rating` 和 `sold` 字段提取
+- ✅ **前端 UI 修复**
+  - 系统设置页面编辑字段可正常修改
+  - 数据抓取卡片勾选类目后按钮状态正确刷新
 
 ### 2026-06-25
 - ✅ **TikTok Shop 反爬突破**

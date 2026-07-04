@@ -476,11 +476,13 @@ export class EaSettings extends LitElement {
   private _editField(field: string, value: string) {
     this.editingField = field;
     this.editValue = value;
+    this.requestUpdate(); // 强制刷新 UI
   }
 
   private _cancelEdit() {
     this.editingField = '';
     this.editValue = '';
+    this.requestUpdate(); // 强制刷新 UI
   }
 
   private async _saveField(field: string) {

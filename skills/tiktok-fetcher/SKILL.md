@@ -46,11 +46,13 @@ tiktok_womenswear_underwear_20260509_104800.json
   },
   "products": [
     {
-      "tag": "DIV",
-      "className": "product-card-classname...",
-      "text": "商品名称 $19.99",
-      "price": "19.99",
-      "rating": "4.8"
+      "name": "商品名称",
+      "price": 19.99,
+      "rating": 4.8,
+      "sold": "1.2K sold",
+      "image_url": "https://...",
+      "product_url": "https://www.tiktok.com/shop/pdp/...",
+      "tiktokshop_id": "ABC123"
     }
   ]
 }
@@ -65,7 +67,13 @@ tiktok_womenswear_underwear_20260509_104800.json
 - `metadata.scraped_date`: 抓取日期（用于数据库分组）
 - `metadata.scraped_time`: 抓取时间（用于数据库分组）
 - `metadata.total_items`: 商品总数
-- `products`: 商品列表数组
+- `products[].name`: 商品名称
+- `products[].price`: 价格（浮点数）
+- `products[].rating`: 评分（浮点数，可能为空）
+- `products[].sold`: 销量文本（如 "1.2K sold"）
+- `products[].image_url`: 商品图片 URL
+- `products[].product_url`: 商品详情页 URL
+- `products[].tiktokshop_id`: TikTok Shop 商品 ID
 
 ## 反爬对策（重要）
 
