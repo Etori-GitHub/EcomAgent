@@ -99,6 +99,21 @@ python\python.exe -m playwright install chromium
 echo.
 
 :init_database
+REM Check config files
+echo [CHECKING] Config files...
+if not exist "config\api_keys.json" (
+    if exist "config\api_keys.template.json" (
+        echo [CONFIG] Creating api_keys.json from template...
+        copy "config\api_keys.template.json" "config\api_keys.json" >nul
+        echo [CONFIG] Created api_keys.json
+    ) else (
+        echo [WARN] api_keys.template.json not found
+    )
+) else (
+    echo [OK] api_keys.json exists
+)
+echo.
+
 REM Initialize databases if not exist
 echo [CHECKING] Database initialization...
 set NEED_INIT=0

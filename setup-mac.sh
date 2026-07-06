@@ -38,6 +38,21 @@ echo ""
 echo "安装 Playwright 浏览器..."
 playwright install chromium
 
+# 检查配置文件
+echo ""
+echo "检查配置文件..."
+if [ ! -f "config/api_keys.json" ]; then
+    if [ -f "config/api_keys.template.json" ]; then
+        echo "[CONFIG] 从模板创建 api_keys.json..."
+        cp config/api_keys.template.json config/api_keys.json
+        echo "[CONFIG] Created api_keys.json"
+    else
+        echo "[WARN] api_keys.template.json 不存在"
+    fi
+else
+    echo "[OK] api_keys.json 已存在"
+fi
+
 # 设置权限
 chmod +x start.sh
 
